@@ -1,0 +1,7 @@
+com\demo\repo\DemoRepo.class
+com\demo\repo\NewsItem.class
+com\demo\controller\LogoutServlet.class
+com\demo\repo\Product.class
+com\electromart\filter\CharacterEncodingFilter.class
+com\demo\controller\HomeServlet.class
+com\demo\model\NewsItem.class
