@@ -29,6 +29,22 @@ public class DemoRepo {
   public static List<Product> byCategory(String cat){
     return PRODUCTS.stream().filter(p -> p.getCategory().equalsIgnoreCase(cat)).collect(Collectors.toList());
   }
+  
+  public static List<Product> getAllProducts(){
+    return PRODUCTS;
+  }
+  
+  public static List<Product> searchProducts(String keyword){
+    if (keyword == null || keyword.trim().isEmpty()) {
+      return PRODUCTS;
+    }
+    final String keywordLower = keyword.toLowerCase().trim();
+    return PRODUCTS.stream()
+        .filter(p -> p.getName().toLowerCase().contains(keywordLower) ||
+                    p.getBrand().toLowerCase().contains(keywordLower) ||
+                    p.getCategory().toLowerCase().contains(keywordLower))
+        .collect(Collectors.toList());
+  }
 
   public static List<NewsItem> latestNews(int n){
     return List.of(
