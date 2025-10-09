@@ -18,7 +18,15 @@ public class LoaiSanPham {
     private String tenLoai;
     @Column(name = "ngay_tao")
     private LocalDate ngayTao = LocalDate.now();
-
+    
+    public LoaiSanPham()
+    {
+        
+    }
+    public LoaiSanPham(Long id, String tenLoai) {
+        this.id = id;
+        this.tenLoai = tenLoai;
+    }
     public Long getId() {
         return id;
     }

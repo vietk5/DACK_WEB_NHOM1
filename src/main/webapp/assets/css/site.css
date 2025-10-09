@@ -425,3 +425,30 @@ footer{ background:rgba(12,14,18,.6); border-top:1px solid var(--brd); }
   transform: scale(1.1);
   transition: transform 0.3s ease;
 }
+
+/* Menu con */
+.dropdown-submenu .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-top: 0;
+  margin-left: 0;
+}
+
+/* Hiện menu con khi hover */
+.dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+}
+/* Giúp menu con trông khớp với bootstrap */
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-item.dropdown-toggle::after {
+  float: right;
+  margin-left: 5px;
+  content: "›"; /* mũi tên sang phải */
+}
+.dropdown-submenu .dropdown-toggle::after {
+  display: none !important;
+}

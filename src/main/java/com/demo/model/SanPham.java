@@ -4,6 +4,7 @@
  */
 package com.demo.model;
 
+import java.io.Serializable;
 import javax.persistence.*; 
 import java.math.*;
 
@@ -32,7 +33,21 @@ public class SanPham extends AuditEntity {
     private LocalDate ngayCapPhat = LocalDate.now();
     @Column(name = "so_luong_ton")
     private Integer soLuongTon = 0;
-
+    
+    public SanPham() {
+        
+    }
+    public SanPham(Long id, String tenSanPham, ThuongHieu thuongHieu, LoaiSanPham loai, BigDecimal gia, String moTaNgan, LocalDate ngayCapNhat, Integer soLuongTon) {
+        this.id = id;
+        this.tenSanPham = tenSanPham;
+        this.thuongHieu = thuongHieu;
+        this.loai = loai;
+        this.gia = gia;
+        this.moTaNgan = moTaNgan;
+        this.ngayCapNhat = ngayCapNhat;
+        this.soLuongTon = soLuongTon;
+    }
+        
     public Long getId() {
         return id;
     }

@@ -15,7 +15,14 @@ public class ThuongHieu {
     private Long id;
     @Column(name = "ten_thuong_hieu")
     private String tenThuongHieu;
-
+    
+    public ThuongHieu() {
+        
+    }
+    public ThuongHieu(Long id, String tenThuongHieu) {
+        this.id = id;
+        this.tenThuongHieu = tenThuongHieu;
+    }
     public Long getId() {
         return id;
     }

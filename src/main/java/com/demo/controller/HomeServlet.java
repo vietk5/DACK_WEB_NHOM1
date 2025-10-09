@@ -1,5 +1,7 @@
 package com.demo.controller;
 
+import com.demo.model.database.LoaiSanPhamDB;
+import com.demo.model.database.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,8 +27,8 @@ public class HomeServlet extends HttpServlet {
     resp.setContentType("text/html; charset=UTF-8");
 
     // Data nền
-    req.setAttribute("brands",     DemoRepo.brands());
-    req.setAttribute("categories", DemoRepo.categories());
+    req.setAttribute("categories", LoaiSanPhamDB.selectAllTenLoaiSanPham());
+    req.setAttribute("brands", ThuongHieuDB.selectAllTenThuongHieu());
 
     // Đọc tham số brand (nếu có)
     String brand = req.getParameter("brand");

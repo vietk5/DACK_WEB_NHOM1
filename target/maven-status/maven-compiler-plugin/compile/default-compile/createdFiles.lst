@@ -1,12 +1,18 @@
+com\demo\controller\CheckoutServlet.class
 com\demo\repo\NewsItem.class
+com\demo\controller\ProductDetailServlet.class
 com\demo\model\AuditEntity.class
 com\demo\model\cs\PhieuPhanHoi.class
 com\demo\enums\LoaiThanhVien.class
 com\demo\model\kho\ChiTietPhieuXuat.class
 com\demo\model\order\ChiTietDonHang.class
+com\demo\model\database\SanPhamDB.class
+com\demo\model\database\ThuongHieuDB.class
 com\demo\enums\TrangThaiDonHang.class
 com\demo\model\NguoiDung.class
 com\demo\model\kho\ChiTietPhieuXuatKey.class
+com\demo\controller\OrdersServlet.class
+com\demo\model\database\LoaiSanPhamDB.class
 com\demo\model\kho\ChiTietPhieuNhap.class
 com\demo\repo\Product.class
 com\demo\model\kho\ChiTietPhieuNhapKey.class
@@ -14,6 +20,8 @@ com\demo\persistence\JPAUtil.class
 com\demo\model\PhieuThanhToan.class
 com\demo\model\PhuongThucThanhToan.class
 com\demo\model\cs\PhieuHoTro.class
+com\demo\controller\ReceivingServlet.class
+com\demo\controller\CartServlet.class
 com\demo\model\SanPham.class
 com\demo\model\DiaChi.class
 com\demo\model\LoaiSanPham.class
@@ -30,6 +38,7 @@ com\demo\persistence\GenericDAO.class
 com\demo\repo\DemoRepo.class
 com\demo\controller\LogoutServlet.class
 com\demo\model\kho\PhieuXuat.class
+com\demo\controller\SearchServlet.class
 com\demo\model\Admin.class
 com\demo\model\NhanVien.class
 com\demo\model\cart\GioHang.class

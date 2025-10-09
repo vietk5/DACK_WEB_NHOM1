@@ -42,17 +42,30 @@
     <div class="collapse navbar-collapse" id="topNav">
       <!-- Left -->
       <ul class="navbar-nav me-3">
+          
         <!-- Categories dropdown -->
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            Danh mục
-          </a>
-          <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
-            <c:forEach items="${categories}" var="c">
-              <li><a class="dropdown-item" href="#">${c}</a></li>
-            </c:forEach>
-          </ul>
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              Danh mục sản phẩm 
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
+              <c:forEach items="${categories}" var="category">
+                <li class="dropdown-submenu">
+                  <a class="dropdown-item dropdown-toggle" href="#">${category}</a>
+                  <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
+                      <li><a class="dropdown-item"> <strong>Thương hiệu</strong> </a></li>
+                    <c:forEach items="${brands}" var="brand">
+                      <li><a class="dropdown-item" href="#">
+                        ${brand}
+                      </a></li>
+                    </c:forEach>
+                  </ul>
+                </li>
+              </c:forEach>
+            </ul>
         </li>
+
+        
         <li class="nav-item"><a class="nav-link" href="#promos">Khuyến mãi</a></li>
         <li class="nav-item"><a class="nav-link" href="#best">Bán chạy</a></li>
         <li class="nav-item"><a class="nav-link" href="#laptops">Laptop</a></li>

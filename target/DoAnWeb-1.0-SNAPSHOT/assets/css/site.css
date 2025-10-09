@@ -219,3 +219,236 @@ footer{ background:rgba(12,14,18,.6); border-top:1px solid var(--brd); }
   border:1px solid rgba(255,255,255,.18);
   box-shadow:0 0 .5rem rgba(0,0,0,.35);
 }
+
+/* ===== SEARCH PAGE STYLES ===== */
+.search-header {
+  background: linear-gradient(135deg, rgba(242,197,114,0.1), rgba(41,180,208,0.1));
+  border: 1px solid var(--brd);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.search-filters {
+  background: linear-gradient(180deg, var(--glass-1), rgba(12,14,18,.48));
+  border: 1px solid var(--brd);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.search-filters .form-label {
+  color: var(--text-1);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.search-filters .form-select {
+  background: rgba(12,14,18,.6);
+  border: 1px solid var(--brd);
+  color: var(--text-1);
+  border-radius: 8px;
+}
+
+.search-filters .form-select:focus {
+  border-color: var(--acc-2);
+  box-shadow: 0 0 0 0.2rem rgba(41,180,208,.25);
+  background: rgba(12,14,18,.8);
+}
+
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.search-product-card {
+  background: linear-gradient(180deg, var(--glass-1), rgba(12,14,18,.48));
+  border: 1px solid var(--brd);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.search-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0,0,0,.4);
+  border-color: rgba(41,180,208,.3);
+}
+
+.search-product-card .product-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.search-product-card:hover .product-img {
+  transform: scale(1.05);
+}
+
+.discount-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff4d6d, #ff6b7a);
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 2px 8px rgba(255,77,109,.3);
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(180deg, var(--glass-1), rgba(12,14,18,.48));
+  border: 1px solid var(--brd);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.no-results i {
+  font-size: 4rem;
+  color: var(--text-2);
+  margin-bottom: 1rem;
+}
+
+.search-stats {
+  background: linear-gradient(135deg, rgba(242,197,114,0.1), rgba(41,180,208,0.1));
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.search-stats .badge {
+  background: linear-gradient(135deg, var(--acc), var(--acc-2));
+  color: #111;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+/* ===== PRODUCT DETAIL PAGE STYLES ===== */
+.product-detail-image {
+  background: linear-gradient(180deg, var(--glass-1), rgba(12,14,18,.48));
+  border: 1px solid var(--brd);
+  border-radius: 16px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.product-detail-info {
+  background: linear-gradient(180deg, var(--glass-1), rgba(12,14,18,.48));
+  border: 1px solid var(--brd);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.rating-stars i {
+  font-size: 1.2rem;
+  margin-right: 0.2rem;
+}
+
+.price-section {
+  background: linear-gradient(135deg, rgba(242,197,114,0.1), rgba(41,180,208,0.1));
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.product-description .card {
+  background: rgba(12,14,18,.6);
+  border: 1px solid var(--brd);
+}
+
+.add-to-cart-section {
+  background: linear-gradient(135deg, rgba(242,197,114,0.05), rgba(41,180,208,0.05));
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.product-features {
+  background: linear-gradient(180deg, var(--glass-1), rgba(12,14,18,.48));
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.product-features ul li {
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.related-products {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--brd);
+}
+
+.breadcrumb {
+  background: linear-gradient(180deg, var(--glass-1), rgba(12,14,18,.48));
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--text-2);
+}
+
+.breadcrumb-item a {
+  color: var(--acc);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--acc-2);
+}
+
+/* Logo hover effect */
+.navbar-brand:hover .logo-text {
+  color: var(--acc) !important;
+  transition: color 0.3s ease;
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+/* Menu con */
+.dropdown-submenu .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-top: 0;
+  margin-left: 0;
+}
+
+/* Hiện menu con khi hover */
+.dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+}
+/* Giúp menu con trông khớp với bootstrap */
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-item.dropdown-toggle::after {
+  float: right;
+  margin-left: 5px;
+  content: "›"; /* mũi tên sang phải */
+}
+.dropdown-submenu .dropdown-toggle::after {
+  display: none !important;
+}

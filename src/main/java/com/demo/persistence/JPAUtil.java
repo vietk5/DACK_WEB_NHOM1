@@ -5,15 +5,14 @@
 package com.demo.persistence;
 
 
-import javax.persistence.*;
-public final class JPAUtil {
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
-    private static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("shopPU");
-
-    private JPAUtil() {
-    }
-
-    public static EntityManager em() {
-        return EMF.createEntityManager();
+public class JPAUtil {
+    private static final EntityManagerFactory emf =
+            Persistence.createEntityManagerFactory("shopPU");
+    
+    public static EntityManagerFactory getEmFactory() {
+        return emf;
     }
 }
