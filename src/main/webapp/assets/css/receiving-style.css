@@ -174,3 +174,27 @@ textarea {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.alert-popup {
+    /* Vị trí cố định (fixed) ở góc trên bên trái */
+    position: fixed;
+    top: 20px;
+    left: -350px; /* Bắt đầu ngoài màn hình */
+    z-index: 1000;
+    
+    /* Thiết kế */
+    padding: 15px 30px;
+    background-color: #4CAF50; /* Màu xanh lá cây */
+    color: white;
+    font-size: 16px;
+    border-radius: 0 5px 5px 0; /* Bo tròn chỉ phía bên phải */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    
+    /* Hiệu ứng chuyển động */
+    transition: left 0.5s ease-in-out; /* Chuyển động trong 0.5 giây */
+}
+
+/* Class sẽ được thêm bằng JS để hiển thị popup */
+.alert-popup.show {
+    left: 0; /* Di chuyển vào vị trí 0px (sát mép trái) */
+}

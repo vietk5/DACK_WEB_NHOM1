@@ -28,6 +28,7 @@ public class SanPham extends AuditEntity {
     @Column(name = "gia", precision = 15, scale = 2)
     private BigDecimal gia;
     @Column(name = "mo_ta_ngan")
+    @Lob
     private String moTaNgan;
     @Column(name = "ngay_cap_phat")
     private LocalDate ngayCapPhat = LocalDate.now();
@@ -37,14 +38,13 @@ public class SanPham extends AuditEntity {
     public SanPham() {
         
     }
-    public SanPham(Long id, String tenSanPham, ThuongHieu thuongHieu, LoaiSanPham loai, BigDecimal gia, String moTaNgan, LocalDate ngayCapNhat, Integer soLuongTon) {
-        this.id = id;
+    public SanPham(String tenSanPham, ThuongHieu thuongHieu, LoaiSanPham loai, BigDecimal gia, String moTaNgan, LocalDate ngayCapPhat, Integer soLuongTon) {
         this.tenSanPham = tenSanPham;
         this.thuongHieu = thuongHieu;
         this.loai = loai;
         this.gia = gia;
         this.moTaNgan = moTaNgan;
-        this.ngayCapNhat = ngayCapNhat;
+        this.ngayCapPhat = ngayCapPhat;
         this.soLuongTon = soLuongTon;
     }
         

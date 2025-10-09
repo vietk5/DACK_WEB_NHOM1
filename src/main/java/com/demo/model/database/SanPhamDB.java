@@ -74,11 +74,11 @@ public class SanPhamDB {
         
         Query query = em.createQuery(qString); 
         try {
-        trans.begin();
-        query.setParameter("id", id);
-        int updatedCount = query.executeUpdate();
-        trans.commit();
-        return updatedCount > 0; 
+            trans.begin();
+            query.setParameter("id", id);
+            int updatedCount = query.executeUpdate();
+            trans.commit();
+            return updatedCount > 0; 
         } catch (Exception e) {
             System.out.println(e);
             if (trans != null && trans.isActive()) {
@@ -87,6 +87,24 @@ public class SanPhamDB {
             return false;
 
         } finally {
+            em.close();
+        }
+    }
+    public static SanPham selectSanPhamByTen(String tenSanPham) {
+        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
+        String qString = "SELECT s FROM SanPham s " 
+                + "WHERE s.tenSanPham= :tenSanPham";
+        TypedQuery<SanPham> query = em.createQuery(qString, SanPham.class);
+        query.setParameter("tenSanPham", tenSanPham);
+        try {
+            SanPham sanPham = query.getSingleResult();
+            return sanPham;
+        } 
+        catch (NoResultException e) {
+            // Nếu không tìm thấy sản phẩm nào
+            return null;
+        }
+        finally {
             em.close();
         }
     }

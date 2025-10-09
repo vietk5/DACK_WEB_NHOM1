@@ -25,27 +25,19 @@ import java.util.stream.Collectors;
 @WebServlet(name = "ReceivingServlet", urlPatterns = {"/receiving"})
 public class ReceivingServlet extends HttpServlet{
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse respone)
+  protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
       
     String url = "/WEB-INF/views/receiving.jsp";
-    
-    LocalDate currentDate = LocalDate.now();
-    request.setAttribute("currentDate", currentDate);
-    
-    request.setCharacterEncoding("UTF-8");
-    respone.setCharacterEncoding("UTF-8");
-    respone.setContentType("text/html; charset=UTF-8");
 
     // Data nền
-    request.setAttribute("categories", LoaiSanPhamDB.selectAllTenLoaiSanPham());
-    request.setAttribute("brands", ThuongHieuDB.selectAllTenThuongHieu());
+//    request.setAttribute("categories", LoaiSanPhamDB.selectAllTenLoaiSanPham());
+//    request.setAttribute("brands", ThuongHieuDB.selectAllTenThuongHieu());
     
     String action = request.getParameter("action");
-    if (action == null) action = "join";
+    if (action == null) action = "";
     
     if (action.equals("add")) {
-        String idSanPhamStr = request.getParameter("idSanPham");
         String tenSanPham = request.getParameter("tenSanPham");
         String tenThuongHieu = request.getParameter("thuongHieu");
         String tenLoaiSanPham = request.getParameter("loaiSanPham");
@@ -55,25 +47,54 @@ public class ReceivingServlet extends HttpServlet{
         ThuongHieu thuongHieu = ThuongHieuDB.selectThuongHieuByTen(tenThuongHieu);
         LoaiSanPham loaiSanPham = LoaiSanPhamDB.selectLoaiSanPhamByTen(tenLoaiSanPham);
         
-        Long idSanPham = Long.parseLong(idSanPhamStr.trim());
         BigDecimal gia = new BigDecimal(giaStr.trim());
         
-        boolean sanPhamTonTai = SanPhamDB.isProductExistById(idSanPham);
-        if (sanPhamTonTai == true) {
-            SanPhamDB.updateSoLuongTonById(idSanPham);
+        SanPham sanPham = SanPhamDB.selectSanPhamByTen(tenSanPham);
+        if (sanPham != null) {
+            response.sendRedirect(request.getContextPath() + "/receiving?duplicate=true&tenSanPham=" + tenSanPham); 
+//            SanPhamDB.updateSoLuongTonById(sanPham.getId());
+            return;
         }
         else {
-            SanPham sanPham = new SanPham(idSanPham, tenSanPham, thuongHieu, loaiSanPham, gia, moTaNgan, currentDate, 1);
-            SanPhamDB.insert(sanPham);
+            SanPham newSanPham = new SanPham(tenSanPham, thuongHieu, loaiSanPham, gia, moTaNgan, LocalDate.now(), 1);
+            SanPhamDB.insert(newSanPham);
+            
+            response.sendRedirect(request.getContextPath() + "/receiving?success=true"); 
+            return;
         }
-        url = "/WEB-INF/views/receiving_sucess.jsp";
+//        response.sendRedirect(request.getContextPath() + "/home");
     }
-    request.getRequestDispatcher(url).forward(request, respone);
+    else if (action.equals("confirm_update")) {
+        String tenSanPham = request.getParameter("tenSanPham");
+        SanPham sanPham = SanPhamDB.selectSanPhamByTen(tenSanPham); 
+        SanPhamDB.updateSoLuongTonById(sanPham.getId());
+        response.sendRedirect(request.getContextPath() + "/receiving?update_success=true");
+        return;
+    }
+    request.getRequestDispatcher(url).forward(request, response);
   }
 
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse respone)
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    respone.sendRedirect(request.getContextPath() + "/receiving");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
+
+        // Luôn chuẩn bị dữ liệu nền cho JSP
+        request.setAttribute("categories", LoaiSanPhamDB.selectAllTenLoaiSanPham());
+        request.setAttribute("brands", ThuongHieuDB.selectAllTenThuongHieu());
+        
+        String action = request.getParameter("action");
+        if (action == null) action = "";
+        if (action.equals("confirm_update")) {
+            String tenSanPham = request.getParameter("tenSanPham");
+            SanPham sanPham = SanPhamDB.selectSanPhamByTen(tenSanPham); 
+            SanPhamDB.updateSoLuongTonById(sanPham.getId());
+            response.sendRedirect(request.getContextPath() + "/receiving?update_success=true");
+            return;
+        }
+
+        // Chuyển tiếp (forward) đến trang JSP
+        request.getRequestDispatcher("/WEB-INF/views/receiving.jsp").forward(request, response);
   }
 }

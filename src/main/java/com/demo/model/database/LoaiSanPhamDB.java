@@ -43,9 +43,9 @@ public class LoaiSanPhamDB {
     public static LoaiSanPham selectLoaiSanPhamByTen(String tenLoaiSanPham) {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
         String qString = "SELECT l FROM LoaiSanPham l " 
-                + "WHERE l.tenLoaiSanPham = :tenLoaiSanPham";
+                + "WHERE l.tenLoai= :tenLoai";
         TypedQuery<LoaiSanPham> query = em.createQuery(qString, LoaiSanPham.class);
-        query.setParameter("tenLoaiSanPham", tenLoaiSanPham);
+        query.setParameter("tenLoai", tenLoaiSanPham);
         try {
             LoaiSanPham loaiSanPham = query.getSingleResult();
             return loaiSanPham;
