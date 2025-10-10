@@ -1,7 +1,7 @@
 package com.demo.persistence;
 
 import com.demo.model.KhachHang;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.*;
 
 public class KhachHangDAO extends GenericDAO<KhachHang, Long> {
@@ -13,7 +13,7 @@ public class KhachHangDAO extends GenericDAO<KhachHang, Long> {
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
     public Optional<KhachHang> findByEmailAndPassword(String email, String password) {
-        var list = findWhere("lower(e.email) = :e and e.matKhauHash = :p",
+        var list = findWhere("lower(e.email) = :e and e.matKhau = :p",
                 Map.of("e", email == null ? "" : email.toLowerCase(), "p", password));
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }

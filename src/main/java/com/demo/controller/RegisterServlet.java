@@ -44,7 +44,7 @@ public class RegisterServlet extends HttpServlet {
         KhachHang kh = new KhachHang();
         kh.setTen(fullName);
         kh.setEmail(email);
-        kh.setMatKhauHash(pass); // DEV: plaintext
+        kh.setMatKhau(pass); // Lưu plaintext
 
         khDAO.create(kh);
 

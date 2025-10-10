@@ -6,7 +6,7 @@ package com.demo.model.order;
 
 import java.io.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 @Embeddable
 public class ChiTietDonHangKey implements Serializable {
 

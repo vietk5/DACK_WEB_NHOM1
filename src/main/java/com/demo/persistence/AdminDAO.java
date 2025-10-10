@@ -1,6 +1,6 @@
 package com.demo.persistence;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import com.demo.model.Admin;
 import java.util.*;
 

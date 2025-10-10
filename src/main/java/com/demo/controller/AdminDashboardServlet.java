@@ -10,8 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,24 +81,30 @@ public class AdminDashboardServlet extends HttpServlet {
             // upper-bound exclusive: đầu ngày hôm sau
             LocalDateTime toTs   = toDate.plusDays(1).atStartOfDay();
 
-            String ql =
-                    "select function('date_trunc','" + bucket + "', d.ngayDatHang), " +
-                    "       sum(ct.soLuong * ct.donGia) " +
-                    "from DonHang d join d.chiTiet ct " +
-                    "where d.trangThai = :done and d.ngayDatHang between :f and :t " +
-                    "group by function('date_trunc','" + bucket + "', d.ngayDatHang) " +
-                    "order by 1";
+            // Dùng Native Query với bucket hardcoded (PostgreSQL yêu cầu date_trunc string literal trong GROUP BY)
+            // Bucket đã được validate ở trên nên an toàn với String.format
+            String sql = String.format(
+                    "SELECT date_trunc('%s', t0.ngay_dat_hang) as period, " +
+                    "       SUM(t1.so_luong * t1.don_gia) as revenue " +
+                    "FROM don_hang t0 " +
+                    "JOIN chi_tiet_don_hang t1 ON t1.don_hang_id = t0.id " +
+                    "WHERE t0.trang_thai = ? AND t0.ngay_dat_hang BETWEEN ? AND ? " +
+                    "GROUP BY date_trunc('%s', t0.ngay_dat_hang) " +
+                    "ORDER BY period",
+                    bucket, bucket);
 
-            TypedQuery<Object[]> q = em.createQuery(ql, Object[].class)
-                    .setParameter("done", TrangThaiDonHang.HOAN_TAT)
-                    .setParameter("f", fromTs)   // <- LocalDateTime
-                    .setParameter("t", toTs);    // <- LocalDateTime
+            Query q = em.createNativeQuery(sql)
+                    .setParameter(1, TrangThaiDonHang.HOAN_TAT.toString())
+                    .setParameter(2, fromTs)
+                    .setParameter(3, toTs);
 
             // Chuyển kết quả thành {label, value} cho chart
             List<Map<String, Object>> revenue = new ArrayList<>();
             var weekFields = WeekFields.ISO;
 
-            for (Object[] r : q.getResultList()) {
+            @SuppressWarnings("unchecked")
+            List<Object[]> resultList = q.getResultList();
+            for (Object[] r : resultList) {
                 Object tsObj = r[0];
                 LocalDateTime ldt;
                 if (tsObj instanceof LocalDateTime) {

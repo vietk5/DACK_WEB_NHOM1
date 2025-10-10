@@ -4,7 +4,7 @@
  */
 package com.demo.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "thuong_hieu")

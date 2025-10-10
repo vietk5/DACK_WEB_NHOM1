@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.demo.model.cart;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import com.demo.model.SanPham;
 @Entity
 @Table(name = "gio_hang_item")

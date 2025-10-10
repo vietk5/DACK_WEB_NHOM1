@@ -1,7 +1,7 @@
 package com.demo.model;
 
 import com.demo.enums.LoaiThanhVien;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "khach_hang")
@@ -14,9 +14,9 @@ public class KhachHang extends NguoiDung {
     @OneToOne(mappedBy = "chuSoHuu", cascade = CascadeType.ALL, orphanRemoval = true)
     private com.demo.model.cart.GioHang gioHang;
 
-    // --- MẬT KHẨU: dùng cùng tên cột như Admin/DAO ---
-    @Column(name = "mat_khau_hash", length = 255)
-    private String matKhauHash;
+    // --- MẬT KHẨU: lưu plain text (không hash) ---
+    @Column(name = "mat_khau", length = 255)
+    private String matKhau;
 
     /* ================== getter/setter ================== */
 
@@ -36,28 +36,12 @@ public class KhachHang extends NguoiDung {
         this.gioHang = g;
     }
 
-    public String getMatKhauHash() {
-        return matKhauHash;
-    }
-
-    public void setMatKhauHash(String matKhauHash) {
-        this.matKhauHash = matKhauHash;
-    }
-
-    /* ====== Các method “tương thích” với code cũ ======
-       LoginServlet/DAO đôi khi gọi getMatKhau() hoặc getHoTen()
-       => trả về dữ liệu đúng thay vì ném UnsupportedOperationException. */
-
-    @Transient
     public String getMatKhau() {
-        // DEV: trả plaintext đang lưu trong matKhauHash
-        // PROD: nên đổi thành compare bằng BCrypt.checkpw(...)
-        return this.matKhauHash;
+        return matKhau;
     }
 
-    public void setMatKhau(String rawPassword) {
-        // DEV: lưu thẳng
-        this.matKhauHash = rawPassword;
+    public void setMatKhau(String matKhau) {
+        this.matKhau = matKhau;
     }
 
     public String getHoTen() {

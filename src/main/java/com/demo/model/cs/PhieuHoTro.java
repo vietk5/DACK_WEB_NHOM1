@@ -5,7 +5,7 @@
 package com.demo.model.cs;
 
 import com.demo.model.KhachHang;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.*;
 
 @Entity

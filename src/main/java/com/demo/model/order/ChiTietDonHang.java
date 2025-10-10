@@ -5,7 +5,7 @@
 package com.demo.model.order;
 
 import com.demo.model.SanPham; 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.math.*;
 

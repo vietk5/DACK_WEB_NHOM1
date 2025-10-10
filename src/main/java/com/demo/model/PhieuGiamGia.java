@@ -5,7 +5,7 @@
 package com.demo.model;
 
 import com.demo.enums.LoaiGiamGia;
-import javax.persistence.*; import java.math.*;
+import jakarta.persistence.*; import java.math.*;
 
 import java.time.*;
 @Entity

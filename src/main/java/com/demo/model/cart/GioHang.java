@@ -5,7 +5,7 @@
 package com.demo.model.cart;
 
 import com.demo.model.KhachHang;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
 @Entity

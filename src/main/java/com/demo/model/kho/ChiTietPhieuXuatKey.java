@@ -6,7 +6,7 @@ package com.demo.model.kho;
 
 import java.io.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 @Embeddable
 public class ChiTietPhieuXuatKey implements Serializable {
 

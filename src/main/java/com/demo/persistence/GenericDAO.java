@@ -1,7 +1,7 @@
 package com.demo.persistence;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
