@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<%@ include file="layout_header.jspf" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ include file="layout_header.jspf" %>
 <%-- PROMOS / CAROUSEL --%>
 <section id="promos" class="mb-3">
     <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">

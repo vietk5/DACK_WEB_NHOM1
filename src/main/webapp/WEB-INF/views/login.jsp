@@ -22,9 +22,11 @@
           <div class="col-12">
             <button class="btn btn-rog w-100" type="submit">Đăng nhập</button>
           </div>
-<!--          <div class="col-12 text-center small text-muted">
-            Admin mặc định: <code>admindackweb / P@ssw0rd</code>
-          </div>-->
+          <div class="col-12 text-center">
+            <a href="${pageContext.request.contextPath}/forgot-password" class="small text-muted">
+              Quên mật khẩu?
+            </a>
+          </div>
           <div class="col-12 text-center">
             Chưa có tài khoản? <a href="${pageContext.request.contextPath}/register">Đăng ký</a>
           </div>
