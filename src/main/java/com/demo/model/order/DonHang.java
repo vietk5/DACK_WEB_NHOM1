@@ -6,7 +6,7 @@ package com.demo.model.order;
 
 import com.demo.enums.TrangThaiDonHang;
 import com.demo.model.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.*;
 import java.util.*;
 

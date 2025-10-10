@@ -4,7 +4,7 @@
  */
 package com.demo.model.kho;
 
-import javax.persistence.*; import java.time.*;
+import jakarta.persistence.*; import java.time.*;
 
 import java.util.*;
 @Entity

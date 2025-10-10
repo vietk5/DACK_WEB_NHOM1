@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ include file="layout_header.jspf" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<!-- PROMOS / CAROUSEL -->
+<%-- PROMOS / CAROUSEL --%>
 <section id="promos" class="mb-3">
     <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner rounded-3 shadow-sm">
@@ -30,8 +30,8 @@
     <p class="text-muted small mt-2">*Thay ảnh tại <code>assets/img/hero_*.jpg</code>.</p>
 </section>
 
-<!-- FEATURED CATEGORIES -->
-<!-- HOT DEALS / GIẢM SÂU HÔM NAY -->
+<%-- FEATURED CATEGORIES --%>
+<%-- HOT DEALS / GIẢM SÂU HÔM NAY --%>
 <section id="hot-deals" class="mb-4">
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-transparent border-0 pb-0 d-flex justify-content-between align-items-center">
@@ -44,14 +44,14 @@
 
         <div class="card-body pt-2">
             <div class="dr-viewport position-relative">
-                <!-- Nút điều hướng (giữa cạnh trái/phải) -->
+                <%-- Nút điều hướng (giữa cạnh trái/phải) --%>
                 <button class="dr-nav prev" type="button" aria-label="Trước">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M15 18l-6-6 6-6"/>
                     </svg>
                 </button>
 
-                <!-- Track cuộn ngang -->
+                <%-- Track cuộn ngang --%>
                 <div class="dr-track" id="hotDealsTrack">
                     <c:forEach items="${empty deals ? best : deals}" var="p">
                         <div class="deal-card">
@@ -79,7 +79,7 @@
 </section>
 
 
-<!-- BRANDS STRIP -->
+<%-- BRANDS STRIP --%>
 <section class="mb-4">
     <div class="card border-0 shadow-sm">
         <div class="card-body">
@@ -95,12 +95,12 @@
             </h5>
 
             <div class="d-flex flex-wrap gap-2">
-                <!-- Nút 'Tất cả' -->
+                <%-- Nút 'Tất cả' --%>
                 <a href="${pageContext.request.contextPath}/home"
                    class="badge rounded-pill text-bg-light border brand-pill
                    <c:if test='${empty activeBrand}'>active</c:if>">Tất cả</a>
 
-                   <!-- Các brand -> link kèm ?brand=... -->
+                <%-- Các brand -> link kèm ?brand=... --%>
                 <c:forEach items="${brands}" var="b">
                     <a href="${pageContext.request.contextPath}/home?brand=${fn:escapeXml(b)}"
                        class="badge rounded-pill text-bg-light border brand-pill
@@ -113,7 +113,7 @@
     </div>
 </section>
 
-<!-- BEST SELLERS -->
+<%-- BEST SELLERS --%>
 <section id="best" class="mb-4">
     <div class="card border-0 shadow-sm">
         <div class="card-body">
@@ -146,7 +146,7 @@
     </div>
 </section>
 
-<!-- Laptops -->
+<%-- Laptops --%>
 <section id="laptops" class="mb-4">
     <div class="card border-0 shadow-sm">
         <div class="card-body">
@@ -179,7 +179,7 @@
     </div>
 </section>
 
-<!-- PCs -->
+<%-- PCs --%>
 <section id="pcs" class="mb-4">
     <div class="card border-0 shadow-sm">
         <div class="card-body">

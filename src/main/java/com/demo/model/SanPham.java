@@ -5,7 +5,7 @@
 package com.demo.model;
 
 import java.io.Serializable;
-import javax.persistence.*; 
+import jakarta.persistence.*; 
 import java.math.*;
 
 import java.time.*;

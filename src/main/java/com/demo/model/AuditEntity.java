@@ -1,7 +1,7 @@
 
 package com.demo.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.*;
 
 @MappedSuperclass

@@ -5,7 +5,7 @@
 package com.demo.model;
 
 import com.demo.model.order.DonHang; 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.*;
 
 @Entity
