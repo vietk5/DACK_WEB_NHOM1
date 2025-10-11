@@ -85,6 +85,26 @@ public class CartServlet extends HttpServlet {
           break;
         }
       }
+    } else if ("increase".equalsIgnoreCase(action)) {
+      // Increase quantity by 1
+      String sku = nvl(req.getParameter("sku"));
+      for (Map<String, Object> it : cart) {
+        if (sku.equalsIgnoreCase(String.valueOf(it.get("sku")))) {
+          int currentQty = (Integer) it.getOrDefault("qty", 1);
+          it.put("qty", currentQty + 1);
+          break;
+        }
+      }
+    } else if ("decrease".equalsIgnoreCase(action)) {
+      // Decrease quantity by 1 (minimum 1)
+      String sku = nvl(req.getParameter("sku"));
+      for (Map<String, Object> it : cart) {
+        if (sku.equalsIgnoreCase(String.valueOf(it.get("sku")))) {
+          int currentQty = (Integer) it.getOrDefault("qty", 1);
+          it.put("qty", Math.max(1, currentQty - 1));
+          break;
+        }
+      }
     } else {
       // default: add
       String sku = nvl(req.getParameter("sku"));
