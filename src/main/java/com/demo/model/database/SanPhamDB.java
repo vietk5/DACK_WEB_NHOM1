@@ -65,18 +65,17 @@ public class SanPhamDB {
             em.close();
         }
     }
-    public static boolean updateSoLuongTonById(Long id, Integer soLuong) {
+    public static boolean updateSoLuongTonById(Long id) {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
         String qString = "UPDATE SanPham s "
-                + "SET s.soLuongTon = s.soLuongTon + :soLuong "
+                + "SET s.soLuongTon = s.soLuongTon + 1 "
                 + "WHERE s.id = :id";
         
         Query query = em.createQuery(qString); 
         try {
             trans.begin();
             query.setParameter("id", id);
-            query.setParameter("soLuong", soLuong);
             int updatedCount = query.executeUpdate();
             trans.commit();
             return updatedCount > 0; 
@@ -100,24 +99,6 @@ public class SanPhamDB {
         try {
             SanPham sanPham = query.getSingleResult();
             return sanPham;
-        } 
-        catch (NoResultException e) {
-            // Nếu không tìm thấy sản phẩm nào
-            return null;
-        }
-        finally {
-            em.close();
-        }
-    }
-    public static Long selectIDSanPhamByTen(String tenSanPham) {
-        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
-        String qString = "SELECT s.id FROM SanPham s " 
-                + "WHERE s.tenSanPham= :tenSanPham";
-        TypedQuery<Long> query = em.createQuery(qString, Long.class);
-        query.setParameter("tenSanPham", tenSanPham);
-        try {
-            Long id = query.getSingleResult();
-            return id;
         } 
         catch (NoResultException e) {
             // Nếu không tìm thấy sản phẩm nào
