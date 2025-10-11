@@ -214,24 +214,111 @@
 <script>
 function increaseQuantity() {
   const quantityInput = document.getElementById('quantity');
-  const currentValue = parseInt(quantityInput.value);
-  if (currentValue < 10) {
+  const currentValue = parseInt(quantityInput.value) || 1;
+  if (currentValue < 99) {
     quantityInput.value = currentValue + 1;
+    document.getElementById('qtyHidden').value = currentValue + 1;
   }
 }
 
 function decreaseQuantity() {
   const quantityInput = document.getElementById('quantity');
-  const currentValue = parseInt(quantityInput.value);
+  const currentValue = parseInt(quantityInput.value) || 1;
   if (currentValue > 1) {
     quantityInput.value = currentValue - 1;
+    document.getElementById('qtyHidden').value = currentValue - 1;
   }
 }
 
 // Sync quantity field to hidden input for form submit
 document.getElementById('quantity').addEventListener('input', function(){
-  document.getElementById('qtyHidden').value = this.value || 1;
+  const value = parseInt(this.value) || 1;
+  this.value = Math.max(1, Math.min(99, value));
+  document.getElementById('qtyHidden').value = this.value;
+});
+
+// Add animation when adding to cart
+document.querySelector('form[action*="cart"]').addEventListener('submit', function(e) {
+  const btn = this.querySelector('button[type="submit"]');
+  btn.innerHTML = '<i class="bi bi-check2 me-2"></i>Đã thêm!';
+  btn.classList.add('btn-success');
+  btn.classList.remove('btn-rog');
+  
+  setTimeout(() => {
+    btn.innerHTML = '<i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ hàng';
+    btn.classList.add('btn-rog');
+    btn.classList.remove('btn-success');
+  }, 1500);
 });
 </script>
+
+<style>
+/* Enhanced Add to Cart Button */
+.btn-rog {
+  transition: all 0.3s ease;
+}
+
+.btn-rog:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 0, 102, 0.4);
+}
+
+.btn-rog:active {
+  transform: translateY(0);
+}
+
+/* Quantity Buttons Enhancement */
+.btn-outline-secondary {
+  transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.btn-outline-secondary:active {
+  transform: scale(0.95);
+}
+
+/* Product Image Hover Effect */
+.product-detail-image img {
+  transition: transform 0.5s ease;
+}
+
+.product-detail-image:hover img {
+  transform: scale(1.05);
+}
+
+/* Badge Animations */
+.rating-badge, .discount-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.discount-badge {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.rating-badge {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+}
+</style>
 
 <%@ include file="/WEB-INF/views/layout_footer.jspf" %>
