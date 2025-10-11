@@ -57,7 +57,8 @@
                &image=${fn:escapeXml(imgSrc)}">
         Thêm vào giỏ
       </a>
-      <a class="btn btn-sm btn-outline-light-subtle" href="#">Xem chi tiết</a>
+      <a class="btn btn-sm btn-outline-light-subtle" 
+         href="${cp}/product?productId=${param.id}">Xem chi tiết</a>
     </div>
   </div>
 </div>

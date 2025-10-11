@@ -51,11 +51,11 @@
             <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
               <c:forEach items="${categories}" var="category">
                 <li class="dropdown-submenu">
-                  <a class="dropdown-item dropdown-toggle" href="#">${category}</a>
+                  <a class="dropdown-item dropdown-toggle" href="search?category=${category}">${category}</a>
                   <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
                       <li><a class="dropdown-item"> <strong>Thương hiệu</strong> </a></li>
                     <c:forEach items="${brands}" var="brand">
-                      <li><a class="dropdown-item" href="#">
+                      <li><a class="dropdown-item" href="search?category=${category}&brand=${brand}">
                         ${brand}
                       </a></li>
                     </c:forEach>

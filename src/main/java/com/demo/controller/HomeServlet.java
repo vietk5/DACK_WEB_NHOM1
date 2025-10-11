@@ -1,5 +1,6 @@
 package com.demo.controller;
 
+import com.demo.model.*;
 import com.demo.model.database.LoaiSanPhamDB;
 import com.demo.model.database.*;
 import jakarta.servlet.ServletException;
@@ -36,30 +37,31 @@ public class HomeServlet extends HttpServlet {
     final String brandFinal = brand;
 
     // Best sellers (giới hạn 8) + filter brand nếu có
-    List<Product> best = DemoRepo.bestSellers(8);
-    if (brandFinal != null && !brandFinal.isEmpty()) {
-      best = best.stream()
-          .filter(p -> p.getBrand().equalsIgnoreCase(brandFinal))
-          .collect(Collectors.toList());
-    }
+    List<SanPham> best = SanPhamDB.select8SanPham();
+//    List<Product> best = DemoRepo.bestSellers(8);
+//    if (brandFinal != null && !brandFinal.isEmpty()) {
+//      best = best.stream()
+//          .filter(p -> p.getBrand().equalsIgnoreCase(brandFinal))
+//          .collect(Collectors.toList());
+//    }
     req.setAttribute("best", best);
 
     // Laptop
-    List<Product> laptops = DemoRepo.byCategory("Laptop");
-    if (brandFinal != null && !brandFinal.isEmpty()) {
-      laptops = laptops.stream()
-          .filter(p -> p.getBrand().equalsIgnoreCase(brandFinal))
-          .collect(Collectors.toList());
-    }
+    List<SanPham> laptops = SanPhamDB.selectAllSanPhamByTenLoai("Laptop");
+//    if (brandFinal != null && !brandFinal.isEmpty()) {
+//      laptops = laptops.stream()
+//          .filter(p -> p.getBrand().equalsIgnoreCase(brandFinal))
+//          .collect(Collectors.toList());
+//    }
     req.setAttribute("laptops", laptops);
 
     // PC
-    List<Product> pcs = DemoRepo.byCategory("PC");
-    if (brandFinal != null && !brandFinal.isEmpty()) {
-      pcs = pcs.stream()
-          .filter(p -> p.getBrand().equalsIgnoreCase(brandFinal))
-          .collect(Collectors.toList());
-    }
+    List<SanPham> pcs = SanPhamDB.selectAllSanPhamByTenLoai("PC");
+//    if (brandFinal != null && !brandFinal.isEmpty()) {
+//      pcs = pcs.stream()
+//          .filter(p -> p.getBrand().equalsIgnoreCase(brandFinal))
+//          .collect(Collectors.toList());
+//    }
     req.setAttribute("pcs", pcs);
 
     // News

@@ -127,4 +127,71 @@ public class SanPhamDB {
             em.close();
         }
     }
+    public static List<SanPham> selectAllSanPhamByTenLoai(String tenLoaiSanPham) {
+        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
+        String qString = "SELECT sp FROM SanPham sp "
+                + "WHERE sp.loai.tenLoai = :tenLoaiSanPham";
+        TypedQuery<SanPham> query = em.createQuery(qString, SanPham.class);
+        query.setParameter("tenLoaiSanPham", tenLoaiSanPham);
+        try {
+            List<SanPham> daSanPham = query.getResultList();
+            return daSanPham;
+        } 
+        catch (NoResultException e) {
+            // Nếu không tìm thấy sản phẩm nào
+            return null;
+        }
+        finally {
+            em.close();
+        }
+    }
+    public static SanPham selectSanPhamById(Long id) {
+        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
+        String qString = "SELECT sp FROM SanPham sp "
+                + "WHERE sp.id = :id";
+        TypedQuery<SanPham> query = em.createQuery(qString, SanPham.class);
+        query.setParameter("id", id);
+        try {
+            SanPham sanPham = query.getSingleResult();
+            return sanPham;
+        } 
+        catch (NoResultException e) {
+            // Nếu không tìm thấy sản phẩm nào
+            return null;
+        }
+        finally {
+            em.close();
+        }
+    }
+    public static List<SanPham> selectAllSanPhamByLoaiHoacTHieu(String tenLoaiSanPham, String tenThuongHieu) {
+        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
+        String qString = "SELECT sp FROM SanPham sp "
+                + "WHERE sp.loai.tenLoai = :tenLoaiSanPham "
+                + "or sp.thuongHieu.tenThuongHieu = :tenThuongHieu";
+        TypedQuery<SanPham> query = em.createQuery(qString, SanPham.class);
+        query.setParameter("tenLoaiSanPham", tenLoaiSanPham);
+        query.setParameter("tenThuongHieu", tenThuongHieu);
+        try {
+            List<SanPham> daSanPham = query.getResultList();
+            return daSanPham;
+        } 
+        catch (NoResultException e) {
+            // Nếu không tìm thấy sản phẩm nào
+            return null;
+        }
+        finally {
+            em.close();
+        }
+    }
+    public static List<SanPham> select8SanPham() {
+        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
+        String qString = "SELECT s FROM SanPham s";
+        TypedQuery<SanPham> query = em.createQuery(qString, SanPham.class);
+        query.setMaxResults(8);
+        try {
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
