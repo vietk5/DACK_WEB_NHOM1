@@ -108,7 +108,6 @@ public class SanPhamDB {
             em.close();
         }
     }
-<<<<<<< HEAD
     public static Long selectIDSanPhamByTen(String tenSanPham) {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
         String qString = "SELECT s.id FROM SanPham s " 
@@ -194,6 +193,4 @@ public class SanPhamDB {
             em.close();
         }
     }
-=======
->>>>>>> 3595634cfdb48d4e37e508a1bba27621d0c26aba
 }
