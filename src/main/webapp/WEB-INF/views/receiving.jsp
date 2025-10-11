@@ -30,7 +30,7 @@
       <div class="help">Vui lòng kiểm tra kỹ trước khi nhấn <strong>Gửi</strong>.</div>
     </header>
 
-    <form id="nhapHangForm" autocomplete="off" action="receiving" method="post" enctype="multipart/form-data">
+    <form id="nhapHangForm" autocomplete="off" action="receiving" method="post">
       <input type="hidden" name="action" value="add"> 
       <div class="two-col">
 <!--        <div class="field">
@@ -71,36 +71,19 @@
         <label for="moTa">Mô tả</label>
         <textarea id="moTa" name="moTaNgan" placeholder="Mô tả ngắn (tính năng, màu sắc, tình trạng, bảo hành...)" ></textarea>
       </div>
-      
-      <div class="field">
-        <label for="hinhAnh">Hình ảnh sản phẩm</label>
-        <input id="hinhAnh" name="hinhAnh" type="file" accept="image/png, image/jpeg, image/gif">
-        <div class="help">Chọn file ảnh (jpg, png, gif).</div>
-      </div>
-      
+
 <!--      <div class="field">
+        <label for="gia">Giá (VND)</label>
+        <input id="gia" name="gia" type="number" step="0.01" min="0" placeholder="VD: 12500000" required>
+        <div class="help">Nhập số (đơn vị VND).</div>
+      </div>-->
+      <div class="field">
         <label for="gia">Giá (VND)</label>
         <input id="gia" name="gia" type="text" 
                placeholder="VD: 12.500.000" required
                onkeyup="formatCurrency(this)"> 
         <div class="help">Nhập số (đơn vị VND).</div>
-      </div>-->
-
-      <div class="two-col"> 
-            <div class="field">
-                <label for="gia">Giá (VND)</label>
-                <input id="gia" name="gia" type="text" 
-                       placeholder="VD: 12.500.000" required
-                       onkeyup="formatCurrency(this)"> 
-                <div class="help">Nhập số (đơn vị VND).</div>
-            </div>
-            <div class="field">
-                <label for="soLuong">Số lượng nhập</label>
-                <input id="soLuong" name="soLuong" type="number" 
-                           min="1" value="1" placeholder="Số lượng" required>
-                <div class="help">Số lượng sản phẩm nhập kho.</div>
-            </div>
-       </div>
+      </div>
 
       <div class="actions">
         <button type="submit" class="btn-primary">Gửi</button>
@@ -149,12 +132,11 @@
         // Xử lý Trùng lặp (Cần xác nhận)
         else if (urlParams.get('duplicate') === 'true') {
             const tenSanPham = urlParams.get('tenSanPham');
-            const soLuong = urlParams.get('soLuong');
 
             Swal.fire({
                 icon: 'warning',
                 title: 'Sản phẩm đã tồn tại',
-                html: "Sản phẩm đã có trong kho.<br>Bạn có muốn cập nhật số lượng tồn kho lên " + soLuong + " không?",
+                html: "Sản phẩm đã có trong kho.<br>Bạn có muốn cập nhật số lượng tồn kho lên 1 không?",
                 showCancelButton: true,
                 confirmButtonText: 'Đồng ý Cập nhật',
                 cancelButtonText: 'Quay lại',
@@ -164,7 +146,7 @@
                 if (result.isConfirmed) {
                     // Hành động khi nhấn "Đồng ý Cập nhật"
                     // Chuyển hướng lại Servlet với action="confirm_update"
-                    window.location.href = '${pageContext.request.contextPath}/receiving?action=confirm_update&tenSanPham=' + encodeURIComponent(tenSanPham) + '&soLuong=' + encodeURIComponent(soLuong);
+                    window.location.href = '${pageContext.request.contextPath}/receiving?action=confirm_update&tenSanPham=' + encodeURIComponent(tenSanPham);
 
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     cleanUrlParameters();

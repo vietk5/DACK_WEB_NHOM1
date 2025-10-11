@@ -4,18 +4,18 @@
 <footer class="footer-modern mt-5">
   <!-- Main Footer Content -->
   <div class="footer-content">
-    <div class="container py-5">
-      <div class="row g-4">
+    <div class="container-fluid py-2">
+      <div class="row g-2 px-4">
         <!-- Brand Column -->
-        <div class="col-lg-4 col-md-6">
-          <div class="footer-brand mb-4">
-            <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="col-lg-3 col-md-6">
+          <div class="footer-brand mb-1">
+            <div class="d-flex align-items-center gap-2 mb-1">
               <div class="brand-icon">
                 <i class="bi bi-lightning-charge-fill"></i>
               </div>
               <span class="brand-name">ElectroMart</span>
             </div>
-            <p class="footer-desc mb-4">
+            <p class="footer-desc mb-1">
               <i class="bi bi-stars text-warning me-2"></i>
               Hệ sinh thái điện máy hàng đầu Việt Nam.<br>
               Giao nhanh • Giá tốt • Hỗ trợ 24/7
@@ -34,8 +34,8 @@
             </div>
 
             <!-- Payment Methods -->
-            <div class="payment-methods mt-4">
-              <small class="text-muted d-block mb-2">Phương thức thanh toán</small>
+            <div class="payment-methods mt-1">
+              <small class="text-muted d-block mb-1">Phương thức thanh toán</small>
               <div class="d-flex gap-2 flex-wrap">
                 <span class="payment-badge"><i class="bi bi-credit-card-2-front"></i> Visa</span>
                 <span class="payment-badge"><i class="bi bi-credit-card"></i> Master</span>
@@ -74,16 +74,16 @@
         </div>
 
         <!-- Contact & Newsletter -->
-        <div class="col-lg-4 col-md-6">
+        <div class="col-lg-5 col-md-12">
           <h6 class="footer-title">
             <i class="bi bi-envelope-heart me-2"></i>Đăng ký nhận tin
           </h6>
-          <p class="text-light-emphasis mb-3 small">
+          <p class="text-light-emphasis mb-1 small">
             Nhận ngay mã giảm giá 10% cho đơn hàng đầu tiên!
           </p>
           
           <!-- Newsletter Form -->
-          <form class="newsletter-form mb-4" action="${pageContext.request.contextPath}/subscribe" method="post">
+          <form class="newsletter-form mb-1" action="${pageContext.request.contextPath}/subscribe" method="post">
             <div class="input-group">
               <input type="email" name="email" class="form-control" 
                      placeholder="Nhập email của bạn..." required>
@@ -117,9 +117,9 @@
 
   <!-- Footer Bottom -->
   <div class="footer-bottom">
-    <div class="container">
-      <div class="row align-items-center py-3">
-        <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+    <div class="container-fluid">
+      <div class="row align-items-center py-1 px-4">
+        <div class="col-lg-6 text-center text-lg-start mb-1 mb-lg-0">
           <small class="text-light-emphasis">
             © <%= java.time.Year.now() %> ElectroMart. Made with 
             <i class="bi bi-heart-fill text-danger"></i> in Vietnam
@@ -159,6 +159,8 @@
   color: #e0e0e0;
   position: relative;
   overflow: hidden;
+  margin: 0;
+  width: 100%;
 }
 
 .footer-modern::before {
@@ -178,14 +180,14 @@
 
 /* Brand Section */
 .footer-brand .brand-icon {
-  width: 48px;
-  height: 48px;
+  width: 35px;
+  height: 35px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 18px;
   color: white;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
   animation: pulse 2s infinite;
@@ -197,7 +199,7 @@
 }
 
 .brand-name {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
@@ -207,7 +209,8 @@
 
 .footer-desc {
   color: #b8b8b8;
-  line-height: 1.8;
+  line-height: 1.4;
+  font-size: 0.85rem;
 }
 
 /* Quick Contact Buttons */
@@ -220,14 +223,14 @@
 .contact-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: 5px;
+  padding: 4px 10px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border-radius: 5px;
   color: #fff;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
@@ -244,11 +247,11 @@
 .payment-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
+  gap: 4px;
+  padding: 3px 8px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  font-size: 0.75rem;
+  border-radius: 5px;
+  font-size: 0.7rem;
   color: #e0e0e0;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -257,10 +260,11 @@
 .footer-title {
   color: #fff;
   font-weight: 600;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.3rem;
   border-bottom: 2px solid rgba(102, 126, 234, 0.3);
   position: relative;
+  font-size: 0.95rem;
 }
 
 .footer-title::after {
@@ -281,7 +285,7 @@
 }
 
 .footer-links li {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.2rem;
 }
 
 .footer-links a {
@@ -312,17 +316,24 @@
 }
 
 /* Newsletter Form */
+.newsletter-form {
+  max-width: 100%;
+}
+
 .newsletter-form .input-group {
-  border-radius: 10px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
 }
 
 .newsletter-form .form-control {
   border: none;
-  padding: 12px 16px;
+  padding: 5px 12px;
   background: rgba(255, 255, 255, 0.95);
   color: #1a1a2e;
+  height: 32px;
+  font-size: 0.85rem;
 }
 
 .newsletter-form .form-control:focus {
@@ -333,10 +344,11 @@
 .newsletter-form .btn-gradient {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
-  padding: 12px 24px;
+  padding: 5px 16px;
   color: white;
   font-weight: 600;
   transition: all 0.3s ease;
+  height: 32px;
 }
 
 .newsletter-form .btn-gradient:hover {
@@ -348,19 +360,19 @@
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 4px;
 }
 
 .contact-item {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: start;
   color: #b8b8b8;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .contact-item i {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #667eea;
   margin-top: 2px;
 }
@@ -368,7 +380,8 @@
 .contact-item strong {
   color: #fff;
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
+  font-size: 0.9rem;
 }
 
 /* Footer Bottom */
