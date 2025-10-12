@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.demo.model.cart;
 
 import com.demo.model.KhachHang;
@@ -15,10 +11,13 @@ public class GioHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToOne
     @JoinColumn(name = "khach_hang_id")
     private KhachHang chuSoHuu;
-    @OneToMany(mappedBy = "gioHang", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    // ❌ Bỏ quan hệ JPA để tránh lỗi “non-entity target”
+    @Transient
     private List<GioHangItem> items = new ArrayList<>();
 
     public Long getId() {
@@ -33,15 +32,15 @@ public class GioHang {
         return chuSoHuu;
     }
 
-    public void setChuSoHuu(KhachHang v) {
-        this.chuSoHuu = v;
+    public void setChuSoHuu(KhachHang chuSoHuu) {
+        this.chuSoHuu = chuSoHuu;
     }
 
     public List<GioHangItem> getItems() {
         return items;
     }
 
-    public void setItems(List<GioHangItem> v) {
-        this.items = v;
+    public void setItems(List<GioHangItem> items) {
+        this.items = items;
     }
 }

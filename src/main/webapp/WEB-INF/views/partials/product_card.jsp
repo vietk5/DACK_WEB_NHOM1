@@ -49,13 +49,8 @@
     <!-- Actions -->
     <div class="mt-auto d-grid gap-2 product-foot">
       <a class="btn btn-sm btn-rog"
-         href="${cp}/cart?action=add
-               &sku=${fn:escapeXml(skuVal)}
-               &name=${fn:escapeXml(param.name)}
-               &price=${param.price}
-               &qty=1
-               &image=${fn:escapeXml(imgSrc)}">
-        Thêm vào giỏ
+         accesskey=""href="${cp}/cart?action=add&sku=${fn:escapeXml(skuVal)}&name=${fn:escapeXml(param.name)}&price=${param.price}&qty=1&image=${fn:escapeXml(imgSrc)}">
+         Thêm vào giỏ
       </a>
       <a class="btn btn-sm btn-outline-light-subtle" href="#">Xem chi tiết</a>
     </div>

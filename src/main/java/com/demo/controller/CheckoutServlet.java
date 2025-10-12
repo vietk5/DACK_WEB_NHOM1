@@ -1,81 +1,57 @@
 package com.demo.controller;
 
+import com.demo.model.cart.GioHangItem;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
+import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.*;
 
 @WebServlet(name = "CheckoutServlet", urlPatterns = {"/checkout"})
 public class CheckoutServlet extends HttpServlet {
 
-  @SuppressWarnings("unchecked")
-  private List<Map<String, Object>> getSessionCart(HttpSession session) {
-    Object obj = session.getAttribute("cart");
-    if (obj instanceof List) return (List<Map<String, Object>>) obj;
-    List<Map<String, Object>> cart = new ArrayList<>();
-    session.setAttribute("cart", cart);
-    return cart;
-  }
-
-  private long computeSum(List<Map<String, Object>> cart){
-    long total = 0L;
-    for (Map<String, Object> it : cart) {
-      long price = (Long) it.getOrDefault("price", 0L);
-      int qty = (Integer) it.getOrDefault("qty", 0);
-      total += price * qty;
-    }
-    return total;
-  }
-
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
-    req.getRequestDispatcher("/checkout.jsp").forward(req, resp);
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
-
-    HttpSession session = req.getSession(true);
-    List<Map<String, Object>> cart = getSessionCart(session);
-    if (cart.isEmpty()) {
-      resp.sendRedirect(req.getContextPath() + "/cart");
-      return;
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
     }
 
-    // Collect basic checkout info
-    String fullName = req.getParameter("fullName");
-    String phone = req.getParameter("phone");
-    String address = req.getParameter("address");
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-    long sum = computeSum(cart);
+        HttpSession session = req.getSession();
+        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        if (cart == null || cart.isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/cart");
+            return;
+        }
 
-    // Simulate order creation (store brief summary in session and clear cart)
-    Map<String, Object> lastOrder = new HashMap<>();
-    lastOrder.put("orderId", UUID.randomUUID().toString().substring(0, 8));
-    lastOrder.put("customer", fullName);
-    lastOrder.put("phone", phone);
-    lastOrder.put("address", address);
-    lastOrder.put("total", sum);
-    lastOrder.put("items", new ArrayList<>(cart));
-    session.setAttribute("lastOrder", lastOrder);
+        String fullName = req.getParameter("fullName");
+        String phone = req.getParameter("phone");
+        String address = req.getParameter("address");
 
-    // Clear cart
-    cart.clear();
-    session.setAttribute("cart", cart);
-    session.setAttribute("cartCount", 0);
+        long total = cart.stream().mapToLong(i -> i.getGia() * i.getSoLuong()).sum();
 
-    // Redirect to orders page (or success page)
-    resp.sendRedirect(req.getContextPath() + "/orders");
-  }
+        Map<String, Object> order = new LinkedHashMap<>();
+        order.put("id", UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        order.put("customerName", fullName);
+        order.put("phone", phone);
+        order.put("address", address);
+        order.put("total", total);
+        order.put("createdAt", new Date());
+        order.put("items", new ArrayList<>(cart));
+
+        List<Map<String, Object>> orders = (List<Map<String, Object>>) session.getAttribute("orders");
+        if (orders == null) orders = new ArrayList<>();
+        orders.add(order);
+        session.setAttribute("orders", orders);
+
+        cart.clear();
+        session.setAttribute("cart", cart);
+
+        resp.sendRedirect(req.getContextPath() + "/orders");
+    }
 }
-
-

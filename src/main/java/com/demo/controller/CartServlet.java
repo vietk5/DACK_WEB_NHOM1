@@ -1,120 +1,156 @@
 package com.demo.controller;
 
+import com.demo.model.cart.GioHangItem;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
+import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.*;
 
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
 public class CartServlet extends HttpServlet {
 
-  @SuppressWarnings("unchecked")
-  private List<Map<String, Object>> getSessionCart(HttpSession session) {
-    Object obj = session.getAttribute("cart");
-    if (obj instanceof List) {
-      return (List<Map<String, Object>>) obj;
-    }
-    List<Map<String, Object>> cart = new ArrayList<>();
-    session.setAttribute("cart", cart);
-    return cart;
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-  private static String nvl(String s) { return s == null ? "" : s; }
+        HttpSession session = req.getSession();
+        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        if (cart == null) cart = new ArrayList<>();
 
-  private static long parseLongSafe(String v, long def) {
-    try { return Long.parseLong(v); } catch (Exception e) { return def; }
-  }
+        String action = req.getParameter("action");
+        if (action == null) action = "view";
 
-  private static int parseIntSafe(String v, int def) {
-    try { return Integer.parseInt(v); } catch (Exception e) { return def; }
-  }
+        System.out.println("[DEBUG] Action GET nhận được: " + action);
 
-  private void computeTotals(HttpServletRequest req, List<Map<String, Object>> cart){
-    long total = 0L;
-    int count = 0;
-    for (Map<String, Object> it : cart) {
-      long price = (Long) it.getOrDefault("price", 0L);
-      int qty = (Integer) it.getOrDefault("qty", 0);
-      total += price * qty;
-      count += qty;
-    }
-    req.setAttribute("total", total);
-    req.getSession().setAttribute("cartCount", count);
-  }
+        switch (action) {
+            case "add": {
+                String sku = req.getParameter("sku");
+                String ten = req.getParameter("name");
+                String hinh = req.getParameter("image");
+                long gia = parseLong(req.getParameter("price"));
+                int soLuong = parseInt(req.getParameter("qty"), 1);
 
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
+                System.out.println("🛒 [DEBUG] Thêm sản phẩm vào giỏ (GET):");
+                System.out.println("     SKU: " + sku);
+                System.out.println("     Tên: " + ten);
+                System.out.println("     Hình: " + hinh);
+                System.out.println("     Giá: " + gia);
+                System.out.println("     Số lượng thêm: " + soLuong);
 
-    HttpSession session = req.getSession(true);
-    List<Map<String, Object>> cart = getSessionCart(session);
+                Optional<GioHangItem> existing = cart.stream()
+                        .filter(i -> i.getSku().equals(sku))
+                        .findFirst();
 
-    String action = nvl(req.getParameter("action"));
-    if ("remove".equalsIgnoreCase(action)) {
-      String sku = nvl(req.getParameter("sku"));
-      cart.removeIf(it -> sku.equalsIgnoreCase(String.valueOf(it.get("sku"))));
-    } else if ("clear".equalsIgnoreCase(action)) {
-      cart.clear();
-    }
+                if (existing.isPresent()) {
+                    GioHangItem item = existing.get();
+                    item.setSoLuong(item.getSoLuong() + soLuong);
+                    System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
+                } else {
+                    cart.add(new GioHangItem(sku, ten, hinh, gia, soLuong));
+                    System.out.println("🟢 [DEBUG] Sản phẩm mới đã thêm vào giỏ.");
+                }
 
-    computeTotals(req, cart);
-    req.getRequestDispatcher("/cart.jsp").forward(req, resp);
-  }
+                session.setAttribute("cart", cart);
+                System.out.println("✅ [DEBUG] Tổng sản phẩm trong giỏ: " + cart.size());
+                resp.sendRedirect(req.getContextPath() + "/cart");
+                return;
+            }
 
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
+            case "remove": {
+                String sku = req.getParameter("sku");
+                System.out.println("🗑️ [DEBUG] Xóa sản phẩm: " + sku);
+                cart.removeIf(i -> i.getSku().equals(sku));
+                session.setAttribute("cart", cart);
+                resp.sendRedirect(req.getContextPath() + "/cart");
+                return;
+            }
 
-    HttpSession session = req.getSession(true);
-    List<Map<String, Object>> cart = getSessionCart(session);
+            case "clear": {
+                System.out.println("🧹 [DEBUG] Xóa toàn bộ giỏ hàng");
+                cart.clear();
+                session.setAttribute("cart", cart);
+                resp.sendRedirect(req.getContextPath() + "/cart");
+                return;
+            }
 
-    String action = nvl(req.getParameter("action"));
-    if ("update".equalsIgnoreCase(action)) {
-      String sku = nvl(req.getParameter("sku"));
-      int qty = Math.max(1, parseIntSafe(req.getParameter("qty"), 1));
-      for (Map<String, Object> it : cart) {
-        if (sku.equalsIgnoreCase(String.valueOf(it.get("sku")))) {
-          it.put("qty", qty);
-          break;
+            default:
+                System.out.println("📦 [DEBUG] Hiển thị giỏ hàng – tổng sản phẩm: " + cart.size());
+                req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
         }
-      }
-    } else {
-      // default: add
-      String sku = nvl(req.getParameter("sku"));
-      String name = nvl(req.getParameter("name"));
-      long price = Math.max(0L, parseLongSafe(req.getParameter("price"), 0L));
-      int qty = Math.max(1, parseIntSafe(req.getParameter("qty"), 1));
-      String image = nvl(req.getParameter("image"));
-
-      Optional<Map<String, Object>> existed = cart.stream()
-          .filter(it -> sku.equalsIgnoreCase(String.valueOf(it.get("sku"))))
-          .findFirst();
-      if (existed.isPresent()) {
-        Map<String, Object> it = existed.get();
-        int oldQty = (Integer) it.getOrDefault("qty", 0);
-        it.put("qty", oldQty + qty);
-      } else {
-        Map<String, Object> item = new HashMap<>();
-        item.put("sku", sku.isEmpty() ? name.replaceAll("\\s+", "-").toLowerCase() : sku);
-        item.put("name", name);
-        item.put("price", price);
-        item.put("qty", qty);
-        item.put("image", image);
-        cart.add(item);
-      }
     }
 
-    // After mutation, forward to cart page
-    computeTotals(req, cart);
-    req.getRequestDispatcher("/cart.jsp").forward(req, resp);
-  }
+    private long parseLong(String val) {
+        try { return Long.parseLong(val); } catch (Exception e) { return 0; }
+    }
+
+    private int parseInt(String val, int def) {
+        try { return Integer.parseInt(val); } catch (Exception e) { return def; }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        HttpSession session = req.getSession();
+        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        if (cart == null) cart = new ArrayList<>();
+
+        String action = req.getParameter("action");
+        if (action == null) action = "view";
+
+        System.out.println("🛒 [DEBUG] Action POST nhận được: " + action);
+
+        switch (action) {
+            case "add": {
+                String sku = req.getParameter("sku");
+                String ten = req.getParameter("name");
+                String hinh = req.getParameter("image");
+                long gia = parseLong(req.getParameter("price"));
+                int soLuong = parseInt(req.getParameter("qty"), 1);
+
+                System.out.println("🛒 [DEBUG] Thêm sản phẩm vào giỏ (POST):");
+                System.out.println("     SKU: " + sku);
+                System.out.println("     Tên: " + ten);
+                System.out.println("     Giá: " + gia);
+                System.out.println("     Số lượng thêm: " + soLuong);
+
+                Optional<GioHangItem> existing = cart.stream()
+                        .filter(i -> i.getSku().equals(sku))
+                        .findFirst();
+
+                if (existing.isPresent()) {
+                    GioHangItem item = existing.get();
+                    item.setSoLuong(item.getSoLuong() + soLuong);
+                    System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
+                } else {
+                    cart.add(new GioHangItem(sku, ten, hinh, gia, soLuong));
+                    System.out.println("🟢 [DEBUG] Sản phẩm mới đã thêm vào giỏ.");
+                }
+
+                session.setAttribute("cart", cart);
+                System.out.println("✅ [DEBUG] Số lượng sản phẩm trong giỏ hiện tại: " + cart.size());
+                break;
+            }
+
+            case "remove": {
+                String sku = req.getParameter("sku");
+                System.out.println("🗑️ [DEBUG] Xóa sản phẩm: " + sku);
+                cart.removeIf(i -> i.getSku().equals(sku));
+                session.setAttribute("cart", cart);
+                break;
+            }
+
+            case "clear": {
+                System.out.println("🧹 [DEBUG] Xóa toàn bộ giỏ hàng");
+                cart.clear();
+                session.setAttribute("cart", cart);
+                break;
+            }
+        }
+
+        resp.sendRedirect(req.getContextPath() + "/cart");
+    }
 }
-
-
