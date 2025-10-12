@@ -1,185 +1,112 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="c"  uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<%@ taglib prefix="fn"  uri="jakarta.tags.functions" %>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<%@ include file="layout_header.jspf" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 
-<!doctype html>
-<html lang="vi">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Form Nhập Hàng - Nhân viên</title>
-  <link href="${pageContext.request.contextPath}/assets/css/receiving-style.css" rel="stylesheet"/>
-</head>
-<body>
-  <div id="custom-alert" class="alert-popup">
-    <i class="fa-solid fa-circle-check"></i> 
-    <span class="message-text">Nhận hàng thành công!</span>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Nhập kho hàng</h5>
+            <a class="btn btn-outline-light btn-sm" href="${ctx}/admin">← Dashboard</a>
+          </div>
+          <hr/>
+
+          <!-- Alerts theo query param -->
+          <c:if test="${param.success == 'true'}">
+            <div class="alert alert-success">Đã thêm sản phẩm mới thành công.</div>
+          </c:if>
+          <c:if test="${param.update_success == 'true'}">
+            <div class="alert alert-success">Đã cập nhật số lượng tồn kho thành công.</div>
+          </c:if>
+          <c:if test="${param.duplicate == 'true'}">
+            <div class="alert alert-warning">
+              Sản phẩm <strong>${param.tenSanPham}</strong> đã tồn tại. Bạn muốn tăng số lượng?
+            </div>
+          </c:if>
+
+          <!-- Form add -->
+          <form class="row g-3" method="post"
+                action="${ctx}/receiving" enctype="multipart/form-data" autocomplete="off">
+            <input type="hidden" name="action" value="add"/>
+
+            <div class="col-md-6">
+              <label class="form-label">Tên sản phẩm</label>
+              <input class="form-control" name="tenSanPham" required/>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Thương hiệu</label>
+              <select class="form-select" name="thuongHieu" required>
+                <option value="">-- Chọn --</option>
+                <c:forEach var="b" items="${brands}">
+                  <option value="${b}">${b}</option>
+                </c:forEach>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Loại sản phẩm</label>
+              <select class="form-select" name="loaiSanPham" required>
+                <option value="">-- Chọn --</option>
+                <c:forEach var="cat" items="${categories}">
+                  <option value="${cat}">${cat}</option>
+                </c:forEach>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Giá (VND)</label>
+              <input id="gia" name="gia" class="form-control" placeholder="VD: 12.500.000" required
+                     oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+              <div class="form-text">Nhập số VND (không ký tự chữ).</div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Số lượng</label>
+              <input class="form-control" type="number" name="soLuong" min="1" value="1" required>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Hình ảnh</label>
+              <input class="form-control" type="file" name="hinhAnh" accept="image/*">
+              <div class="form-text">Tùy chọn (JPG/PNG, &lt; 2MB).</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Mô tả ngắn</label>
+              <textarea class="form-control" name="moTaNgan" rows="3"></textarea>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+              <button class="btn btn-rog" type="submit">Gửi</button>
+              <button class="btn btn-outline-light" type="reset">Xóa</button>
+            </div>
+          </form>
+
+          <!-- Khối xác nhận tăng số lượng khi duplicate -->
+          <c:if test="${param.duplicate == 'true'}">
+            <hr/>
+            <form class="d-flex flex-wrap gap-2 align-items-end" method="post" action="${ctx}/receiving">
+              <input type="hidden" name="action" value="confirm_update"/>
+              <input type="hidden" name="tenSanPham" value="${param.tenSanPham}"/>
+              <div>
+                <label class="form-label">Tăng thêm</label>
+                <input class="form-control" type="number" name="soLuong" min="1" value="1" required>
+              </div>
+              <button class="btn btn-warning" type="submit">Xác nhận cập nhật</button>
+            </form>
+          </c:if>
+
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-  <div class="container">
-    <header>
-      <div>
-        <h1>Form Nhập Hàng</h1>
-        <p>Dành cho nhân viên kho</p>
-      </div>
-      <div class="help">Vui lòng kiểm tra kỹ trước khi nhấn <strong>Gửi</strong>.</div>
-    </header>
 
-    <form id="nhapHangForm" autocomplete="off" action="receiving" method="post">
-      <input type="hidden" name="action" value="add"> 
-      <div class="two-col">
-<!--        <div class="field">
-          <label for="idSanPham">ID Sản phẩm</label>
-          <input id="idSanPham" name="idSanPham" type="text" maxlength="20" placeholder="VD: SP001" required pattern="[A-Za-z0-9_-]+" title="Chỉ cho phép chữ, số, gạch ngang hoặc gạch dưới">
-          <div class="help">Mã dùng để định danh (không dấu, không khoảng trắng).</div>
-        </div>-->
-
-        <div class="field">
-          <label for="tenSanPham">Tên sản phẩm</label>
-          <input id="tenSanPham" name="tenSanPham" type="text" maxlength="120" placeholder="VD: Laptop ASUS VivoBook 15"  required>
-        </div>
-      </div>
-
-      <div class="two-col">
-        <div class="field">
-          <label for="thuongHieu">Thương hiệu</label>
-          <select id="thuongHieu" name="thuongHieu" required>
-            <option value="">-- Chọn thương hiệu --</option>
-            <c:forEach var="brandName" items="${brands}">
-                <option value="${brandName}">${brandName}</option>
-            </c:forEach>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="loai">Loại sản phẩm</label>
-          <select id="loai" name="loaiSanPham" required>
-            <option value="">-- Chọn loại sản phẩm --</option>
-            <c:forEach var="category" items="${categories}">
-                <option value="${category}">${category}</option>
-            </c:forEach>
-          </select> 
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="moTa">Mô tả</label>
-        <textarea id="moTa" name="moTaNgan" placeholder="Mô tả ngắn (tính năng, màu sắc, tình trạng, bảo hành...)" ></textarea>
-      </div>
-
-<!--      <div class="field">
-        <label for="gia">Giá (VND)</label>
-        <input id="gia" name="gia" type="number" step="0.01" min="0" placeholder="VD: 12500000" required>
-        <div class="help">Nhập số (đơn vị VND).</div>
-      </div>-->
-      <div class="field">
-        <label for="gia">Giá (VND)</label>
-        <input id="gia" name="gia" type="text" 
-               placeholder="VD: 12.500.000" required
-               onkeyup="formatCurrency(this)"> 
-        <div class="help">Nhập số (đơn vị VND).</div>
-      </div>
-
-      <div class="actions">
-        <button type="submit" class="btn-primary">Gửi</button>
-        <button type="reset" class="btn-ghost">Xóa</button>
-        <!--<button type="reset" class="btn-ghost">Quay về</button>-->
-        <div id="formMessage" style="margin-left:auto;font-weight:600"></div>
-      </div>
-    </form>
-    
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // Hàm làm sạch URL
-        function cleanUrlParameters() {
-            if (window.history.replaceState) {
-                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-            }
-        }
-        // Thêm sản phẩm mới Thành công
-        if (urlParams.get('success') === 'true') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Hoàn tất!',
-                text: 'Đã thêm sản phẩm mới thành công!',
-                showConfirmButton: false, // Ẩn nút OK
-                timer: 5000 // tự động đóng sau 5 giây
-            }).then(() => {
-                cleanUrlParameters();
-            });
-        } 
-
-        // Cập nhật số lượng Thành công
-        else if (urlParams.get('update_success') === 'true') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Hoàn tất!',
-                text: 'Đã cập nhật số lượng tồn kho thành công!',
-                showConfirmButton: false,
-                timer: 5000
-            }).then(() => {
-                cleanUrlParameters();
-            });
-        } 
-
-        // Xử lý Trùng lặp (Cần xác nhận)
-        else if (urlParams.get('duplicate') === 'true') {
-            const tenSanPham = urlParams.get('tenSanPham');
-
-            Swal.fire({
-                icon: 'warning',
-                title: 'Sản phẩm đã tồn tại',
-                html: "Sản phẩm đã có trong kho.<br>Bạn có muốn cập nhật số lượng tồn kho lên 1 không?",
-                showCancelButton: true,
-                confirmButtonText: 'Đồng ý Cập nhật',
-                cancelButtonText: 'Quay lại',
-                reverseButtons: true
-
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Hành động khi nhấn "Đồng ý Cập nhật"
-                    // Chuyển hướng lại Servlet với action="confirm_update"
-                    window.location.href = '${pageContext.request.contextPath}/receiving?action=confirm_update&tenSanPham=' + encodeURIComponent(tenSanPham);
-
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    cleanUrlParameters();
-                }
-            });
-        }
-
-        // Đảm bảo URL được làm sạch nếu không có popup nào được hiển thị
-        // Điều này sẽ xử lý các tham số cũ nếu người dùng refresh trang mà không có popup hiển thị
-        if (urlParams.has('success') || urlParams.has('update_success') || urlParams.has('duplicate')) {
-            // Không làm sạch ngay, vì việc làm sạch đã được xử lý trong .then() hoặc .else if()
-        } else {
-            cleanUrlParameters();
-        }
-        
-        function formatCurrency(input) {
-            // Lấy giá trị hiện tại và loại bỏ tất cả các ký tự không phải số
-            let value = input.value.replace(/\D/g, ''); 
-            if (value === '') return;
-            // định dạng lại số, thêm dấu chấm (.) làm dấu phân cách hàng nghìn
-            // định dạng chuẩn theo tiền tệ Việt Nam
-            let formattedValue = new Intl.NumberFormat('vi-VN', { 
-            }).format(value);
-            input.value = formattedValue;
-        }
-
-        document.getElementById('nhapHangForm').addEventListener('submit', function() {
-            const giaInput = document.getElementById('gia');
-            // Loại bỏ dấu chấm, chỉ giữ lại số nguyên thủy để Servlet có thể xử lý BigDecimal
-            const rawValue = giaInput.value.replace(/\./g, ''); 
-            giaInput.value = rawValue;
-            return true;
-        });
-    </script>
-</body>
-</html>
+<%@ include file="layout_footer.jspf" %>

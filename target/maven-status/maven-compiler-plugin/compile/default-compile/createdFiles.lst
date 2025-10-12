@@ -35,6 +35,7 @@ com\demo\model\database\LoaiSanPhamDB.class
 com\demo\repo\Product.class
 com\demo\model\kho\ChiTietPhieuNhapKey.class
 com\demo\persistence\JPAUtil.class
+com\demo\controller\ForgotPasswordServlet.class
 com\demo\model\PhieuThanhToan.class
 com\demo\model\PhuongThucThanhToan.class
 com\demo\model\cs\PhieuHoTro.class
@@ -60,3 +61,4 @@ com\demo\persistence\SanPhamDAO.class
 com\demo\controller\SearchServlet.class
 com\demo\model\cart\GioHang.class
 com\electromart\filter\AdminAuthFilter.class
+com\demo\controller\ProfileServlet.class

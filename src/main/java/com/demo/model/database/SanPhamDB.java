@@ -15,6 +15,7 @@ import com.demo.persistence.JPAUtil;
 import jakarta.persistence.Query;
 
 public class SanPhamDB {
+
     public static List<SanPham> selectAllSanPham() {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
         String qString = "SELECT s FROM SanPham s";  // dùng alias và tên field trong entity
@@ -25,10 +26,11 @@ public class SanPhamDB {
             em.close();
         }
     }
+
     public static void insert(SanPham sanPham) {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
-        trans.begin();        
+        trans.begin();
         try {
             em.persist(sanPham);
             trans.commit();
@@ -39,10 +41,11 @@ public class SanPhamDB {
             em.close();
         }
     }
+
     public static void delete(SanPham sanPham) {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
-        trans.begin();        
+        trans.begin();
         try {
             em.remove(em.merge(sanPham));
             trans.commit();
@@ -51,60 +54,99 @@ public class SanPhamDB {
             trans.rollback();
         } finally {
             em.close();
-        }       
+        }
     }
+
     public static boolean isProductExistById(Long id) {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
         try {
             SanPham sanPham = em.find(SanPham.class, id);
-            return sanPham != null; 
+            return sanPham != null;
         } catch (Exception e) {
             System.out.println(e);
             return false;
-        } finally {
-            em.close();
-        }
-    }
-    public static boolean updateSoLuongTonById(Long id) {
-        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
-        EntityTransaction trans = em.getTransaction();
-        String qString = "UPDATE SanPham s "
-                + "SET s.soLuongTon = s.soLuongTon + 1 "
-                + "WHERE s.id = :id";
-        
-        Query query = em.createQuery(qString); 
-        try {
-            trans.begin();
-            query.setParameter("id", id);
-            int updatedCount = query.executeUpdate();
-            trans.commit();
-            return updatedCount > 0; 
-        } catch (Exception e) {
-            System.out.println(e);
-            if (trans != null && trans.isActive()) {
-                trans.rollback();
-            }
-            return false;
-
         } finally {
             em.close();
         }
     }
     public static SanPham selectSanPhamByTen(String tenSanPham) {
         EntityManager em = JPAUtil.getEmFactory().createEntityManager();
-        String qString = "SELECT s FROM SanPham s " 
+        String qString = "SELECT s FROM SanPham s "
                 + "WHERE s.tenSanPham= :tenSanPham";
         TypedQuery<SanPham> query = em.createQuery(qString, SanPham.class);
         query.setParameter("tenSanPham", tenSanPham);
         try {
             SanPham sanPham = query.getSingleResult();
             return sanPham;
-        } 
-        catch (NoResultException e) {
+        } catch (NoResultException e) {
             // Nếu không tìm thấy sản phẩm nào
             return null;
+        } finally {
+            em.close();
         }
-        finally {
+    }
+
+    public static boolean updateSoLuongTonById(Long id, int delta) {
+        if (delta <= 0) {
+            delta = 1; // an toàn
+        }
+        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
+        EntityTransaction trans = em.getTransaction();
+
+        // COALESCE để phòng soLuongTon null
+        String ql = "UPDATE SanPham s "
+                + "SET s.soLuongTon = COALESCE(s.soLuongTon, 0) + :d "
+                + "WHERE s.id = :id";
+
+        try {
+            trans.begin();
+            int n = em.createQuery(ql)
+                    .setParameter("d", delta)
+                    .setParameter("id", id)
+                    .executeUpdate();
+            trans.commit();
+            return n > 0;
+        } catch (Exception e) {
+            System.out.println(e);
+            if (trans != null && trans.isActive()) {
+                trans.rollback();
+            }
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Tăng tồn kho theo TÊN sản phẩm với số lượng tùy ý. Tiện khi bạn chỉ có
+     * tên trong form xác nhận. Trả về true nếu có bản ghi được cập nhật.
+     */
+    public static boolean updateSoLuongTonByTen(String tenSanPham, int delta) {
+        if (delta <= 0) {
+            delta = 1;
+        }
+        EntityManager em = JPAUtil.getEmFactory().createEntityManager();
+        EntityTransaction trans = em.getTransaction();
+
+        String ql = "UPDATE SanPham s "
+                + "SET s.soLuongTon = COALESCE(s.soLuongTon, 0) + :d "
+                + "WHERE s.tenSanPham = :ten";
+
+        try {
+            trans.begin();
+            int n = em.createQuery(ql)
+                    .setParameter("d", delta)
+                    .setParameter("ten", tenSanPham)
+                    .executeUpdate();
+            trans.commit();
+            return n > 0;
+        } catch (Exception e) {
+            System.out.println(e);
+            if (trans != null && trans.isActive()) {
+                trans.rollback();
+            }
+            return false;
+        } finally {
             em.close();
         }
     }

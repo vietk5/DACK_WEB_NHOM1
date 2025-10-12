@@ -5,11 +5,13 @@ C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\electromart\fil
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\controller\ReceivingServlet.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\controller\AdminRevenueServlet.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\persistence\SanPhamDAO.java
+C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\controller\ForgotPasswordServlet.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\model\Admin.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\model\PhieuThanhToan.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\model\kho\ChiTietPhieuXuatKey.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\model\SanPham.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\repo\NewsItem.java
+C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\controller\ProfileServlet.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\model\kho\PhieuXuat.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\model\order\DonHang.java
 C:\Users\ADMIN\OneDrive\Desktop\DACK_WEB_NHOM1\src\main\java\com\demo\controller\CheckoutServlet.java
