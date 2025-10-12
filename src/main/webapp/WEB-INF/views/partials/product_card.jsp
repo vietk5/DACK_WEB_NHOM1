@@ -48,15 +48,16 @@
 
     <!-- Actions -->
     <div class="mt-auto d-grid gap-2 product-foot">
-      <a class="btn btn-sm btn-rog"
-         href="${cp}/cart?action=add
-               &sku=${fn:escapeXml(skuVal)}
-               &name=${fn:escapeXml(param.name)}
-               &price=${param.price}
-               &qty=1
-               &image=${fn:escapeXml(imgSrc)}">
-        Thêm vào giỏ
-      </a>
+      <form action="${pageContext.request.contextPath}/cart" method="post" class="d-inline">
+  <input type="hidden" name="action" value="add">
+  <input type="hidden" name="sku" value="${param.id}">
+  <input type="hidden" name="name" value="${param.name}">
+  <input type="hidden" name="price" value="${param.price}">
+  <input type="hidden" name="qty" value="1">
+  <input type="hidden" name="image" value="${param.image}">
+  <button type="submit" class="btn btn-sm btn-rog w-100">Thêm vào giỏ</button>
+</form>
+
       <a class="btn btn-sm btn-outline-light-subtle" 
          href="${cp}/product?productId=${param.id}">Xem chi tiết</a>
     </div>

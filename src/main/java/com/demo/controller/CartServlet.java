@@ -19,7 +19,17 @@ public class CartServlet extends HttpServlet {
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
         if (cart == null) cart = new ArrayList<>();
 
+        // ✅ Kiểm tra đăng nhập trước khi cho phép thêm giỏ
+        Object user = session.getAttribute("user"); // hoặc "account" tùy bạn lưu
         String action = req.getParameter("action");
+        if ("add".equals(action) && user == null) {
+            // Lưu lại trang hiện tại để quay lại sau đăng nhập
+            String referer = req.getHeader("Referer");
+            session.setAttribute("redirectAfterLogin", referer);
+            resp.sendRedirect(req.getContextPath() + "/login?requireLogin=true");
+            return;
+        }
+
         if (action == null) action = "view";
 
         System.out.println("[DEBUG] Action GET nhận được: " + action);
@@ -32,12 +42,8 @@ public class CartServlet extends HttpServlet {
                 long gia = parseLong(req.getParameter("price"));
                 int soLuong = parseInt(req.getParameter("qty"), 1);
 
-                System.out.println("🛒 [DEBUG] Thêm sản phẩm vào giỏ (GET):");
-                System.out.println("     SKU: " + sku);
-                System.out.println("     Tên: " + ten);
-                System.out.println("     Hình: " + hinh);
-                System.out.println("     Giá: " + gia);
-                System.out.println("     Số lượng thêm: " + soLuong);
+                System.out.println("🛒 Giá nhận được từ request: " + req.getParameter("price"));
+                System.out.println("[DEBUG] Giá nhận được từ form: " + req.getParameter("price"));
 
                 Optional<GioHangItem> existing = cart.stream()
                         .filter(i -> i.getSku().equals(sku))
@@ -46,43 +52,56 @@ public class CartServlet extends HttpServlet {
                 if (existing.isPresent()) {
                     GioHangItem item = existing.get();
                     item.setSoLuong(item.getSoLuong() + soLuong);
-                    System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
                 } else {
                     cart.add(new GioHangItem(sku, ten, hinh, gia, soLuong));
-                    System.out.println("🟢 [DEBUG] Sản phẩm mới đã thêm vào giỏ.");
                 }
 
                 session.setAttribute("cart", cart);
-                System.out.println("✅ [DEBUG] Tổng sản phẩm trong giỏ: " + cart.size());
-                resp.sendRedirect(req.getContextPath() + "/cart");
+                int totalQty = cart.stream().mapToInt(GioHangItem::getSoLuong).sum();
+                session.setAttribute("cartCount", totalQty);
+
+                String referer = req.getHeader("Referer");
+                if (referer != null && !referer.isBlank()) {
+                    resp.sendRedirect(referer);
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/cart");
+                }
                 return;
             }
 
             case "remove": {
                 String sku = req.getParameter("sku");
-                System.out.println("🗑️ [DEBUG] Xóa sản phẩm: " + sku);
                 cart.removeIf(i -> i.getSku().equals(sku));
                 session.setAttribute("cart", cart);
+                session.setAttribute("cartCount", cart.stream().mapToInt(GioHangItem::getSoLuong).sum());
                 resp.sendRedirect(req.getContextPath() + "/cart");
                 return;
             }
 
             case "clear": {
-                System.out.println("🧹 [DEBUG] Xóa toàn bộ giỏ hàng");
                 cart.clear();
                 session.setAttribute("cart", cart);
+                session.setAttribute("cartCount", 0);
                 resp.sendRedirect(req.getContextPath() + "/cart");
                 return;
             }
 
             default:
-                System.out.println("📦 [DEBUG] Hiển thị giỏ hàng – tổng sản phẩm: " + cart.size());
                 req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
         }
     }
 
     private long parseLong(String val) {
-        try { return Long.parseLong(val); } catch (Exception e) { return 0; }
+        try {
+            if (val == null) return 0;
+            val = val.replaceAll("\\.\\d+$", ""); // cắt .00
+            val = val.replaceAll("[^0-9]", "");   // bỏ dấu chấm/thừa
+            if (val.isEmpty()) return 0;
+            return Long.parseLong(val);
+        } catch (Exception e) {
+            System.out.println("⚠️ parseLong lỗi với: " + val);
+            return 0;
+        }
     }
 
     private int parseInt(String val, int def) {
@@ -95,11 +114,20 @@ public class CartServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession();
+        Object user = session.getAttribute("user");
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
         if (cart == null) cart = new ArrayList<>();
 
         String action = req.getParameter("action");
         if (action == null) action = "view";
+
+        // ✅ Kiểm tra đăng nhập khi thêm (POST)
+        if ("add".equals(action) && user == null) {
+            String referer = req.getHeader("Referer");
+            session.setAttribute("redirectAfterLogin", referer);
+            resp.sendRedirect(req.getContextPath() + "/login?requireLogin=true");
+            return;
+        }
 
         System.out.println("🛒 [DEBUG] Action POST nhận được: " + action);
 
@@ -111,12 +139,6 @@ public class CartServlet extends HttpServlet {
                 long gia = parseLong(req.getParameter("price"));
                 int soLuong = parseInt(req.getParameter("qty"), 1);
 
-                System.out.println("🛒 [DEBUG] Thêm sản phẩm vào giỏ (POST):");
-                System.out.println("     SKU: " + sku);
-                System.out.println("     Tên: " + ten);
-                System.out.println("     Giá: " + gia);
-                System.out.println("     Số lượng thêm: " + soLuong);
-
                 Optional<GioHangItem> existing = cart.stream()
                         .filter(i -> i.getSku().equals(sku))
                         .findFirst();
@@ -124,33 +146,38 @@ public class CartServlet extends HttpServlet {
                 if (existing.isPresent()) {
                     GioHangItem item = existing.get();
                     item.setSoLuong(item.getSoLuong() + soLuong);
-                    System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
                 } else {
                     cart.add(new GioHangItem(sku, ten, hinh, gia, soLuong));
-                    System.out.println("🟢 [DEBUG] Sản phẩm mới đã thêm vào giỏ.");
                 }
 
                 session.setAttribute("cart", cart);
-                System.out.println("✅ [DEBUG] Số lượng sản phẩm trong giỏ hiện tại: " + cart.size());
+                break;
+            }
+
+            case "update": {
+                String sku = req.getParameter("sku");
+                int newQty = parseInt(req.getParameter("qty"), 1);
+                cart.stream().filter(i -> i.getSku().equals(sku))
+                        .findFirst().ifPresent(item -> item.setSoLuong(newQty));
+                session.setAttribute("cart", cart);
                 break;
             }
 
             case "remove": {
                 String sku = req.getParameter("sku");
-                System.out.println("🗑️ [DEBUG] Xóa sản phẩm: " + sku);
                 cart.removeIf(i -> i.getSku().equals(sku));
                 session.setAttribute("cart", cart);
                 break;
             }
 
             case "clear": {
-                System.out.println("🧹 [DEBUG] Xóa toàn bộ giỏ hàng");
                 cart.clear();
                 session.setAttribute("cart", cart);
                 break;
             }
         }
 
+        session.setAttribute("cartCount", cart.stream().mapToInt(GioHangItem::getSoLuong).sum());
         resp.sendRedirect(req.getContextPath() + "/cart");
     }
 }

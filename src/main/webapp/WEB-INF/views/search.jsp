@@ -180,15 +180,17 @@
                       <i class="bi bi-eye me-1"></i>Xem chi tiết
                     </a>
                     <form method="post" action="${cp}/cart" class="d-grid">
-                      <input type="hidden" name="sku" value="${fn:replace(fn:toLowerCase(product.name),' ','-')}">
-                      <input type="hidden" name="name" value="${fn:escapeXml(product.name)}">
-                      <input type="hidden" name="price" value="${product.price}">
-                      <input type="hidden" name="qty" value="1">
-                      <input type="hidden" name="image" value="${cp}/${product.image}">
-                      <button class="btn btn-rog" type="submit">
-                        <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
-                      </button>
-                    </form>
+                             <input type="hidden" name="action" value="add">
+                             <input type="hidden" name="sku" value="${fn:replace(fn:toLowerCase(product.name),' ','-')}">
+                             <input type="hidden" name="name" value="${fn:escapeXml(product.name)}">
+                             <input type="hidden" name="price" value="${product.price}">
+                             <input type="hidden" name="qty" value="1">
+                             <input type="hidden" name="image" value="${cp}/${product.image}">
+                             <button class="btn btn-rog" type="submit">
+                             <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
+                        </button>
+                        </form>
+
                   </div>
                 </div>
               </div>
