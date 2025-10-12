@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+    <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
@@ -56,13 +56,13 @@
                     <c:forEach items="${empty deals ? best : deals}" var="p">
                         <div class="deal-card">
                             <jsp:include page="partials/product_card.jsp">
-                                <jsp:param name="name"     value="${p.name}"/>
-                                <jsp:param name="brand"    value="${p.brand}"/>
-                                <jsp:param name="category" value="${p.category}"/>
-                                <jsp:param name="price"    value="${p.price}"/>
-                                <jsp:param name="oldPrice" value="${p.oldPrice}"/>
-                                <jsp:param name="rating"   value="${p.rating}"/>
-                                <jsp:param name="image"    value="${p.image}"/>
+                                <jsp:param name="id" value="${p.getId()}"/>
+                                <jsp:param name="name" value="${p.getTenSanPham()}"/>
+                                <jsp:param name="brand" value="${p.getThuongHieu().getTenThuongHieu()}"/>
+                                <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
+                                <jsp:param name="price" value="${p.getGia()}"/>
+                                <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </div>
                     </c:forEach>
@@ -127,13 +127,13 @@
                     <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
                         <c:forEach items="${best}" var="p">
                             <jsp:include page="partials/product_card.jsp">
-                                <jsp:param name="name" value="${p.name}"/>
-                                <jsp:param name="brand" value="${p.brand}"/>
-                                <jsp:param name="category" value="${p.category}"/>
-                                <jsp:param name="price" value="${p.price}"/>
-                                <jsp:param name="oldPrice" value="${p.oldPrice}"/>
-                                <jsp:param name="rating" value="${p.rating}"/>
-                                <jsp:param name="image" value="${pageContext.request.contextPath}/${p.image}"/>
+                                <jsp:param name="id" value="${p.getId()}"/>
+                                <jsp:param name="name" value="${p.getTenSanPham()}"/>
+                                <jsp:param name="brand" value="${p.getThuongHieu().getTenThuongHieu()}"/>
+                                <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
+                                <jsp:param name="price" value="${p.getGia()}"/>
+                                <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </c:forEach>
                     </div>
@@ -152,7 +152,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="mb-0">Laptop nổi bật</h5>
-                <a class="link-primary small" href="#">Xem tất cả</a>
+                <a class="link-primary small" href="search?q=Laptop">Xem tất cả</a>
             </div>
 
             <c:choose>
@@ -160,13 +160,13 @@
                     <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
                         <c:forEach items="${laptops}" var="p">
                             <jsp:include page="partials/product_card.jsp">
-                                <jsp:param name="name" value="${p.name}"/>
-                                <jsp:param name="brand" value="${p.brand}"/>
-                                <jsp:param name="category" value="${p.category}"/>
-                                <jsp:param name="price" value="${p.price}"/>
-                                <jsp:param name="oldPrice" value="${p.oldPrice}"/>
-                                <jsp:param name="rating" value="${p.rating}"/>
-                                <jsp:param name="image" value="${pageContext.request.contextPath}/${p.image}"/>
+                                <jsp:param name="id" value="${p.getId()}"/>
+                                <jsp:param name="name" value="${p.getTenSanPham()}"/>
+                                <jsp:param name="brand" value="${p.getThuongHieu().getTenThuongHieu()}"/>
+                                <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
+                                <jsp:param name="price" value="${p.getGia()}"/>
+                                <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </c:forEach>
                     </div>
@@ -193,13 +193,13 @@
                     <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
                         <c:forEach items="${pcs}" var="p">
                             <jsp:include page="partials/product_card.jsp">
-                                <jsp:param name="name" value="${p.name}"/>
-                                <jsp:param name="brand" value="${p.brand}"/>
-                                <jsp:param name="category" value="${p.category}"/>
-                                <jsp:param name="price" value="${p.price}"/>
-                                <jsp:param name="oldPrice" value="${p.oldPrice}"/>
-                                <jsp:param name="rating" value="${p.rating}"/>
-                                <jsp:param name="image" value="${pageContext.request.contextPath}/${p.image}"/>
+                                <jsp:param name="id" value="${p.getId()}"/>
+                                <jsp:param name="name" value="${p.getTenSanPham()}"/>
+                                <jsp:param name="brand" value="${p.getThuongHieu().getTenThuongHieu()}"/>
+                                <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
+                                <jsp:param name="price" value="${p.getGia()}"/>
+                                <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </c:forEach>
                     </div>

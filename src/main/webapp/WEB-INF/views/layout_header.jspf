@@ -51,11 +51,11 @@
             <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
               <c:forEach items="${categories}" var="category">
                 <li class="dropdown-submenu">
-                  <a class="dropdown-item dropdown-toggle" href="#">${category}</a>
+                  <a class="dropdown-item dropdown-toggle" href="search?category=${category}">${category}</a>
                   <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
                       <li><a class="dropdown-item"> <strong>Thương hiệu</strong> </a></li>
                     <c:forEach items="${brands}" var="brand">
-                      <li><a class="dropdown-item" href="#">
+                      <li><a class="dropdown-item" href="search?category=${category}&brand=${brand}">
                         ${brand}
                       </a></li>
                     </c:forEach>
@@ -83,10 +83,16 @@
       <ul class="navbar-nav align-items-lg-center">
         <!-- Cart -->
         <li class="nav-item me-2">
-          <a class="nav-link" href="${pageContext.request.contextPath}/cart">
-            Giỏ hàng
-            <c:set var="cartCount" value="${empty sessionScope.cart ? 0 : fn:length(sessionScope.cart)}"/>
-            <span class="badge bg-warning text-dark ms-1">${cartCount}</span>
+          <a class="nav-link position-relative d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/cart">
+            <i class="bi bi-cart3" style="font-size: 1.2rem;"></i>
+            <span class="d-none d-lg-inline">Giỏ hàng</span>
+            <c:if test="${not empty sessionScope.cartCount and sessionScope.cartCount > 0}">
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                    style="font-size: 0.7rem; margin-left: -10px;">
+                ${sessionScope.cartCount}
+                <span class="visually-hidden">sản phẩm trong giỏ</span>
+              </span>
+            </c:if>
           </a>
         </li>
 
