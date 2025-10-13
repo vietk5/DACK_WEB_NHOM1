@@ -29,7 +29,8 @@
           <c:set var="sum" value="0"/>
           <c:forEach var="it" items="${sessionScope.cart}">
             <tr>
-              <td><img src="${it.hinh}" width="60" class="rounded"/></td>
+              <td><img src="${pageContext.request.contextPath}/${it.hinh}" width="60" class="rounded"
+                       onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/img/laptop_placeholder.jpg';"/></td>
               <td>${it.ten}</td>
               <td><fmt:formatNumber value="${it.gia}" type="number"/> đ</td>
               <td>${it.soLuong}</td>
