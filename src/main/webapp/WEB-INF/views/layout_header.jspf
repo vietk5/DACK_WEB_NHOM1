@@ -53,12 +53,19 @@
                 <li class="dropdown-submenu">
                   <a class="dropdown-item dropdown-toggle" href="search?category=${category}">${category}</a>
                   <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
-                      <li><a class="dropdown-item"> <strong>Thương hiệu</strong> </a></li>
-                    <c:forEach items="${brands}" var="brand">
+                    <li><a class="dropdown-item"> <strong>Thương hiệu</strong> </a></li>
+                    
+                    <%-- Chỉ hiển thị brands có sản phẩm trong category này --%>
+                    <c:forEach items="${categoryBrands[category]}" var="brand">
                       <li><a class="dropdown-item" href="search?category=${category}&brand=${brand}">
                         ${brand}
                       </a></li>
                     </c:forEach>
+                    
+                    <%-- Nếu không có brand nào --%>
+                    <c:if test="${empty categoryBrands[category]}">
+                      <li><a class="dropdown-item text-muted"><i>Không có thương hiệu</i></a></li>
+                    </c:if>
                   </ul>
                 </li>
               </c:forEach>
