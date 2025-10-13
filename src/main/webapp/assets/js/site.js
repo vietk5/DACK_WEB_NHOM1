@@ -81,24 +81,35 @@ ElectroMart.initFlashRail = function(){
 };
 
 ElectroMart.startCountdown = function(){
-  const cd = document.getElementById('flashCountdown');
+  const cd = document.getElementById('dealsCountdown');
   if(!cd) return;
   const pad = n => String(n).padStart(2,'0');
 
-  const endStr = cd.dataset.end && cd.dataset.end.trim();
-  // Mặc định: hết ngày hôm nay 23:59:59
-  const end = endStr ? new Date(endStr) : new Date(new Date().setHours(23,59,59,0));
+  // Đếm ngược 10 phút từ bây giờ
+  const DURATION_MINUTES = 10;
+  const endTime = new Date(Date.now() + DURATION_MINUTES * 60 * 1000);
 
   function tick(){
-    let t = end.getTime() - Date.now();
-    if (t < 0) t = 0;
-    const h = Math.floor(t/3.6e6);
-    const m = Math.floor((t%3.6e6)/6e4);
-    const s = Math.floor((t%6e4)/1000);
-    cd.querySelector('[data-unit="h"]').textContent = pad(h);
-    cd.querySelector('[data-unit="m"]').textContent = pad(m);
-    cd.querySelector('[data-unit="s"]').textContent = pad(s);
+    const now = Date.now();
+    let remaining = endTime.getTime() - now;
+    
+    if (remaining <= 0) {
+      cd.innerHTML = '<span class="text-warning fs-4">⏰ Đã hết giờ! Đang tải lại...</span>';
+      // Tự động reload sau 2 giây
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+      return;
+    }
+    
+    const h = Math.floor(remaining/3.6e6);
+    const m = Math.floor((remaining%3.6e6)/6e4);
+    const s = Math.floor((remaining%6e4)/1000);
+    
+    // Hiển thị to hơn với màu nổi bật
+    cd.innerHTML = `<span style="font-size: 1.8rem; color: #00ff00; text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;">${pad(m)}</span><span style="font-size: 1.5rem; color: #fff;"> : </span><span style="font-size: 1.8rem; color: #00ff00; text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;">${pad(s)}</span>`;
   }
+  
   tick();
   setInterval(tick, 1000);
 };
