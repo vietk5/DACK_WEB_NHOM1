@@ -180,6 +180,7 @@
                       <input type="hidden" name="name" value="${fn:escapeXml(product.tenSanPham)}">
                       <input type="hidden" name="price" value="${product.gia}">
                       <input type="hidden" name="qty" value="1">
+                      <input type="hidden" name="action" value="add">
                       <button class="btn btn-rog" type="submit" 
                               ${product.soLuongTon <= 0 ? 'disabled' : ''}>
                         <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
