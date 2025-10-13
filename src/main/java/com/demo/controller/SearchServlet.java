@@ -118,6 +118,7 @@ public class SearchServlet extends HttpServlet {
         req.setAttribute("suggestions", suggestions); // 💡 Autocomplete
         req.setAttribute("brands", brands);
         req.setAttribute("categories", categories);
+        req.setAttribute("categoryBrands", sanPhamDAO.getCategoryBrandsMap()); // Map category -> brands
         req.setAttribute("activeBrand", brand);
         req.setAttribute("activeCategory", category);
         req.setAttribute("resultCount", totalResults);
