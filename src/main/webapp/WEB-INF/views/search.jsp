@@ -137,7 +137,8 @@
               <!-- Image -->
               <div class="position-relative overflow-hidden">
                 <img class="product-img" 
-                     src="${cp}/assets/img/laptop_placeholder.jpg" 
+                     src="${cp}/assets/img/products/${product.id}.jpg" 
+                     onerror="this.onerror=null; this.src='${cp}/assets/img/laptop_placeholder.jpg';"
                      alt="${fn:escapeXml(product.tenSanPham)}"/>
                 <c:if test="${product.soLuongTon > 0}">
                   <span class="badge bg-success position-absolute top-0 start-0 m-2">
