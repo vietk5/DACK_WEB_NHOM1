@@ -25,7 +25,7 @@
   <link rel="icon" href="${pageContext.request.contextPath}/assets/img/logo.svg"/>
 </head>
 <body class="bg-body">
-  <%@ include file="chatbot.jsp" %> // chatbot file
+  <%@ include file="chatbot.jsp" %>
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark glass-nav sticky-top py-2">
   <div class="container">
