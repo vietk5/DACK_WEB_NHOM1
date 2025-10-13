@@ -152,3 +152,179 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initRail('#hot-deals');
 });
+
+// ========== AUTOCOMPLETE SEARCH ==========
+(function() {
+  'use strict';
+  
+  // Khởi tạo autocomplete cho search box
+  function initAutocomplete() {
+    const searchInput = document.querySelector('input[name="q"]');
+    if (!searchInput) return;
+    
+    const contextPath = searchInput.dataset.contextPath || '';
+    let autocompleteList = null;
+    let currentFocus = -1;
+    let debounceTimer = null;
+    
+    // Tạo dropdown autocomplete
+    function createAutocompleteList() {
+      if (autocompleteList) return autocompleteList;
+      
+      autocompleteList = document.createElement('div');
+      autocompleteList.className = 'autocomplete-list';
+      autocompleteList.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #1a1a1a;
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        display: none;
+      `;
+      
+      searchInput.parentElement.style.position = 'relative';
+      searchInput.parentElement.appendChild(autocompleteList);
+      return autocompleteList;
+    }
+    
+    // Fetch suggestions từ API
+    function fetchSuggestions(query) {
+      if (query.length < 2) {
+        hideAutocomplete();
+        return;
+      }
+      
+      fetch(`${contextPath}/api/autocomplete?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            showSuggestions(data, query);
+          } else {
+            hideAutocomplete();
+          }
+        })
+        .catch(err => {
+          console.error('Autocomplete error:', err);
+          hideAutocomplete();
+        });
+    }
+    
+    // Hiển thị suggestions
+    function showSuggestions(suggestions, query) {
+      const list = createAutocompleteList();
+      list.innerHTML = '';
+      currentFocus = -1;
+      
+      suggestions.forEach((suggestion, index) => {
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.style.cssText = `
+          padding: 12px 16px;
+          cursor: pointer;
+          color: #fff;
+          transition: all 0.2s;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        `;
+        
+        // Highlight matched text
+        const regex = new RegExp(`(${query})`, 'gi');
+        const highlighted = suggestion.replace(regex, '<strong style="color: #ff6b6b;">$1</strong>');
+        item.innerHTML = `<i class="bi bi-search me-2" style="opacity: 0.5;"></i>${highlighted}`;
+        
+        // Click handler
+        item.addEventListener('click', () => {
+          searchInput.value = suggestion;
+          hideAutocomplete();
+          searchInput.form.submit();
+        });
+        
+        // Hover effect
+        item.addEventListener('mouseenter', () => {
+          item.style.background = 'rgba(255, 107, 107, 0.1)';
+        });
+        item.addEventListener('mouseleave', () => {
+          item.style.background = 'transparent';
+        });
+        
+        list.appendChild(item);
+      });
+      
+      list.style.display = 'block';
+    }
+    
+    // Ẩn autocomplete
+    function hideAutocomplete() {
+      if (autocompleteList) {
+        autocompleteList.style.display = 'none';
+      }
+      currentFocus = -1;
+    }
+    
+    // Keyboard navigation
+    function setActive(items) {
+      if (!items) return;
+      removeActive(items);
+      if (currentFocus >= items.length) currentFocus = 0;
+      if (currentFocus < 0) currentFocus = items.length - 1;
+      items[currentFocus].style.background = 'rgba(255, 107, 107, 0.2)';
+    }
+    
+    function removeActive(items) {
+      for (let i = 0; i < items.length; i++) {
+        items[i].style.background = 'transparent';
+      }
+    }
+    
+    // Event listeners
+    searchInput.addEventListener('input', function(e) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        fetchSuggestions(e.target.value.trim());
+      }, 300); // Debounce 300ms
+    });
+    
+    searchInput.addEventListener('keydown', function(e) {
+      if (!autocompleteList || autocompleteList.style.display === 'none') return;
+      
+      const items = autocompleteList.getElementsByClassName('autocomplete-item');
+      
+      if (e.keyCode === 40) { // DOWN
+        e.preventDefault();
+        currentFocus++;
+        setActive(items);
+      } else if (e.keyCode === 38) { // UP
+        e.preventDefault();
+        currentFocus--;
+        setActive(items);
+      } else if (e.keyCode === 13) { // ENTER
+        e.preventDefault();
+        if (currentFocus > -1 && items[currentFocus]) {
+          items[currentFocus].click();
+        }
+      } else if (e.keyCode === 27) { // ESC
+        hideAutocomplete();
+      }
+    });
+    
+    // Click outside to close
+    document.addEventListener('click', function(e) {
+      if (e.target !== searchInput && !autocompleteList?.contains(e.target)) {
+        hideAutocomplete();
+      }
+    });
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAutocomplete);
+  } else {
+    initAutocomplete();
+  }
+})();
