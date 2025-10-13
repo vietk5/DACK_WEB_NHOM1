@@ -7,116 +7,104 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.*;
 
-import com.demo.repo.DemoRepo;
-import com.demo.repo.Product;
+import com.demo.persistence.SanPhamDAO;
+import com.demo.persistence.GenericDAO.Page;
+import com.demo.model.SanPham;
 
 @WebServlet(name = "SearchServlet", urlPatterns = {"/search"})
 public class SearchServlet extends HttpServlet {
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-
-    req.setCharacterEncoding("UTF-8");
-    resp.setCharacterEncoding("UTF-8");
-    resp.setContentType("text/html; charset=UTF-8");
-
-    // Lấy từ khóa tìm kiếm
-    String keyword = req.getParameter("q");
-    if (keyword == null) keyword = "";
-    keyword = keyword.trim();
     
-    // Lấy tham số lọc (nếu có)
-    String brand = req.getParameter("brand");
-    if (brand != null) brand = brand.trim();
-    final String brandFinal = brand;
+    private final SanPhamDAO sanPhamDAO = new SanPhamDAO();
     
-    String category = req.getParameter("category");
-    if (category != null) category = category.trim();
-    final String categoryFinal = category;
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException, IOException {
 
-    // Lấy tất cả sản phẩm
-    List<Product> allProducts = DemoRepo.getAllProducts();
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/html; charset=UTF-8");
 
-    // Price range
-    String minStr = req.getParameter("min");
-    String maxStr = req.getParameter("max");
-    Long min = null, max = null;
-    try { if (minStr != null && !minStr.isBlank()) min = Long.parseLong(minStr.trim()); } catch (Exception ignored) {}
-    try { if (maxStr != null && !maxStr.isBlank()) max = Long.parseLong(maxStr.trim()); } catch (Exception ignored) {}
-    
-    // Lọc theo từ khóa tìm kiếm
-    List<Product> searchResults = allProducts;
-    if (!keyword.isEmpty()) {
-      final String keywordLower = keyword.toLowerCase();
-      searchResults = allProducts.stream()
-          .filter(p -> p.getName().toLowerCase().contains(keywordLower) ||
-                      p.getBrand().toLowerCase().contains(keywordLower) ||
-                      p.getCategory().toLowerCase().contains(keywordLower))
-          .collect(Collectors.toList());
+        // Lấy tham số tìm kiếm
+        String keyword = req.getParameter("q");
+        if (keyword == null) keyword = "";
+        keyword = keyword.trim();
+        
+        String brand = req.getParameter("brand");
+        if (brand != null) brand = brand.trim();
+        
+        String category = req.getParameter("category");
+        if (category != null) category = category.trim();
+
+        // Khoảng giá
+        String minStr = req.getParameter("min");
+        String maxStr = req.getParameter("max");
+        BigDecimal minPrice = null, maxPrice = null;
+        try { 
+            if (minStr != null && !minStr.isBlank()) 
+                minPrice = new BigDecimal(minStr.trim()); 
+        } catch (Exception ignored) {}
+        try { 
+            if (maxStr != null && !maxStr.isBlank()) 
+                maxPrice = new BigDecimal(maxStr.trim()); 
+        } catch (Exception ignored) {}
+        
+        // Phân trang
+        int page = 0;
+        int size = 20; // 20 sản phẩm mỗi trang
+        try {
+            String pageParam = req.getParameter("page");
+            if (pageParam != null) page = Math.max(0, Integer.parseInt(pageParam));
+        } catch (Exception ignored) {}
+        
+        // Sắp xếp
+        String sort = req.getParameter("sort");
+        String sortBy = "id";
+        boolean asc = true;
+        
+        if ("price_asc".equalsIgnoreCase(sort)) {
+            sortBy = "gia";
+            asc = true;
+        } else if ("price_desc".equalsIgnoreCase(sort)) {
+            sortBy = "gia";
+            asc = false;
+        } else if ("name_asc".equalsIgnoreCase(sort)) {
+            sortBy = "tenSanPham";
+            asc = true;
+        }
+
+        // Tìm kiếm từ database
+        Page<SanPham> searchPage = sanPhamDAO.searchAdvanced(
+            keyword, brand, category, minPrice, maxPrice, 
+            page, size, sortBy, asc
+        );
+        
+        // Lấy danh sách thương hiệu và loại sản phẩm
+        List<String> brands = sanPhamDAO.getAllBrands();
+        List<String> categories = sanPhamDAO.getAllCategories();
+
+        // Gửi dữ liệu đến JSP
+        req.setAttribute("searchResults", searchPage.getContent());
+        req.setAttribute("keyword", keyword);
+        req.setAttribute("brands", brands);
+        req.setAttribute("categories", categories);
+        req.setAttribute("activeBrand", brand);
+        req.setAttribute("activeCategory", category);
+        req.setAttribute("resultCount", searchPage.getTotalElements());
+        req.setAttribute("currentPage", searchPage.getPage());
+        req.setAttribute("totalPages", searchPage.getTotalPages());
+        req.setAttribute("minPrice", minPrice);
+        req.setAttribute("maxPrice", maxPrice);
+        req.setAttribute("sort", sort);
+
+        req.getRequestDispatcher("/WEB-INF/views/search.jsp").forward(req, resp);
     }
-    
-    // Lọc theo brand (nếu có)
-    if (brandFinal != null && !brandFinal.isEmpty()) {
-      searchResults = searchResults.stream()
-          .filter(p -> p.getBrand().equalsIgnoreCase(brandFinal))
-          .collect(Collectors.toList());
-    }
-    
-    // Lọc theo category (nếu có)
-    if (categoryFinal != null && !categoryFinal.isEmpty()) {
-      searchResults = searchResults.stream()
-          .filter(p -> p.getCategory().equalsIgnoreCase(categoryFinal))
-          .collect(Collectors.toList());
-    }
 
-    // Lọc theo khoảng giá
-    if (min != null) {
-      final long minVal = min;
-      searchResults = searchResults.stream().filter(p -> p.getPrice() >= minVal).collect(Collectors.toList());
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException, IOException {
+        doGet(req, resp);
     }
-    if (max != null) {
-      final long maxVal = max;
-      searchResults = searchResults.stream().filter(p -> p.getPrice() <= maxVal).collect(Collectors.toList());
-    }
-
-    // Sort
-    String sort = req.getParameter("sort"); // price_asc, price_desc, bestseller
-    if (sort != null) sort = sort.trim();
-    if ("price_asc".equalsIgnoreCase(sort)) {
-      searchResults = searchResults.stream()
-          .sorted(Comparator.comparingLong(Product::getPrice))
-          .collect(Collectors.toList());
-    } else if ("price_desc".equalsIgnoreCase(sort)) {
-      searchResults = searchResults.stream()
-          .sorted(Comparator.comparingLong(Product::getPrice).reversed())
-          .collect(Collectors.toList());
-    } else if ("bestseller".equalsIgnoreCase(sort)) {
-      searchResults = searchResults.stream()
-          .sorted(Comparator.comparingDouble(Product::getRating).reversed())
-          .collect(Collectors.toList());
-    }
-
-    // Gửi dữ liệu đến JSP
-    req.setAttribute("searchResults", searchResults);
-    req.setAttribute("keyword", keyword);
-    req.setAttribute("brands", DemoRepo.brands());
-    req.setAttribute("categories", DemoRepo.categories());
-    req.setAttribute("activeBrand", brandFinal);
-    req.setAttribute("activeCategory", categoryFinal);
-    req.setAttribute("resultCount", searchResults.size());
-    req.setAttribute("min", min);
-    req.setAttribute("max", max);
-    req.setAttribute("sort", sort);
-
-    req.getRequestDispatcher("/WEB-INF/views/search.jsp").forward(req, resp);
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    doGet(req, resp);
-  }
 }
