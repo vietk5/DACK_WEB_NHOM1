@@ -33,13 +33,21 @@
 <%-- FEATURED CATEGORIES --%>
 <%-- HOT DEALS / GIẢM SÂU HÔM NAY --%>
 <section id="hot-deals" class="mb-4">
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-radius: 15px; border: 2px solid rgba(255, 255, 255, 0.2) !important;">
         <div class="card-header bg-transparent border-0 pb-0 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-warning text-dark fw-bold">Giờ vàng</span>
-                <h5 class="mb-0">Giảm sâu hôm nay</h5>
+                <span class="badge bg-warning text-dark fw-bold fs-6 px-3 py-2">
+                    <i class="bi bi-lightning-charge-fill"></i> FLASH SALE 10 PHÚT
+                </span>
+                <h5 class="mb-0 text-white fw-bold">
+                    <i class="bi bi-fire"></i> Giảm sâu hôm nay
+                </h5>
             </div>
-            <div class="small text-muted">Kết thúc sau <span id="dealsCountdown">01 : 37 : 25</span></div>
+            <div class="text-white d-flex align-items-center gap-2">
+                <i class="bi bi-clock-fill fs-4"></i>
+                <span class="fw-bold fs-5">Kết thúc sau:</span> 
+                <span id="dealsCountdown" class="badge px-3 py-2">09 : 00</span>
+            </div>
         </div>
 
         <div class="card-body pt-2">
