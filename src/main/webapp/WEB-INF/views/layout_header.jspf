@@ -75,7 +75,9 @@
       <!-- Search -->
       <form class="d-flex flex-grow-1 me-3" role="search" action="${pageContext.request.contextPath}/search" method="get">
         <input class="form-control me-2 bg-dark border-secondary" type="search" name="q"
-               placeholder="Tìm laptop, PC, linh kiện…" value="${param.q}"/>
+               placeholder="Tìm laptop, PC, linh kiện…" value="${param.q}"
+               data-context-path="${pageContext.request.contextPath}"
+               autocomplete="off"/>
         <button class="btn btn-rog" type="submit">Tìm</button>
       </form>
 
