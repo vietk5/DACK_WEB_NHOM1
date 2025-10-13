@@ -6,6 +6,7 @@ com\demo\model\order\ChiTietDonHang.class
 com\demo\controller\OrdersServlet.class
 com\demo\model\kho\ChiTietPhieuNhap.class
 com\demo\controller\AdminCustomersServlet.class
+com\demo\controller\resetService$1.class
 com\demo\persistence\KhachHangDAO.class
 com\demo\controller\AdminLoginServlet.class
 com\electromart\filter\CharacterEncodingFilter.class
@@ -17,9 +18,11 @@ com\demo\controller\AdminRevenueServlet.class
 com\demo\model\Admin.class
 com\demo\model\NhanVien.class
 com\demo\model\session\SessionUser.class
+com\demo\controller\resetPassword.class
 com\demo\model\kho\PhieuNhap.class
 com\demo\controller\AdminLogoutServlet.class
 com\demo\controller\HomeServlet.class
+com\demo\controller\resetService.class
 com\demo\controller\CheckoutServlet.class
 com\demo\controller\ProductDetailServlet.class
 com\demo\model\AuditEntity.class
@@ -29,6 +32,7 @@ com\demo\model\database\SanPhamDB.class
 com\demo\controller\AdminProductsServlet.class
 com\demo\model\database\ThuongHieuDB.class
 com\demo\enums\TrangThaiDonHang.class
+com\demo\controller\requestPassword.class
 com\demo\model\NguoiDung.class
 com\demo\model\kho\ChiTietPhieuXuatKey.class
 com\demo\model\database\LoaiSanPhamDB.class
@@ -47,6 +51,7 @@ com\demo\model\DiaChi.class
 com\demo\persistence\AdminDAO.class
 com\demo\model\LoaiSanPham.class
 com\demo\enums\LoaiGiamGia.class
+com\demo\model\TokenForgetPassword.class
 com\demo\model\PhieuGiamGia.class
 com\demo\model\order\ChiTietDonHangKey.class
 com\demo\model\KhachHang.class
@@ -60,5 +65,6 @@ com\demo\controller\AdminDashboardServlet.class
 com\demo\persistence\SanPhamDAO.class
 com\demo\controller\SearchServlet.class
 com\demo\model\cart\GioHang.class
+com\demo\persistence\TokenForgetPasswordDAO.class
 com\electromart\filter\AdminAuthFilter.class
 com\demo\controller\ProfileServlet.class
