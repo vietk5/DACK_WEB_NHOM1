@@ -52,6 +52,7 @@ public class ProductDetailServlet extends HttpServlet {
             req.setAttribute("relatedProducts", relatedProducts);
             req.setAttribute("brands", sanPhamDAO.getAllBrands());
             req.setAttribute("categories", sanPhamDAO.getAllCategories());
+            req.setAttribute("categoryBrands", sanPhamDAO.getCategoryBrandsMap());
 
             req.getRequestDispatcher("/WEB-INF/views/product_detail.jsp").forward(req, resp);
             
