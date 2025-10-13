@@ -39,6 +39,11 @@ public class HomeServlet extends HttpServlet {
         req.setAttribute("categories", sanPhamDAO.getAllCategories());
         req.setAttribute("brands", sanPhamDAO.getAllBrands());
         
+        // Lấy Map category -> brands (chỉ brands có sản phẩm trong category đó)
+        var categoryBrands = sanPhamDAO.getCategoryBrandsMap();
+        System.out.println("🔍 [DEBUG] CategoryBrands Map: " + categoryBrands);
+        req.setAttribute("categoryBrands", categoryBrands);
+        
         // ============ CODE CŨ (đã comment) ============
         // req.setAttribute("categories", LoaiSanPhamDB.selectAllTenLoaiSanPham());
         // req.setAttribute("brands", ThuongHieuDB.selectAllTenThuongHieu());
