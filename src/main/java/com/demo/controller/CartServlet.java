@@ -73,7 +73,7 @@ public class CartServlet extends HttpServlet {
                         cart.add(new GioHangItem(
                             sku,
                             product.getTenSanPham(),
-                            "assets/img/laptop_placeholder.jpg",
+                            "assets/img/products/" + productId + ".jpg",
                             product.getGia().longValue(),
                             soLuong
                         ));
