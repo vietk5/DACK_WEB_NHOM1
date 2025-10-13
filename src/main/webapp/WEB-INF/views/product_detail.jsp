@@ -121,13 +121,12 @@
           </div>
           <div class="col-md-6 d-flex align-items-end">
             <form method="post" action="${cp}/cart" class="w-100">
-              <input type="hidden" name="sku" value="${fn:replace(fn:toLowerCase(product.tenSanPham),' ','-')}">
-              <input type="hidden" name="name" value="${fn:escapeXml(product.tenSanPham)}">
-              <input type="hidden" name="price" value="${product.gia}">
-              <input type="hidden" name="image" value="${cp}/assets/img/products/${product.id}.jpg">
+              <input type="hidden" name="action" value="add">
+              <input type="hidden" name="productId" value="${product.id}">
               <input type="hidden" name="qty" id="qtyHidden" value="1">
-              <button class="btn btn-rog w-100" type="submit">
-                <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ hàng
+              <button class="btn btn-rog w-100" type="submit" ${product.soLuongTon <= 0 ? 'disabled' : ''}>
+                <i class="bi bi-cart-plus me-2"></i>
+                ${product.soLuongTon > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng'}
               </button>
             </form>
           </div>
@@ -234,7 +233,7 @@
                   </c:if> --%>
                 </div>
                 
-                <a href="${cp}/product?productId=${fn:escapeXml(relatedProduct.getId())}" class="btn btn-rog w-100">
+                <a href="${cp}/product?id=${relatedProduct.getId()}" class="btn btn-rog w-100">
                   <i class="bi bi-eye me-1"></i>Xem chi tiết
                 </a>
               </div>

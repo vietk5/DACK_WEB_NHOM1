@@ -48,18 +48,18 @@
 
     <!-- Actions -->
     <div class="mt-auto d-grid gap-2 product-foot">
-      <form action="${pageContext.request.contextPath}/cart" method="post" class="d-inline">
-  <input type="hidden" name="action" value="add">
-  <input type="hidden" name="sku" value="${param.id}">
-  <input type="hidden" name="name" value="${param.name}">
-  <input type="hidden" name="price" value="${param.price}">
-  <input type="hidden" name="qty" value="1">
-  <input type="hidden" name="image" value="${param.image}">
-  <button type="submit" class="btn btn-sm btn-rog w-100">Thêm vào giỏ</button>
-</form>
-
+      <form method="post" action="${cp}/cart" class="mb-0">
+        <input type="hidden" name="action" value="add">
+        <input type="hidden" name="productId" value="${param.id}">
+        <input type="hidden" name="qty" value="1">
+        <button type="submit" class="btn btn-sm btn-rog w-100">
+          <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
+        </button>
+      </form>
       <a class="btn btn-sm btn-outline-light-subtle" 
-         href="${cp}/product?productId=${param.id}">Xem chi tiết</a>
+         href="${cp}/product?id=${param.id}">
+        <i class="bi bi-eye me-1"></i>Xem chi tiết
+      </a>
     </div>
   </div>
 </div>

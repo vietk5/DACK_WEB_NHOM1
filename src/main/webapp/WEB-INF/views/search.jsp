@@ -136,16 +136,12 @@
             <div class="search-product-card">
               <!-- Image -->
               <div class="position-relative overflow-hidden">
-                <img class="product-img" src="${cp}/${product.image}" alt="${fn:escapeXml(product.name)}"/>
-                <c:if test="${product.rating > 0}">
-                  <span class="rating-badge position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill">
-                    <i class="bi bi-star-fill me-1"></i>${product.rating}
-                  </span>
-                </c:if>
-                <c:if test="${product.oldPrice != null && product.oldPrice > 0}">
-                  <span class="discount-badge position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill">
-                    -<fmt:formatNumber value="${((product.oldPrice - product.price) / product.oldPrice) * 100}"
-                                       type="number" maxFractionDigits="0"/>%
+                <img class="product-img" 
+                     src="${cp}/assets/img/laptop_placeholder.jpg" 
+                     alt="${fn:escapeXml(product.tenSanPham)}"/>
+                <c:if test="${product.soLuongTon > 0}">
+                  <span class="badge bg-success position-absolute top-0 start-0 m-2">
+                    Còn hàng: ${product.soLuongTon}
                   </span>
                 </c:if>
               </div>
@@ -153,60 +149,87 @@
               <!-- Body -->
               <div class="card-body d-flex flex-column p-3">
                 <h6 class="card-title text-white mb-2" style="font-size: 0.95rem; line-height: 1.3;">
-                  <a href="${cp}/product?name=${fn:escapeXml(product.name)}" class="text-white text-decoration-none">
-                    ${fn:escapeXml(product.name)}
+                  <a href="${cp}/product?id=${product.id}" class="text-white text-decoration-none">
+                    ${fn:escapeXml(product.tenSanPham)}
                   </a>
                 </h6>
                 <p class="text-muted small mb-2">
-                  <i class="bi bi-tag me-1"></i>${fn:escapeXml(product.brand)}
-                  <span class="mx-1">•</span>
-                  <i class="bi bi-grid me-1"></i>${fn:escapeXml(product.category)}
+                  <c:if test="${product.thuongHieu != null}">
+                    <i class="bi bi-tag me-1"></i>${fn:escapeXml(product.thuongHieu.tenThuongHieu)}
+                  </c:if>
+                  <c:if test="${product.loai != null}">
+                    <span class="mx-1">•</span>
+                    <i class="bi bi-grid me-1"></i>${fn:escapeXml(product.loai.tenLoai)}
+                  </c:if>
                 </p>
 
                 <div class="mt-auto">
                   <div class="d-flex align-items-center mb-3">
                     <span class="h5 text-warning mb-0 fw-bold">
-                      <fmt:formatNumber value="${product.price}" type="currency" currencyCode="VND"/>
+                      <fmt:formatNumber value="${product.gia}" type="number" groupingUsed="true"/> đ
                     </span>
-                    <c:if test="${product.oldPrice != null && product.oldPrice > 0}">
-                      <span class="text-muted text-decoration-line-through ms-2 small">
-                        <fmt:formatNumber value="${product.oldPrice}" type="currency" currencyCode="VND"/>
-                      </span>
-                    </c:if>
                   </div>
 
                   <div class="d-grid gap-2">
-                    <a href="${cp}/product?name=${fn:escapeXml(product.name)}" class="btn btn-outline-light">
+                    <a href="${cp}/product?id=${product.id}" class="btn btn-outline-light">
                       <i class="bi bi-eye me-1"></i>Xem chi tiết
                     </a>
                     <form method="post" action="${cp}/cart" class="d-grid">
-                             <input type="hidden" name="action" value="add">
-                             <input type="hidden" name="sku" value="${fn:replace(fn:toLowerCase(product.name),' ','-')}">
-                             <input type="hidden" name="name" value="${fn:escapeXml(product.name)}">
-                             <input type="hidden" name="price" value="${product.price}">
-                             <input type="hidden" name="qty" value="1">
-                             <input type="hidden" name="image" value="${cp}/${product.image}">
-                             <button class="btn btn-rog" type="submit">
-                             <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
-                        </button>
-                        </form>
-
+                      <input type="hidden" name="productId" value="${product.id}">
+                      <input type="hidden" name="name" value="${fn:escapeXml(product.tenSanPham)}">
+                      <input type="hidden" name="price" value="${product.gia}">
+                      <input type="hidden" name="qty" value="1">
+                      <button class="btn btn-rog" type="submit" 
+                              ${product.soLuongTon <= 0 ? 'disabled' : ''}>
+                        <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
           </c:forEach>
         </div>
+        
+        <!-- Pagination -->
+        <c:if test="${totalPages > 1}">
+          <div class="row mt-4">
+            <div class="col-12">
+              <nav aria-label="Search results pagination">
+                <ul class="pagination justify-content-center">
+                  <c:if test="${currentPage > 0}">
+                    <li class="page-item">
+                      <a class="page-link" href="${cp}/search?q=${fn:escapeXml(keyword)}&brand=${activeBrand}&category=${activeCategory}&min=${minPrice}&max=${maxPrice}&sort=${sort}&page=${currentPage - 1}">
+                        <i class="bi bi-chevron-left"></i> Trước
+                      </a>
+                    </li>
+                  </c:if>
+                  
+                  <c:forEach begin="0" end="${totalPages - 1}" var="i">
+                    <c:if test="${i < 10 || (i >= currentPage - 2 && i <= currentPage + 2) || i >= totalPages - 3}">
+                      <li class="page-item ${i == currentPage ? 'active' : ''}">
+                        <a class="page-link" href="${cp}/search?q=${fn:escapeXml(keyword)}&brand=${activeBrand}&category=${activeCategory}&min=${minPrice}&max=${maxPrice}&sort=${sort}&page=${i}">
+                          ${i + 1}
+                        </a>
+                      </li>
+                    </c:if>
+                  </c:forEach>
+                  
+                  <c:if test="${currentPage < totalPages - 1}">
+                    <li class="page-item">
+                      <a class="page-link" href="${cp}/search?q=${fn:escapeXml(keyword)}&brand=${activeBrand}&category=${activeCategory}&min=${minPrice}&max=${maxPrice}&sort=${sort}&page=${currentPage + 1}">
+                        Sau <i class="bi bi-chevron-right"></i>
+                      </a>
+                    </li>
+                  </c:if>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </c:if>
       </c:otherwise>
     </c:choose>
   </div>
 </div>
-
-<!-- JavaScript for cart functionality -->
-<script>
-function addToCart(productName, price) {
-  alert('Đã thêm ' + productName + ' vào giỏ hàng!');
-}
-</script>
 
 <%@ include file="layout_footer.jspf" %>
