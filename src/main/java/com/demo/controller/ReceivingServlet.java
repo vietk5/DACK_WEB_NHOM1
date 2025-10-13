@@ -2,6 +2,7 @@ package com.demo.controller;
 
 import com.demo.model.*;
 import com.demo.model.database.*; // LoaiSanPhamDB, ThuongHieuDB, SanPhamDB
+import com.demo.persistence.SanPhamDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,6 +21,8 @@ import java.time.LocalDate;
         maxRequestSize = 10 * 1024 * 1024 // 10MB / request
 )
 public class ReceivingServlet extends HttpServlet {
+    
+    private final SanPhamDAO sanPhamDAO = new SanPhamDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -30,8 +33,9 @@ public class ReceivingServlet extends HttpServlet {
         final String ctx = request.getContextPath();
 
         // Nền cho JSP nếu forward
-        request.setAttribute("categories", LoaiSanPhamDB.selectAllTenLoaiSanPham());
-        request.setAttribute("brands", ThuongHieuDB.selectAllTenThuongHieu());
+        request.setAttribute("categories", sanPhamDAO.getAllCategories());
+        request.setAttribute("brands", sanPhamDAO.getAllBrands());
+        request.setAttribute("categoryBrands", sanPhamDAO.getCategoryBrandsMap());
 
         String action = request.getParameter("action");
         if (action == null) {
@@ -116,8 +120,9 @@ public class ReceivingServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
 
-        request.setAttribute("categories", LoaiSanPhamDB.selectAllTenLoaiSanPham());
-        request.setAttribute("brands", ThuongHieuDB.selectAllTenThuongHieu());
+        request.setAttribute("categories", sanPhamDAO.getAllCategories());
+        request.setAttribute("brands", sanPhamDAO.getAllBrands());
+        request.setAttribute("categoryBrands", sanPhamDAO.getCategoryBrandsMap());
 
         // Nếu user vào trực tiếp link confirm_update (hiếm), xử lý và redirect
         String action = request.getParameter("action");
