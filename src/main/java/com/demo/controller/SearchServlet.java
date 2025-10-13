@@ -75,26 +75,54 @@ public class SearchServlet extends HttpServlet {
             asc = true;
         }
 
-        // Tìm kiếm từ database
-        Page<SanPham> searchPage = sanPhamDAO.searchAdvanced(
-            keyword, brand, category, minPrice, maxPrice, 
-            page, size, sortBy, asc
-        );
+        // ========== TÍNH NĂNG MỚI: SEARCH THÔNG MINH ==========
+        
+        List<SanPham> searchResults;
+        long totalResults;
+        
+        // Nếu chỉ có keyword (không có filter) → dùng searchWithCache + Ranking
+        boolean hasFilters = (brand != null && !brand.isEmpty()) || 
+                            (category != null && !category.isEmpty()) || 
+                            minPrice != null || maxPrice != null || 
+                            sort != null;
+        
+        if (!hasFilters && !keyword.isEmpty()) {
+            // 🚀 Sử dụng CACHE + RANKING cho tìm kiếm thuần
+            System.out.println("🎯 [SEARCH] Sử dụng searchWithCache + Ranking");
+            searchResults = sanPhamDAO.searchWithCache(keyword, page, size);
+            totalResults = searchResults.size();
+        } else {
+            // Dùng searchAdvanced với filters
+            System.out.println("🔍 [SEARCH] Sử dụng searchAdvanced với filters");
+            Page<SanPham> searchPage = sanPhamDAO.searchAdvanced(
+                keyword, brand, category, minPrice, maxPrice, 
+                page, size, sortBy, asc
+            );
+            searchResults = searchPage.getContent();
+            totalResults = searchPage.getTotalElements();
+        }
+        
+        // Lấy autocomplete suggestions
+        List<String> suggestions = new ArrayList<>();
+        if (!keyword.isEmpty() && keyword.length() >= 2) {
+            suggestions = sanPhamDAO.getSuggestions(keyword, 5);
+        }
         
         // Lấy danh sách thương hiệu và loại sản phẩm
         List<String> brands = sanPhamDAO.getAllBrands();
         List<String> categories = sanPhamDAO.getAllCategories();
 
         // Gửi dữ liệu đến JSP
-        req.setAttribute("searchResults", searchPage.getContent());
+        req.setAttribute("searchResults", searchResults);
         req.setAttribute("keyword", keyword);
+        req.setAttribute("suggestions", suggestions); // 💡 Autocomplete
         req.setAttribute("brands", brands);
         req.setAttribute("categories", categories);
         req.setAttribute("activeBrand", brand);
         req.setAttribute("activeCategory", category);
-        req.setAttribute("resultCount", searchPage.getTotalElements());
-        req.setAttribute("currentPage", searchPage.getPage());
-        req.setAttribute("totalPages", searchPage.getTotalPages());
+        req.setAttribute("resultCount", totalResults);
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", (int) Math.ceil(totalResults / (double) size));
         req.setAttribute("minPrice", minPrice);
         req.setAttribute("maxPrice", maxPrice);
         req.setAttribute("sort", sort);
