@@ -92,6 +92,45 @@ public class SanPhamDAO extends GenericDAO<SanPham, Long> {
         });
     }
     
+    /**
+     * Lấy danh sách thương hiệu có sản phẩm trong một loại (category) cụ thể
+     * Chỉ lấy thương hiệu có sản phẩm còn hàng
+     */
+    public List<String> getBrandsByCategory(String category) {
+        if (category == null || category.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        return inTransaction(em -> {
+            String jpql = "SELECT DISTINCT th.tenThuongHieu " +
+                         "FROM SanPham s " +
+                         "JOIN s.thuongHieu th " +
+                         "JOIN s.loai l " +
+                         "WHERE LOWER(l.tenLoai) = :cat " +
+                         "AND s.soLuongTon > 0 " +
+                         "ORDER BY th.tenThuongHieu";
+            
+            return em.createQuery(jpql, String.class)
+                .setParameter("cat", category.toLowerCase().trim())
+                .getResultList();
+        });
+    }
+    
+    /**
+     * Lấy Map<Category, List<Brand>> cho menu dropdown
+     * Map này chứa category → danh sách brands có sản phẩm trong category đó
+     */
+    public Map<String, List<String>> getCategoryBrandsMap() {
+        Map<String, List<String>> result = new HashMap<>();
+        List<String> categories = getAllCategories();
+        
+        for (String category : categories) {
+            result.put(category, getBrandsByCategory(category));
+        }
+        
+        return result;
+    }
+    
     // ========== TÍNH NĂNG NÂNG CAO (Giống Elasticsearch) ==========
     
     /**
