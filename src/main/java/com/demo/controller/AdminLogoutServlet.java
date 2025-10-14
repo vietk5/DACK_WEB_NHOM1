@@ -8,8 +8,14 @@ import java.io.IOException;
 
 @WebServlet(name="AdminLogoutServlet", urlPatterns={"/admin/logout"})
 public class AdminLogoutServlet extends HttpServlet {
-    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @Override 
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getSession().invalidate();
-        resp.sendRedirect(req.getContextPath() + "/admin/login");
+        resp.sendRedirect(req.getContextPath() + "/login");
+    }
+    
+    @Override 
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
     }
 }
