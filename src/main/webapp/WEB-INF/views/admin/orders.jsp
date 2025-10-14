@@ -1,9 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c"  uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<%@ include file="../layout_header.jspf" %>
+<%@ include file="../layout_admin_header.jspf" %>
 
-<div class="container my-4">
+<div>
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="mb-0">Quản lý đơn hàng</h3>
     <a class="btn btn-outline-light btn-sm" href="${pageContext.request.contextPath}/admin">← Dashboard</a>
@@ -96,4 +96,4 @@
   </div>
 </div>
 
-<%@ include file="../layout_footer.jspf" %>
+<%@ include file="../layout_admin_footer.jspf" %>

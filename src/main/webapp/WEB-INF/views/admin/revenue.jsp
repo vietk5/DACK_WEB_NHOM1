@@ -2,9 +2,9 @@
 <%@ taglib prefix="c"  uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="fn"  uri="jakarta.tags.functions" %>
-<%@ include file="../layout_header.jspf" %>
+<%@ include file="../layout_admin_header.jspf" %>
 
-<div class="container my-4">
+<div>
   <div class="d-flex align-items-center justify-content-between mb-3">
     <h3 class="mb-0">Quản lý doanh thu</h3>
     <a class="btn btn-outline-light btn-sm" href="${pageContext.request.contextPath}/admin">← Dashboard</a>
@@ -158,4 +158,4 @@
   });
 </script>
 
-<%@ include file="../layout_footer.jspf" %>
+<%@ include file="../layout_admin_footer.jspf" %>
