@@ -70,6 +70,7 @@
                                 <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
                                 <jsp:param name="price" value="${p.getGia()}"/>
                                 <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="stock" value="${p.getSoLuongTon()}"/>
                                 <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </div>
@@ -94,7 +95,7 @@
             <h5 class="card-title d-flex align-items-center gap-2">
                 Thương hiệu nổi bật
                 <c:if test="${not empty activeBrand}">
-                    <span class="badge bg-info-subtle text-dark border">
+                    <span class="badge bg-info-subtle text-white border">
                         Đang lọc: <strong>${activeBrand}</strong>
                     </span>
                     <a class="btn btn-sm btn-outline-light-subtle ms-auto"
@@ -125,13 +126,20 @@
 <section id="best" class="mb-4">
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
+<!--            <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="mb-0">Sản phẩm bán chạy</h5>
                 <a class="link-primary small" href="#">Xem tất cả</a>
-            </div>
+            </div>-->
 
             <c:choose>
                 <c:when test="${not empty best}">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Sản phẩm bán chạy</h5>
+                        <span class="badge bg-primary">
+                            Tổng: ${fn:length(best)} sản phẩm
+                        </span>
+                    </div>
+
                     <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
                         <c:forEach items="${best}" var="p">
                             <jsp:include page="partials/product_card.jsp">
@@ -141,6 +149,7 @@
                                 <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
                                 <jsp:param name="price" value="${p.getGia()}"/>
                                 <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="stock" value="${p.getSoLuongTon()}"/>
                                 <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </c:forEach>
@@ -150,6 +159,7 @@
                     <div class="text-muted">Không có sản phẩm phù hợp.</div>
                 </c:otherwise>
             </c:choose>
+
         </div>
     </div>
 </section>
@@ -174,6 +184,7 @@
                                 <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
                                 <jsp:param name="price" value="${p.getGia()}"/>
                                 <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="stock" value="${p.getSoLuongTon()}"/>
                                 <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </c:forEach>
@@ -207,6 +218,7 @@
                                 <jsp:param name="category" value="${p.getLoai().getTenLoai()}"/>
                                 <jsp:param name="price" value="${p.getGia()}"/>
                                 <jsp:param name="oldPrice" value="${p.getGia()}"/>
+                                <jsp:param name="stock" value="${p.getSoLuongTon()}"/>
                                 <jsp:param name="image" value="${pageContext.request.contextPath}/assets/img/products/${p.getId()}.jpg"/>
                             </jsp:include>
                         </c:forEach>
