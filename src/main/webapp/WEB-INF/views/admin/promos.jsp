@@ -64,31 +64,71 @@
     </div>
 
     <div class="card border-0 shadow-sm">
-        <div class="card-header"><h6 class="mb-0">Danh sách mã hiện có</h6></div>
-        <div class="table-responsive">
-            <table class="table table-dark table-striped align-middle mb-0">
-                <thead><tr><th>Mã</th><th>Giá trị</th><th>Trạng thái</th><th class="text-end">Hành động</th></tr></thead>
-                <tbody>
-                <c:forEach items="${promoList}" var="p">
-                    <tr>
-                        <td class="fw-bold">${p.ma}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${p.kieu.name() == 'PHAN_TRAM'}"><fmt:formatNumber value="${p.giaTri}" type="number"/>%</c:when>
-                                <c:otherwise><fmt:formatNumber value="${p.giaTri}" type="currency" currencySymbol="₫"/></c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td><span class="badge ${p.active ? 'text-bg-success' : 'text-bg-secondary'}">${p.active ? 'Đang bật' : 'Đang tắt'}</span></td>
-                        <td class="text-end">
-                            <a class="btn btn-sm btn-outline-warning" href="?action=edit&id=${p.id}">Sửa</a>
-                            <a class="btn btn-sm btn-outline-light" href="?action=toggle&id=${p.id}">${p.active ? 'Tắt' : 'Bật'}</a>
-                            <a class="btn btn-sm btn-outline-danger" href="?action=delete&id=${p.id}" onclick="return confirm('Xóa mã này?')">Xóa</a>
-                        </td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-        </div>
+    <div class="card-header"><h6 class="mb-0">Danh sách mã hiện có</h6></div>
+    <div class="table-responsive">
+        <table class="table table-dark table-striped align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Mã</th>
+                    <th>Giá trị</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Phạm vi áp dụng</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:choose>
+                    <c:when test="${empty promoList}">
+                        <tr><td colspan="7" class="text-center">Không có mã khuyến mãi nào.</td></tr>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach items="${promoList}" var="p">
+                            <tr>
+                                <td class="fw-bold">${p.ma}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${p.kieu.name() == 'PHAN_TRAM'}"><fmt:formatNumber value="${p.giaTri}" type="number"/>%</c:when>
+                                        <c:otherwise><fmt:formatNumber value="${p.giaTri}" type="currency" currencySymbol="₫"/></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty p.ngayBatDau}">
+                                            ${p.ngayBatDau.toLocalDate()}
+                                        </c:when>
+                                        <c:otherwise>Chưa xác định</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty p.ngayKetThuc}">
+                                            ${p.ngayKetThuc.toLocalDate()}
+                                        </c:when>
+                                        <c:otherwise>Chưa xác định</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${p.apDungToanBo}">Tất cả sản phẩm</c:when>
+                                        <c:when test="${not empty p.loaiApDung}">Theo loại sản phẩm (${fn:length(p.loaiApDung)} loại)</c:when>
+                                        <c:when test="${not empty p.sanPhamApDung}">Sản phẩm cụ thể (${fn:length(p.sanPhamApDung)} sản phẩm)</c:when>
+                                        <c:otherwise>Chưa xác định</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td><span class="badge ${p.active ? 'text-bg-success' : 'text-bg-secondary'}">${p.active ? 'Đang bật' : 'Đang tắt'}</span></td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-warning" href="?action=edit&id=${p.id}">Sửa</a>
+                                    <a class="btn btn-sm btn-outline-light" href="?action=toggle&id=${p.id}">${p.active ? 'Tắt' : 'Bật'}</a>
+                                    <a class="btn btn-sm btn-outline-danger" href="?action=delete&id=${p.id}" onclick="return confirm('Xóa mã này?')">Xóa</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </tbody>
+        </table>
     </div>
 </div>
 
