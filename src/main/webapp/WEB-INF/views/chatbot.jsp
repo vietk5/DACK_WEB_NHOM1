@@ -1,5 +1,4 @@
 <style>
-
   df-messenger {
     --df-messenger-bot-message: #e3f2fd;
     --df-messenger-button-titlebar-color: #1976d2;
@@ -7,16 +6,59 @@
     --df-messenger-font-color: #000000;
     --df-messenger-send-icon: #1976d2;
 
-    --df-messenger-chat-window-height: 100px; /* mặc định ~600px */
+    --df-messenger-chat-window-height: 100px; /* máº·c Äá»nh ~600px */
 
 
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 9999;
-    transform: scale(0.9);
+    transform: scale(0.91);
     transform-origin: bottom right;
   }
+        .chat-buttons {
+            position: fixed;
+            bottom: 100px; /* Đã thay đổi */
+            right: 39px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .chat-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .messenger-button {
+            background-color: #007bff; /* Màu xanh Messenger */
+            color: white;
+            font-size: 24px;
+        }
+
+        .zalo-button {
+            background-color: #008cd7; /* Màu xanh Zalo */
+        }
+
+        .zalo-button img {
+            width: 30px;
+            height: 30px;
+        }
+        .messenger-button img {
+            width: 30px;
+            height: 30px;
+        }
 </style>
 <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
     <df-messenger
@@ -25,3 +67,14 @@
       agent-id="7ee21fcb-898b-40f5-bcb8-44035e5429d1"
       language-code="vi"
     ></df-messenger>
+
+    <div class="chat-buttons">
+        <a href="https://www.facebook.com/ec.duy.9/" target="_blank" class="chat-button messenger-button">
+            <!--<i class="fab fa-facebook-messenger"></i>-->
+            <img src="${pageContext.request.contextPath}/assets/img/messenger-logo.png" alt="Zalo Chat">
+        </a>
+        <a href="https://zalo.me/0329455541" target="_blank" class="chat-button zalo-button">
+            <img src="${pageContext.request.contextPath}/assets/img/logo-zalo.png" alt="Zalo Chat">
+            <!--<img src="https://hienlaptop.com/wp-content/uploads/2024/12/logo-zalo-vector-7.jpg" alt="Zalo Chat">-->
+        </a>
+    </div>
