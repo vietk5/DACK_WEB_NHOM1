@@ -124,6 +124,7 @@
         padding: 1.5rem;
         border-bottom: 1px solid #2a2a3e;
         color: #e0e0e0;
+        vertical-align: top;
     }
 
     .compare-table .row-label {
@@ -321,24 +322,24 @@
                     <!-- Tên sản phẩm -->
                     <tr>
                         <td class="row-label"><i class="bi bi-box me-2"></i>Tên sản phẩm</td>
-                        <td class="text-center">
-                            <strong class="text-white">${fn:escapeXml(compareProducts[0].tenSanPham)}</strong>
+                        <td>
+                            <strong class="text-white" style="font-size: 1.1rem;">${fn:escapeXml(compareProducts[0].tenSanPham)}</strong>
                         </td>
-                        <td class="text-center">
-                            <strong class="text-white">${fn:escapeXml(compareProducts[1].tenSanPham)}</strong>
+                        <td>
+                            <strong class="text-white" style="font-size: 1.1rem;">${fn:escapeXml(compareProducts[1].tenSanPham)}</strong>
                         </td>
                     </tr>
                     
                     <!-- Giá -->
-                    <tr>
+                    <tr style="background: rgba(102, 126, 234, 0.05);">
                         <td class="row-label"><i class="bi bi-currency-dollar me-2"></i>Giá bán</td>
-                        <td class="text-center">
-                            <div class="price-highlight">
+                        <td>
+                            <div class="price-highlight" style="font-size: 1.8rem;">
                                 <fmt:formatNumber value="${compareProducts[0].gia}" pattern="#,###"/> đ
                             </div>
                         </td>
-                        <td class="text-center">
-                            <div class="price-highlight">
+                        <td>
+                            <div class="price-highlight" style="font-size: 1.8rem;">
                                 <fmt:formatNumber value="${compareProducts[1].gia}" pattern="#,###"/> đ
                             </div>
                         </td>
@@ -347,40 +348,56 @@
                     <!-- Thương hiệu -->
                     <tr>
                         <td class="row-label"><i class="bi bi-tag me-2"></i>Thương hiệu</td>
-                        <td class="text-center">
-                            ${fn:escapeXml(compareProducts[0].thuongHieu.tenThuongHieu)}
+                        <td>
+                            <span class="badge bg-primary" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                ${fn:escapeXml(compareProducts[0].thuongHieu.tenThuongHieu)}
+                            </span>
                         </td>
-                        <td class="text-center">
-                            ${fn:escapeXml(compareProducts[1].thuongHieu.tenThuongHieu)}
+                        <td>
+                            <span class="badge bg-primary" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                ${fn:escapeXml(compareProducts[1].thuongHieu.tenThuongHieu)}
+                            </span>
                         </td>
                     </tr>
 
                     <!-- Tồn kho -->
                     <tr>
                         <td class="row-label"><i class="bi bi-box-seam me-2"></i>Tình trạng</td>
-                        <td class="text-center">
+                        <td>
                             <c:choose>
                                 <c:when test="${compareProducts[0].soLuongTon <= 0}">
-                                    <span class="badge bg-danger">Hết hàng</span>
+                                    <span class="badge bg-danger" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                        <i class="bi bi-x-circle me-1"></i>Hết hàng
+                                    </span>
                                 </c:when>
                                 <c:when test="${compareProducts[0].soLuongTon < 10}">
-                                    <span class="badge bg-warning text-dark">Còn ${compareProducts[0].soLuongTon} sản phẩm</span>
+                                    <span class="badge bg-warning text-dark" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Còn ${compareProducts[0].soLuongTon} sản phẩm
+                                    </span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge bg-success">Còn hàng</span>
+                                    <span class="badge bg-success" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                        <i class="bi bi-check-circle me-1"></i>Còn hàng
+                                    </span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
-                        <td class="text-center">
+                        <td>
                             <c:choose>
                                 <c:when test="${compareProducts[1].soLuongTon <= 0}">
-                                    <span class="badge bg-danger">Hết hàng</span>
+                                    <span class="badge bg-danger" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                        <i class="bi bi-x-circle me-1"></i>Hết hàng
+                                    </span>
                                 </c:when>
                                 <c:when test="${compareProducts[1].soLuongTon < 10}">
-                                    <span class="badge bg-warning text-dark">Còn ${compareProducts[1].soLuongTon} sản phẩm</span>
+                                    <span class="badge bg-warning text-dark" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Còn ${compareProducts[1].soLuongTon} sản phẩm
+                                    </span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge bg-success">Còn hàng</span>
+                                    <span class="badge bg-success" style="font-size: 0.95rem; padding: 0.5rem 1rem;">
+                                        <i class="bi bi-check-circle me-1"></i>Còn hàng
+                                    </span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -388,14 +405,14 @@
 
                     <!-- Mô tả -->
                     <tr>
-                        <td class="row-label"><i class="bi bi-file-text me-2"></i>Mô tả</td>
-                        <td style="max-width: 400px;">
-                            <div style="max-height: 200px; overflow-y: auto;">
+                        <td class="row-label"><i class="bi bi-file-text me-2"></i>Mô tả chi tiết</td>
+                        <td>
+                            <div class="text-white" style="white-space: pre-line; line-height: 1.8;">
                                 ${fn:escapeXml(compareProducts[0].moTaNgan)}
                             </div>
                         </td>
-                        <td style="max-width: 400px;">
-                            <div style="max-height: 200px; overflow-y: auto;">
+                        <td>
+                            <div class="text-white" style="white-space: pre-line; line-height: 1.8;">
                                 ${fn:escapeXml(compareProducts[1].moTaNgan)}
                             </div>
                         </td>
@@ -407,7 +424,18 @@
                         <td class="text-center">
                             <div class="d-grid gap-2">
                                 <c:if test="${compareProducts[0].soLuongTon > 0}">
-                                    <form method="post" action="${pageContext.request.contextPath}/cart">
+                                    <!-- Mua ngay -->
+                                    <form method="post" action="${pageContext.request.contextPath}/checkout" class="mb-0">
+                                        <input type="hidden" name="action" value="buy_now">
+                                        <input type="hidden" name="productId" value="${compareProducts[0].id}">
+                                        <input type="hidden" name="qty" value="1">
+                                        <button type="submit" class="btn btn-warning btn-sm w-100">
+                                            <i class="bi bi-lightning-charge-fill me-1"></i>Mua ngay
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Thêm vào giỏ -->
+                                    <form method="post" action="${pageContext.request.contextPath}/cart" class="mb-0">
                                         <input type="hidden" name="action" value="add">
                                         <input type="hidden" name="productId" value="${compareProducts[0].id}">
                                         <input type="hidden" name="qty" value="1">
@@ -416,6 +444,8 @@
                                         </button>
                                     </form>
                                 </c:if>
+                                
+                                <!-- Xem chi tiết -->
                                 <a href="${pageContext.request.contextPath}/product?id=${compareProducts[0].id}" 
                                    class="btn btn-outline-light btn-sm">
                                     <i class="bi bi-eye me-1"></i>Xem chi tiết
@@ -425,7 +455,18 @@
                         <td class="text-center">
                             <div class="d-grid gap-2">
                                 <c:if test="${compareProducts[1].soLuongTon > 0}">
-                                    <form method="post" action="${pageContext.request.contextPath}/cart">
+                                    <!-- Mua ngay -->
+                                    <form method="post" action="${pageContext.request.contextPath}/checkout" class="mb-0">
+                                        <input type="hidden" name="action" value="buy_now">
+                                        <input type="hidden" name="productId" value="${compareProducts[1].id}">
+                                        <input type="hidden" name="qty" value="1">
+                                        <button type="submit" class="btn btn-warning btn-sm w-100">
+                                            <i class="bi bi-lightning-charge-fill me-1"></i>Mua ngay
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Thêm vào giỏ -->
+                                    <form method="post" action="${pageContext.request.contextPath}/cart" class="mb-0">
                                         <input type="hidden" name="action" value="add">
                                         <input type="hidden" name="productId" value="${compareProducts[1].id}">
                                         <input type="hidden" name="qty" value="1">
@@ -434,6 +475,8 @@
                                         </button>
                                     </form>
                                 </c:if>
+                                
+                                <!-- Xem chi tiết -->
                                 <a href="${pageContext.request.contextPath}/product?id=${compareProducts[1].id}" 
                                    class="btn btn-outline-light btn-sm">
                                     <i class="bi bi-eye me-1"></i>Xem chi tiết
