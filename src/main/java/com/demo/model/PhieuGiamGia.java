@@ -1,107 +1,103 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.demo.model;
 
 import com.demo.enums.LoaiGiamGia;
-import jakarta.persistence.*; import java.math.*;
+import jakarta.persistence.*;
 
-import java.time.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "phieu_giam_gia")
-public class PhieuGiamGia {
+public class PhieuGiamGia implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "ma", unique = true)
+
+    @Column(name = "ma", unique = true, length = 64)
     private String ma;
-    @Column(name = "mo_ta")
-    private String moTa;
-    @Column(name = "ngay_bat_dau")
-    private LocalDate ngayBatDau;
-    @Column(name = "ngay_ket_thuc")
-    private LocalDate ngayKetThuc;
-    @Column(name = "trang_thai")
-    private boolean trangThai = true;
-    @Column(name = "so_luong_su_dung_toi_da")
-    private Integer soLuongSuDungToiDa;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "loai")
-    private LoaiGiamGia loai;
-    @Column(name = "ap_dung_giam_gia", precision = 15, scale = 2)
-    private BigDecimal apDungGiamGia;
+    @Column(name = "kieu", length = 16)
+    private LoaiGiamGia kieu;  // Discount type (percentage or fixed)
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "gia_tri", precision = 15, scale = 2)
+    private BigDecimal giaTri;  // The value of the discount
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "giam_toi_da", precision = 15, scale = 2)
+    private BigDecimal giamToiDa;  // Max discount
 
-    public String getMa() {
-        return ma;
-    }
+    @Column(name = "don_toi_thieu", precision = 15, scale = 2)
+    private BigDecimal donToiThieu;  // Minimum order value for discount
 
-    public void setMa(String v) {
-        this.ma = v;
-    }
+    @Column(name = "mo_ta")
+    private String moTa;  // Description of the promotion
 
-    public String getMoTa() {
-        return moTa;
-    }
+    @Column(name = "ngay_bat_dau")
+    private LocalDateTime ngayBatDau;  // Start date/time of the promotion
 
-    public void setMoTa(String v) {
-        this.moTa = v;
-    }
+    @Column(name = "ngay_ket_thuc")
+    private LocalDateTime ngayKetThuc;  // End date/time of the promotion
 
-    public LocalDate getNgayBatDau() {
-        return ngayBatDau;
-    }
+    @Column(name = "active", nullable = false)
+    private boolean active = true;  // Whether the promotion is active or not
 
-    public void setNgayBatDau(LocalDate v) {
-        this.ngayBatDau = v;
-    }
+    @Column(name = "ap_dung_toan_bo", nullable = false)
+    private boolean apDungToanBo = false;  // Whether the promotion applies to all products
 
-    public LocalDate getNgayKetThuc() {
-        return ngayKetThuc;
-    }
+    @ManyToMany
+    @JoinTable(name = "phieu_giam_gia_loai",
+            joinColumns = @JoinColumn(name = "phieu_id"),
+            inverseJoinColumns = @JoinColumn(name = "loai_id"))
+    private Set<LoaiSanPham> loaiApDung = new HashSet<>();  // Products' categories to which the promotion applies
 
-    public void setNgayKetThuc(LocalDate v) {
-        this.ngayKetThuc = v;
-    }
+    @ManyToMany
+    @JoinTable(name = "phieu_giam_gia_san_pham",
+            joinColumns = @JoinColumn(name = "phieu_id"),
+            inverseJoinColumns = @JoinColumn(name = "san_pham_id"))
+    private Set<SanPham> sanPhamApDung = new HashSet<>();  // Specific products to which the promotion applies
 
-    public boolean isTrangThai() {
-        return trangThai;
-    }
+    // Getter and Setter methods
 
-    public void setTrangThai(boolean v) {
-        this.trangThai = v;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Integer getSoLuongSuDungToiDa() {
-        return soLuongSuDungToiDa;
-    }
+    public String getMa() { return ma; }
+    public void setMa(String ma) { this.ma = ma; }
 
-    public void setSoLuongSuDungToiDa(Integer v) {
-        this.soLuongSuDungToiDa = v;
-    }
+    public LoaiGiamGia getKieu() { return kieu; }
+    public void setKieu(LoaiGiamGia kieu) { this.kieu = kieu; }
 
-    public LoaiGiamGia getLoai() {
-        return loai;
-    }
+    public BigDecimal getGiaTri() { return giaTri; }
+    public void setGiaTri(BigDecimal giaTri) { this.giaTri = giaTri; }
 
-    public void setLoai(LoaiGiamGia v) {
-        this.loai = v;
-    }
+    public BigDecimal getGiamToiDa() { return giamToiDa; }
+    public void setGiamToiDa(BigDecimal giamToiDa) { this.giamToiDa = giamToiDa; }
 
-    public BigDecimal getApDungGiamGia() {
-        return apDungGiamGia;
-    }
+    public BigDecimal getDonToiThieu() { return donToiThieu; }
+    public void setDonToiThieu(BigDecimal donToiThieu) { this.donToiThieu = donToiThieu; }
 
-    public void setApDungGiamGia(BigDecimal v) {
-        this.apDungGiamGia = v;
-    }
+    public String getMoTa() { return moTa; }
+    public void setMoTa(String moTa) { this.moTa = moTa; }
+
+    public LocalDateTime getNgayBatDau() { return ngayBatDau; }
+    public void setNgayBatDau(LocalDateTime ngayBatDau) { this.ngayBatDau = ngayBatDau; }
+
+    public LocalDateTime getNgayKetThuc() { return ngayKetThuc; }
+    public void setNgayKetThuc(LocalDateTime ngayKetThuc) { this.ngayKetThuc = ngayKetThuc; }
+
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+
+    public boolean isApDungToanBo() { return apDungToanBo; }
+    public void setApDungToanBo(boolean apDungToanBo) { this.apDungToanBo = apDungToanBo; }
+
+    public Set<LoaiSanPham> getLoaiApDung() { return loaiApDung; }
+    public void setLoaiApDung(Set<LoaiSanPham> loaiApDung) { this.loaiApDung = loaiApDung; }
+
+    public Set<SanPham> getSanPhamApDung() { return sanPhamApDung; }
+    public void setSanPhamApDung(Set<SanPham> sanPhamApDung) { this.sanPhamApDung = sanPhamApDung; }
 }
