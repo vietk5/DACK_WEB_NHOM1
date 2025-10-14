@@ -90,6 +90,21 @@
 
       <!-- Right -->
       <ul class="navbar-nav align-items-lg-center">
+        <!-- Compare -->
+        <li class="nav-item me-2">
+          <a class="nav-link position-relative d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/compare">
+            <i class="bi bi-arrow-left-right" style="font-size: 1.2rem;"></i>
+            <span class="d-none d-lg-inline">So sánh</span>
+            <c:if test="${not empty sessionScope.compareCount and sessionScope.compareCount > 0}">
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info" 
+                    style="font-size: 0.7rem; margin-left: -10px;">
+                ${sessionScope.compareCount}
+                <span class="visually-hidden">sản phẩm so sánh</span>
+              </span>
+            </c:if>
+          </a>
+        </li>
+
         <!-- Cart -->
         <li class="nav-item me-2">
           <a class="nav-link position-relative d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/cart">
