@@ -1,6 +1,8 @@
 com\demo\repo\NewsItem.class
 com\demo\model\cs\PhieuPhanHoi.class
+com\demo\model\session\PendingOrder.class
 com\demo\controller\RegisterServlet.class
+com\demo\util\TransactionTracker.class
 com\demo\enums\LoaiThanhVien.class
 com\demo\model\order\ChiTietDonHang.class
 com\demo\controller\OrdersServlet.class
@@ -53,9 +55,11 @@ com\demo\model\SanPham.class
 com\demo\model\DiaChi.class
 com\demo\persistence\AdminDAO.class
 com\demo\model\LoaiSanPham.class
+com\demo\util\VNPayConfig.class
 com\demo\controller\AutocompleteServlet.class
 com\demo\enums\LoaiGiamGia.class
 com\demo\model\TokenForgetPassword.class
+com\demo\controller\VNPayReturnServlet.class
 com\demo\model\PhieuGiamGia.class
 com\demo\model\order\ChiTietDonHangKey.class
 com\demo\model\KhachHang.class

@@ -4,4 +4,6 @@
  */
 package com.demo.enums;
 
-public enum TrangThaiDonHang { MOI, DANG_XU_LY, DANG_GIAO, HOAN_TAT, DA_HUY, TRA_HANG }
+public enum TrangThaiDonHang {
+    MOI, DANG_XU_LY, DANG_GIAO, HOAN_TAT, DA_HUY, TRA_HANG, DA_THANH_TOAN
+}
