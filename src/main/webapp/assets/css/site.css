@@ -532,3 +532,143 @@ footer.site-footer { margin-top: auto; }
 .alert-popup.show {
   right: 20px;
 }
+
+
+.update-quantity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 5px 10px;
+  width: fit-content;
+  margin: auto;
+}
+
+.quantity-form {
+  margin: 0;
+}
+
+.btn-qty {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  background: #222;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-qty:hover {
+  background: #444;
+  border-color: #888;
+  transform: scale(1.05);
+}
+
+.quantity-display {
+  display: inline-block;
+  min-width: 40px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  user-select: none;
+}
+
+/* ==== CUSTOM CART ACTION ROW ==== */
+.quantity-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Cột 1: Số lượng */
+.quantity-control {
+  flex: 0 0 25%;          /* chiếm ~25% hàng */
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.quantity-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 4px 6px;
+  height: 42px;                 /* giữ chiều cao cố định */
+  min-width: 140px;             /* đủ rộng cho 3 phần tử */
+  gap: 6px;                     /* khoảng cách đều giữa nút và input */
+}
+
+.quantity-input {
+  width: 45px;                  /* vừa khít giữa 2 nút */
+  height: 36px;
+  text-align: center;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-1);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 36px;            /* giúp text thật sự căn giữa */
+  appearance: textfield;        /* ẩn nút mặc định của input number */
+}
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Giữ style nút nhất quán với ROG theme */
+.btn-qty {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 6px;
+  background: rgba(12,14,18,.8);
+  color: var(--text-1);
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-qty:hover {
+  background: linear-gradient(135deg, var(--acc), var(--acc-2));
+  color: #111;
+  transform: scale(1.05);
+}
+
+/* Cột 2 và 3: nút hành động */
+.action-form {
+  flex: 1; /* chia đều phần còn lại */
+}
+.action-form .btn-rog {
+  height: 45px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* Responsive: khi màn nhỏ, xuống hàng đẹp */
+@media (max-width: 768px) {
+  .quantity-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .quantity-control, .action-form {
+    width: 100%;
+  }
+}
+
