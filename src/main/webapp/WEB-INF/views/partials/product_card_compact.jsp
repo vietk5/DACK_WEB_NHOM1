@@ -43,8 +43,33 @@
         </div>
       </div>
 
+      <!-- Stock Status -->
+      <c:if test="${not empty param.stock}">
+        <div class="stock-status mb-2">
+          <c:choose>
+            <c:when test="${param.stock <= 0}">
+              <span class="badge bg-danger w-100" style="font-size: 0.7rem;">
+                <i class="bi bi-x-circle me-1"></i>Hết hàng
+              </span>
+            </c:when>
+            <c:when test="${param.stock < 10}">
+              <span class="badge bg-warning text-dark w-100" style="font-size: 0.7rem;">
+                <i class="bi bi-exclamation-triangle me-1"></i>Còn ${param.stock}
+              </span>
+            </c:when>
+            <c:otherwise>
+              <span class="badge bg-success w-100" style="font-size: 0.7rem;">
+                <i class="bi bi-check-circle me-1"></i>Còn hàng
+              </span>
+            </c:otherwise>
+          </c:choose>
+        </div>
+      </c:if>
+
       <div class="actions d-grid">
-        <a href="#" class="btn btn-rog btn-sm">Thêm vào giỏ</a>
+        <a href="#" class="btn btn-rog btn-sm" ${not empty param.stock && param.stock <= 0 ? 'disabled' : ''}>
+          ${not empty param.stock && param.stock <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
+        </a>
       </div>
     </div>
   </div>

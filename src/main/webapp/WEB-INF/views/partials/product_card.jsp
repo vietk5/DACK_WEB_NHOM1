@@ -46,14 +46,37 @@
       </div>
     </div>
 
+    <!-- Stock Status -->
+    <c:if test="${not empty param.stock}">
+      <div class="stock-status mb-2">
+        <c:choose>
+          <c:when test="${param.stock <= 0}">
+            <span class="badge bg-danger">
+              <i class="bi bi-x-circle me-1"></i>Hết hàng
+            </span>
+          </c:when>
+          <c:when test="${param.stock < 10}">
+            <span class="badge bg-warning text-dark">
+              <i class="bi bi-exclamation-triangle me-1"></i>Chỉ còn ${param.stock} sản phẩm
+            </span>
+          </c:when>
+          <c:otherwise>
+            <span class="badge bg-success">
+              <i class="bi bi-check-circle me-1"></i>Còn hàng (${param.stock})
+            </span>
+          </c:otherwise>
+        </c:choose>
+      </div>
+    </c:if>
+
     <!-- Actions -->
     <div class="mt-auto d-grid gap-2 product-foot">
       <form method="post" action="${cp}/cart" class="mb-0">
         <input type="hidden" name="action" value="add">
         <input type="hidden" name="productId" value="${param.id}">
         <input type="hidden" name="qty" value="1">
-        <button type="submit" class="btn btn-sm btn-rog w-100">
-          <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
+        <button type="submit" class="btn btn-sm btn-rog w-100" ${not empty param.stock && param.stock <= 0 ? 'disabled' : ''}>
+          <i class="bi bi-cart-plus me-1"></i>${not empty param.stock && param.stock <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
         </button>
       </form>
       <a class="btn btn-sm btn-outline-light-subtle" 
