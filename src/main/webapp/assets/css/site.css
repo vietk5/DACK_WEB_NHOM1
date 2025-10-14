@@ -457,62 +457,78 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 main.flex-fill { flex: 1 0 auto; }
 footer.site-footer { margin-top: auto; }
 
-/* ========== FLASH SALE / GIẢM SÂU 10 PHÚT ========== */
-@keyframes flash-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-@keyframes countdown-glow {
-  0%, 100% { 
-    background-color: #000; 
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), 0 0 40px rgba(0, 255, 0, 0.3); 
-  }
-  50% { 
-    background-color: #0a0a0a; 
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), 0 0 60px rgba(0, 255, 0, 0.5); 
-  }
-}
-
-#dealsCountdown {
-  animation: countdown-glow 1.5s ease-in-out infinite;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 2px;
-  font-weight: 900 !important;
-  border: 3px solid #00ff00 !important;
-  padding: 10px 20px !important;
-  border-radius: 8px !important;
-  min-width: 150px;
-  text-align: center;
-  display: inline-block;
-}
-
-#hot-deals .badge.bg-warning {
-  animation: flash-pulse 1.5s ease-in-out infinite;
-}
-
-#hot-deals .card {
-  position: relative;
+/* ADMIN: PRODUCTS TABLE CSS  */
+.table.table-dark.table-bordered {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #444;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
   overflow: hidden;
 }
 
-#hot-deals .card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 70%
-  );
-  animation: shine 3s ease-in-out infinite;
+/* Header: gradient, chữ trắng, căn giữa, không xuống dòng */
+.table.table-dark.table-bordered thead th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: 1px solid #444;
+  text-align: center;
+  white-space: nowrap;
+  padding: 0.75rem;
+  font-weight: 600;
 }
 
-@keyframes shine {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+/* Body cells: viền, padding hợp lý, giữ 1 dòng, canh giữa dọc */
+.table.table-dark.table-bordered tbody td {
+  border: 1px solid #444;
+  padding: 0.6rem 0.75rem;
+  color: var(--text-1);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Hover hàng: nhấn nhẹ với màu đồng bộ header */
+.table.table-dark.table-bordered tbody tr:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+/* Cột thao tác gọn + không wrap */
+.table td:last-child,
+.table th:last-child {
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Nút trong ô thao tác: khoảng cách nhỏ gọn */
+.table td .btn {
+  margin: 0 2px;
+}
+
+/* Cho phép cuộn ngang khi quá rộng */
+.table-responsive {
+  overflow-x: auto;
+}
+
+
+/* Thông báo xóa */
+.alert-popup {
+  position: fixed;
+  top: 20px;
+  right: -400px; /* ẩn ban đầu */
+  z-index: 9999;
+  background-color: #28a745;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: right 0.4s ease;
+}
+
+.alert-popup.show {
+  right: 20px;
 }
