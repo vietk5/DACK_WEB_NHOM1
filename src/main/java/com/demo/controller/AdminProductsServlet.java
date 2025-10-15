@@ -41,7 +41,7 @@ public class AdminProductsServlet extends HttpServlet {
           .setParameter("kw", q)
           .getSingleResult();
 
-      // dùng fetch join để tránh Lazy ở JSP
+      // SẮP XẾP MỚI NHẤT TRƯỚC (ID GIẢM DẦN)
       List<SanPham> items = em.createQuery(
           "select distinct p from SanPham p " +
           "left join fetch p.thuongHieu th " +
@@ -50,7 +50,7 @@ public class AdminProductsServlet extends HttpServlet {
           "   or lower(p.tenSanPham) like concat('%',:kw,'%') " +
           "   or lower(th.tenThuongHieu) like concat('%',:kw,'%') " +
           "   or lower(lo.tenLoai) like concat('%',:kw,'%') " +
-          "order by p.ngayCapPhat desc", SanPham.class)
+          "order by p.id desc", SanPham.class)
           .setParameter("kw", q)
           .setFirstResult(offset)
           .setMaxResults(size)
@@ -61,7 +61,7 @@ public class AdminProductsServlet extends HttpServlet {
       req.setAttribute("page", page);
       req.setAttribute("size", size);
       req.setAttribute("total", total);
-      req.setAttribute("offset", offset); // để tính STT
+      req.setAttribute("offset", offset); // JSP dùng offset + index + 1 để render STT
 
       req.getRequestDispatcher("/WEB-INF/views/admin/products.jsp").forward(req, resp);
     } finally {
