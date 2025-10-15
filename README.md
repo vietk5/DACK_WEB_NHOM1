@@ -247,6 +247,511 @@ Chứa các enum của hệ thống.
 - PaymentMethod: COD, BANK_TRANSFER, E_WALLET
 - MembershipTier: SILVER, GOLD, DIAMOND
 
+## 🎨 **VIEW STRUCTURE (JSP Files)**
+
+### **1. Layout Templates**
+```
+webapp/WEB-INF/views/
+├── layout_header.jspf          # Header chung cho user
+├── layout_footer.jspf          # Footer chung cho user
+├── layout_admin_header.jspf    # Header cho admin panel
+└── layout_admin_footer.jspf    # Footer cho admin panel
+```
+
+### **2. User Interface Pages**
+```
+webapp/WEB-INF/views/
+├── home.jsp              # Trang chủ
+├── login.jsp            # Đăng nhập
+├── register.jsp         # Đăng ký
+├── forgot-password.jsp  # Quên mật khẩu
+├── reset-password.jsp   # Đặt lại mật khẩu
+├── profile.jsp          # Trang cá nhân
+└── search.jsp           # Trang kết quả tìm kiếm
+```
+
+### **3. Product Related Pages**
+```
+webapp/WEB-INF/views/
+├── product_detail.jsp   # Chi tiết sản phẩm
+├── category.jsp         # Danh sách theo danh mục
+├── compare.jsp          # So sánh sản phẩm
+└── promotions.jsp       # Trang khuyến mãi
+```
+
+### **4. Shopping Related Pages**
+```
+webapp/WEB-INF/views/
+├── cart.jsp             # Giỏ hàng
+├── checkout.jsp         # Thanh toán
+├── payment_result.jsp   # Kết quả thanh toán
+├── orders.jsp           # Danh sách đơn hàng
+└── order_detail.jsp     # Chi tiết đơn hàng
+```
+
+### **5. Support Pages**
+```
+webapp/WEB-INF/views/
+├── chatbot.jsp          # Chatbot hỗ trợ
+├── faq.jsp              # Câu hỏi thường gặp
+└── contact.jsp          # Liên hệ
+```
+
+### **6. Admin Panel Pages**
+```
+webapp/WEB-INF/views/admin/
+├── dashboard.jsp            # Trang tổng quan
+├── products/
+│   ├── list.jsp            # Danh sách sản phẩm
+│   ├── add.jsp             # Thêm sản phẩm
+│   └── edit.jsp            # Sửa sản phẩm
+├── orders/
+│   ├── list.jsp            # Danh sách đơn hàng
+│   └── detail.jsp          # Chi tiết đơn hàng
+├── users/
+│   ├── list.jsp            # Danh sách người dùng
+│   └── edit.jsp            # Sửa thông tin người dùng
+├── promotions/
+│   ├── list.jsp            # Danh sách khuyến mãi
+│   └── edit.jsp            # Quản lý khuyến mãi
+└── reports/
+    ├── sales.jsp           # Báo cáo doanh số
+    ├── inventory.jsp       # Báo cáo kho
+    └── customers.jsp       # Báo cáo khách hàng
+```
+
+### **7. Partial Views**
+```
+webapp/WEB-INF/views/partials/
+├── product_card.jsp        # Card hiển thị sản phẩm
+├── pagination.jsp          # Phân trang
+├── breadcrumb.jsp          # Breadcrumb navigation
+├── filter_sidebar.jsp      # Sidebar lọc sản phẩm
+└── notification.jsp        # Thông báo
+```
+
+### **8. Error Pages**
+```
+webapp/WEB-INF/views/errors/
+├── 404.jsp                # Trang không tồn tại
+├── 403.jsp                # Không có quyền truy cập
+├── 500.jsp                # Lỗi server
+└── maintenance.jsp        # Bảo trì
+```
+
+### **9. Email Templates**
+```
+webapp/WEB-INF/views/emails/
+├── welcome.jsp            # Email chào mừng
+├── order_confirmation.jsp # Xác nhận đơn hàng
+├── shipping_update.jsp    # Cập nhật vận chuyển
+├── reset_password.jsp     # Đặt lại mật khẩu
+└── newsletter.jsp         # Template newsletter
+```
+
+### **10. Asset Structure**
+```
+webapp/assets/
+├── css/
+│   ├── site.css          # CSS chung
+│   ├── admin.css         # CSS cho admin panel
+│   └── responsive.css    # CSS responsive
+├── js/
+│   ├── site.js           # JavaScript chung
+│   ├── cart.js           # Logic giỏ hàng
+│   ├── validation.js     # Validate form
+│   └── admin.js          # JS cho admin panel
+└── img/
+    ├── logo/             # Logo website
+    ├── banners/          # Ảnh banner
+    ├── products/         # Ảnh sản phẩm
+    └── icons/            # Icon và svg
+```
+
+## 💾 **DATABASE CONFIGURATION**
+
+### **1. Database Information**
+```properties
+Database Type: PostgreSQL
+Version: 14.0 or higher
+Character Set: UTF-8
+Collation: en_US.UTF-8
+```
+
+### **2. JPA Configuration (persistence.xml)**
+```xml
+<persistence-unit name="ElectroMartPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    
+    <!-- Entity Classes -->
+    <class>com.demo.model.User</class>
+    <class>com.demo.model.Product</class>
+    <class>com.demo.model.Order</class>
+    <!-- Other entity classes... -->
+
+    <properties>
+        <!-- Database Connection -->
+        <property name="jakarta.persistence.jdbc.url" 
+                  value="jdbc:postgresql://[host]:[port]/electromart_db"/>
+        <property name="jakarta.persistence.jdbc.user" value="your_username"/>
+        <property name="jakarta.persistence.jdbc.password" value="your_password"/>
+        <property name="jakarta.persistence.jdbc.driver" 
+                  value="org.postgresql.Driver"/>
+
+        <!-- EclipseLink Properties -->
+        <property name="eclipselink.logging.level" value="FINE"/>
+        <property name="eclipselink.logging.parameters" value="true"/>
+        <property name="eclipselink.cache.shared.default" value="false"/>
+        <property name="eclipselink.weaving" value="static"/>
+    </properties>
+</persistence-unit>
+```
+
+### **3. Database Schema**
+
+#### **Core Tables**
+```sql
+-- Users & Authentication
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Products
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    sku VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    price DECIMAL(15,2) NOT NULL,
+    category_id INT REFERENCES categories(id),
+    brand_id INT REFERENCES brands(id),
+    stock_quantity INT DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'ACTIVE'
+);
+
+-- Categories
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    parent_id INT REFERENCES categories(id),
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT
+);
+```
+
+#### **Order Management**
+```sql
+-- Orders
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    total_amount DECIMAL(15,2) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    payment_method VARCHAR(50),
+    shipping_address_id INT REFERENCES addresses(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Order Items
+CREATE TABLE order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders(id),
+    product_id INT REFERENCES products(id),
+    quantity INT NOT NULL,
+    price_at_time DECIMAL(15,2) NOT NULL,
+    UNIQUE(order_id, product_id)
+);
+```
+
+#### **Customer Management**
+```sql
+-- Customer Profiles
+CREATE TABLE customer_profiles (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    phone VARCHAR(20),
+    membership_tier VARCHAR(20),
+    points INT DEFAULT 0
+);
+
+-- Addresses
+CREATE TABLE addresses (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    address_line1 VARCHAR(255) NOT NULL,
+    address_line2 VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20),
+    is_default BOOLEAN DEFAULT false
+);
+```
+
+#### **Inventory Management**
+```sql
+-- Inventory Transactions
+CREATE TABLE inventory_transactions (
+    id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(id),
+    quantity INT NOT NULL,
+    type VARCHAR(20) NOT NULL, -- IN/OUT
+    reference_type VARCHAR(50), -- ORDER/RESTOCK
+    reference_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Suppliers
+CREATE TABLE suppliers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    contact_person VARCHAR(100),
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    address TEXT
+);
+```
+
+#### **Promotion & Marketing**
+```sql
+-- Promotions
+CREATE TABLE promotions (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    discount_value DECIMAL(15,2) NOT NULL,
+    minimum_purchase DECIMAL(15,2),
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    usage_limit INT,
+    used_count INT DEFAULT 0
+);
+
+-- Product Reviews
+CREATE TABLE product_reviews (
+    id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(id),
+    user_id INT REFERENCES users(id),
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### **4. Database Indexes**
+```sql
+-- Performance Indexes
+CREATE INDEX idx_products_category ON products(category_id);
+CREATE INDEX idx_products_brand ON products(brand_id);
+CREATE INDEX idx_orders_user ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_order_items_order ON order_items(order_id);
+CREATE INDEX idx_order_items_product ON order_items(product_id);
+CREATE INDEX idx_inventory_product ON inventory_transactions(product_id);
+CREATE INDEX idx_promotions_code ON promotions(code);
+CREATE INDEX idx_product_reviews_product ON product_reviews(product_id);
+```
+
+### **5. Database Views**
+```sql
+-- Product Details View
+CREATE VIEW vw_product_details AS
+SELECT 
+    p.id, p.name, p.price, p.description,
+    c.name as category_name,
+    b.name as brand_name,
+    COALESCE(r.avg_rating, 0) as average_rating,
+    COALESCE(r.review_count, 0) as review_count
+FROM products p
+LEFT JOIN categories c ON p.category_id = c.id
+LEFT JOIN brands b ON p.brand_id = b.id
+LEFT JOIN (
+    SELECT product_id, 
+           AVG(rating) as avg_rating,
+           COUNT(*) as review_count
+    FROM product_reviews
+    GROUP BY product_id
+) r ON p.id = r.product_id;
+
+-- Order Summary View
+CREATE VIEW vw_order_summary AS
+SELECT 
+    o.id, o.created_at,
+    u.username,
+    COUNT(oi.id) as total_items,
+    o.total_amount,
+    o.status
+FROM orders o
+JOIN users u ON o.user_id = u.id
+JOIN order_items oi ON o.id = oi.order_id
+GROUP BY o.id, u.username;
+```
+
+### **6. Stored Procedures**
+```sql
+-- Update Product Stock
+CREATE OR REPLACE PROCEDURE update_product_stock(
+    p_product_id INT,
+    p_quantity INT,
+    p_type VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF p_type = 'IN' THEN
+        UPDATE products 
+        SET stock_quantity = stock_quantity + p_quantity
+        WHERE id = p_product_id;
+    ELSIF p_type = 'OUT' THEN
+        UPDATE products 
+        SET stock_quantity = stock_quantity - p_quantity
+        WHERE id = p_product_id;
+    END IF;
+    
+    INSERT INTO inventory_transactions (
+        product_id, quantity, type
+    ) VALUES (
+        p_product_id, p_quantity, p_type
+    );
+    
+    COMMIT;
+END;
+$$;
+
+-- Calculate Order Total
+CREATE OR REPLACE FUNCTION calculate_order_total(p_order_id INT)
+RETURNS DECIMAL AS $$
+BEGIN
+    RETURN (
+        SELECT SUM(quantity * price_at_time)
+        FROM order_items
+        WHERE order_id = p_order_id
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+## 🔄 **CORE WORKFLOWS**
+
+### **1. User Registration & Authentication Flow**
+```mermaid
+graph TD
+    A[Visitor] -->|Click Register| B[Registration Form]
+    B -->|Submit Form| C{Validate Input}
+    C -->|Invalid| B
+    C -->|Valid| D[Create User Account]
+    D -->|Send Email| E[Verification Email]
+    E -->|Click Link| F[Verify Account]
+    F -->|Success| G[Login Page]
+    G -->|Enter Credentials| H{Validate Login}
+    H -->|Invalid| G
+    H -->|Valid| I[User Dashboard]
+```
+
+### **2. Shopping & Checkout Process**
+```mermaid
+graph TD
+    A[Browse Products] -->|Add to Cart| B[Shopping Cart]
+    B -->|Update Quantity| B
+    B -->|Remove Item| B
+    B -->|Proceed to Checkout| C[Checkout Page]
+    C -->|Enter Shipping Info| D[Choose Payment Method]
+    D -->|COD| E[Place Order]
+    D -->|Bank Transfer| F[Payment Gateway]
+    F -->|Payment Success| E
+    F -->|Payment Failed| D
+    E -->|Create Order| G[Order Confirmation]
+    G -->|Send Email| H[Order Notification]
+```
+
+### **3. Order Processing Workflow**
+```mermaid
+graph TD
+    A[New Order] -->|Staff Review| B{Check Stock}
+    B -->|In Stock| C[Process Order]
+    B -->|Out of Stock| D[Contact Supplier]
+    D -->|Restock| C
+    C -->|Pack Items| E[Ready for Shipping]
+    E -->|Assign Shipper| F[In Transit]
+    F -->|Delivery Success| G[Complete]
+    F -->|Delivery Failed| H[Return to Warehouse]
+    G -->|After 7 days| I[Allow Review]
+```
+
+### **4. Customer Support Flow**
+```mermaid
+graph TD
+    A[Customer Issue] -->|Chatbot| B{Can Resolve?}
+    B -->|Yes| C[Provide Solution]
+    B -->|No| D[Create Support Ticket]
+    D -->|Assign Staff| E[Staff Review]
+    E -->|Need Info| F[Request Customer]
+    F -->|Customer Reply| E
+    E -->|Can Resolve| G[Propose Solution]
+    G -->|Customer Accept| H[Close Ticket]
+    G -->|Customer Reject| E
+```
+
+### **5. Inventory Management Flow**
+```mermaid
+graph TD
+    A[Monitor Stock] -->|Low Stock| B[Generate PO]
+    B -->|Send to Supplier| C[Wait Response]
+    C -->|Confirm Order| D[Process Payment]
+    D -->|Payment Complete| E[Wait Delivery]
+    E -->|Receive Items| F[Quality Check]
+    F -->|Pass| G[Update Inventory]
+    F -->|Fail| H[Return to Supplier]
+    G -->|Stock Updated| I[Update Product Status]
+```
+
+### **6. Admin Dashboard Workflow**
+```mermaid
+graph TD
+    A[Admin Login] -->|Success| B[Dashboard Overview]
+    B -->|View Reports| C[Generate Reports]
+    C -->|Daily Sales| D[Sales Analysis]
+    C -->|Inventory| E[Stock Status]
+    C -->|Customer| F[Customer Analysis]
+    B -->|Manage Orders| G[Order Management]
+    B -->|Manage Products| H[Product Management]
+    B -->|Manage Users| I[User Management]
+```
+
+### **7. Marketing Campaign Flow**
+```mermaid
+graph TD
+    A[Plan Campaign] -->|Create| B[Set Parameters]
+    B -->|Configure| C[Set Products]
+    C -->|Set Timing| D[Schedule Campaign]
+    D -->|Launch| E[Active Campaign]
+    E -->|Monitor| F{Performance Check}
+    F -->|Good| G[Continue]
+    F -->|Poor| H[Adjust Parameters]
+    H -->|Update| E
+    G -->|End Date| I[Campaign Report]
+```
+
+### **8. Payment Processing Flow**
+```mermaid
+graph TD
+    A[Select Payment] -->|COD| B[Verify Address]
+    A -->|Bank Transfer| C[Generate Details]
+    A -->|E-Wallet| D[Connect Gateway]
+    B -->|Valid| E[Create Order]
+    C -->|Payment Received| E
+    D -->|Payment Success| E
+    E -->|Process| F[Order Created]
+    F -->|Send| G[Email Confirmation]
+    D -->|Payment Failed| H[Show Error]
+```
+
 ---
 
 ## 🚀 **Hướng dẫn cài đặt và chạy dự án**
@@ -324,125 +829,6 @@ Nếu bạn tìm thấy lỗi hoặc có đề xuất cải tiến, vui lòng:
 
 ## **5. FILTER PACKAGE (com.electromart.filter)**
 <img width="721" height="130" alt="image" src="https://github.com/user-attachments/assets/9eb7c394-be9e-4e54-a64c-f30536c75c54" />
-
----
-
-## 🌐 **VIEW (JSP) STRUCTURE**
-### **Public Pages:**
-+	index.jsp - Landing page
-+	login.jsp - Login page
-+	checkout.jsp - Checkout page
-+	order.jsp, orders.jsp, order_detail.jsp - Order pages
-+	promotions.jsp - Promotions page
-### **Protected Views (/WEB-INF/views/)**
-### **User Views:**
-File	Chức năng
-home.jsp	Trang chủ
-login.jsp	Đăng nhập
-register.jsp	Đăng ký
-profile.jsp	Thông tin cá nhân
-cart.jsp	Giỏ hàng
-checkout.jsp	Thanh toán
-orders.jsp	Lịch sử đơn hàng
-product_detail.jsp	Chi tiết sản phẩm
-search.jsp	Tìm kiếm
-receiving.jsp	Xác nhận nhận hàng
-forgot-password.jsp	Quên mật khẩu
-reset-password.jsp	Reset mật khẩu
-reset-forgot-password.jsp	Reset (từ email)
-### **Admin Views (admin/)**
-File	Chức năng
-dashboard.jsp	Dashboard admin
-products.jsp	Quản lý sản phẩm
-orders.jsp	Quản lý đơn hàng
-customers.jsp	Quản lý khách hàng
-revenue.jsp	Báo cáo doanh thu
-### **Shared Components:**
-+	layout_header.jspf - Header chung
-+	layout_footer.jspf - Footer chung
-+	partials/product_card.jsp - Card sản phẩm
-+	partials/product_card_compact.jsp - Card compact
-
----
-
-## 🗄️ **DATABASE CONFIGURATION**
-**persistence.xml:**
-- Database: PostgreSQL on Render Cloud
-- URL: jdbc:postgresql://dpg-d3hscdb3fgac73a2joag-a.oregon-postgres.render.com:5432/dack_web_nhom1
-- Driver: org.postgresql.Driver
-- JPA Provider: EclipseLink 4.0.2
-- Schema Generation: UPDATE (tự động cập nhật)
-
----
-
-## 🎨 **ASSETS STRUCTURE**
-### **CSS:**
-+	site.css - CSS chính
-+	receiving-style.css - CSS cho trang nhận hàng
-### **JavaScript:**
-+	site.js - JS chính
-### **Images:**
-+	products/ - Hình sản phẩm (26 files .jpg)
-+	uploads/ - Upload images
-+	Hero images, placeholders, logos
-
----
-
-## 🔄 WORKFLOW CHÍNH
-### **1. Quy trình mua hàng:**
-Home → Browse Products → Product Detail → Add to Cart 
-→ View Cart → Checkout → Create Order → Payment 
-→ Order Confirmation → Receiving
-### **2. Quy trình quản lý (Admin):**
-Admin Login → Dashboard → Manage (Products/Orders/Customers) 
-→ Update Status → View Reports
-### **3. Xử lý đơn hàng:**
-MỚI → ĐANG XỬ LÝ → ĐANG GIAO → HOÀN TẤT
-       ↓
-     DA_HUY / TRẢ HÀNG
-   
----
-
-## 🔐**AUTHENTICATION & AUTHORIZATION**
-+	Session-based authentication
-+	Lưu user trong SessionUser object
-+	Password: Plain text (⚠️ không hash - cần cải thiện bảo mật)
-+	Token reset password có thời hạn
-+	Filter kiểm tra encoding UTF-8
-
----
-
-## 📊 **KEY FEATURES**
-✅ Đã implement:
-+	CRUD sản phẩm, đơn hàng, khách hàng
-+	Shopping cart (session-based)
-+	Checkout & payment
-+	Order tracking
-+	Search & filter
-+	Admin dashboard
-+	Email reset password
-+	Pagination
-⚠️ Cần cải thiện:
-+	Bảo mật mật khẩu (hash password)
-+	Input validation
-+	Error handling
-+	Logging system
-+	Unit tests
-
----
-
-## 📞 **Support & Contact**
-
-### **Team**
-- **Leader**: [Name] - [Email]
-- **Member**: [Name] - [Email]
-- **Member**: [Name] - [Email]
-- **Member**: [Name] - [Email]
-- **Member**: [Name] - [Email]
-- **Member**: [Name] - [Email]
-- **Member**: [Name] - [Email]
-- **Member**: [Name] - [Email]
-- **Member**: [Name] - [Email]
 
 ---
 
