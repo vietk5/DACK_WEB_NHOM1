@@ -16,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -79,12 +80,6 @@ public class CheckoutServlet extends HttpServlet {
         SessionUser user = (SessionUser) session.getAttribute("user");
         if (user == null || user.isAdmin()) {
             resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
-
-        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
-        if (cart == null || cart.isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/cart");
             return;
         }
         // Kiểm tra action từ form
