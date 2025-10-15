@@ -5,6 +5,7 @@ com\demo\controller\RegisterServlet.class
 com\demo\util\TransactionTracker.class
 com\demo\enums\LoaiThanhVien.class
 com\demo\model\order\ChiTietDonHang.class
+com\demo\persistence\GioHangDAO.class
 com\demo\controller\OrdersServlet.class
 com\demo\model\kho\ChiTietPhieuNhap.class
 com\demo\persistence\LoaiSanPhamDAO.class
@@ -35,6 +36,7 @@ com\demo\model\AuditEntity.class
 com\demo\controller\CheckoutService$1.class
 com\demo\persistence\DonHangDAO.class
 com\demo\model\kho\ChiTietPhieuXuat.class
+com\demo\controller\AdminEditProductServlet.class
 com\demo\model\database\SanPhamDB.class
 com\demo\controller\AdminProductsServlet.class
 com\demo\model\database\ThuongHieuDB.class
@@ -61,6 +63,7 @@ com\demo\model\LoaiSanPham.class
 com\demo\util\VNPayConfig.class
 com\demo\controller\AutocompleteServlet.class
 com\demo\enums\LoaiGiamGia.class
+com\demo\model\GioHangItemEntity.class
 com\demo\model\TokenForgetPassword.class
 com\demo\controller\VNPayReturnServlet.class
 com\demo\model\PhieuGiamGia.class

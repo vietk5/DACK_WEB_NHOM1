@@ -19,8 +19,8 @@ public class CheckoutService {
     // CẤU HÌNH EMAIL
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
-    private static final String EMAIL_USERNAME = "minhkhangvoz25@gmail.com";
-    private static final String EMAIL_PASSWORD = "fvdd ptdp fcnu zyty";
+    private static final String EMAIL_USERNAME = "shoplinhkien161025@gmail.com";
+    private static final String EMAIL_PASSWORD = "avan kxwi pkjd mkrb";
     private static final String FROM_NAME = "ElectroMart";
 
     /**

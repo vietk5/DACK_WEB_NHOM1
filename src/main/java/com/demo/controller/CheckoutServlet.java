@@ -32,14 +32,44 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        doPost(req, resp);
+        HttpSession session = req.getSession();
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        if (user == null || user.isAdmin()) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
+        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        if (cart == null || cart.isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/cart");
+            return;
+        }
+
+        // TỰ ĐỘNG ĐIỀN THÔNG TIN TỪ PROFILE
+        try {
+            KhachHang khachHang = khachHangDAO.find(user.getId());
+            if (khachHang != null) {
+                // Set thông tin vào request để hiển thị trên form
+                req.setAttribute("fullName", khachHang.getTen());
+                req.setAttribute("phone", khachHang.getSdt());
+                req.setAttribute("email", khachHang.getEmail());
+                req.setAttribute("address", khachHang.getDiaChi());
+
+                System.out.println("Auto-filled profile for user: " + khachHang.getEmail());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Nếu lỗi thì vẫn cho phép user nhập thủ công
+        }
+
+        req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        
+
         req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         SessionUser user = (SessionUser) session.getAttribute("user");
@@ -48,7 +78,7 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
         String action = req.getParameter("action");
-        
+
         if ("buy_now".equals(action)) {
             Long productId = Long.valueOf(req.getParameter("productId").trim());
             SanPham product = sanPhamDAO.find(productId);
@@ -65,7 +95,7 @@ public class CheckoutServlet extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
             return;
         }
-        
+
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
         List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
         if (buyNowCart != null) {
@@ -97,7 +127,7 @@ public class CheckoutServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/checkout");
             return;
         }
-        
+
         if ("applyVoucher".equals(action)) {
             req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
             return;
@@ -131,7 +161,9 @@ public class CheckoutServlet extends HttpServlet {
 
         List<GioHangItem> selectedCart = (List<GioHangItem>) session.getAttribute("selectedCart");
         List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (buyNowCart != null) selectedCart = buyNowCart;
+        if (buyNowCart != null) {
+            selectedCart = buyNowCart;
+        }
         if (selectedCart == null || selectedCart.isEmpty()) {
             selectedCart = (List<GioHangItem>) session.getAttribute("cart");
         }
@@ -214,7 +246,9 @@ public class CheckoutServlet extends HttpServlet {
 
         List<GioHangItem> selectedCart = (List<GioHangItem>) session.getAttribute("selectedCart");
         List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (buyNowCart != null) selectedCart = buyNowCart;
+        if (buyNowCart != null) {
+            selectedCart = buyNowCart;
+        }
         if (selectedCart == null || selectedCart.isEmpty()) {
             selectedCart = (List<GioHangItem>) session.getAttribute("cart");
         }

@@ -1,5 +1,6 @@
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\controller\CheckoutService.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\controller\LogoutServlet.java
+C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\GioHangItemEntity.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\AuditEntity.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\SanPham.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\util\TransactionTracker.java
@@ -65,6 +66,7 @@ C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\controller
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\controller\SearchServlet.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\controller\AdminCustomersServlet.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\PhieuThanhToan.java
+C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\controller\AdminEditProductServlet.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\controller\AdminLogoutServlet.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\session\SessionUser.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\persistence\DonHangDAO.java
@@ -76,3 +78,4 @@ C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\kho\
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\repo\DemoRepo.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\PhieuGiamGia.java
 C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\model\PhuongThucThanhToan.java
+C:\Users\MKhang\Desktop\DoAnWeb\DACK_WEB_NHOM1\src\main\java\com\demo\persistence\GioHangDAO.java
