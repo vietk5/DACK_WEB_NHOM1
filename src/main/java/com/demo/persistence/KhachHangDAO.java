@@ -34,4 +34,15 @@ public class KhachHangDAO extends GenericDAO<KhachHang, Long> {
             return k;
         } finally { em.close(); }
     }
+    public KhachHang findById(Long id) {
+    EntityManager em = JPAUtil.em();
+    try {
+        return em.find(KhachHang.class, id);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+    } finally {
+        em.close();
+    }
+}
 }
