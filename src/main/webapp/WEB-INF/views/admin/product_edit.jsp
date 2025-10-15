@@ -25,19 +25,32 @@
         <input type="hidden" name="size" value="${size}"/>
 
         <div class="row g-4">
+          <!-- Cột trái: Ảnh -->
           <div class="col-lg-4">
+            <!-- Ảnh hiện tại (ưu tiên {id}.jpg, fallback p{id}.jpg, cuối cùng là no-image.png) -->
             <div class="mb-3">
               <label class="form-label">Ảnh hiện tại</label>
               <div class="border rounded p-2 bg-black-50 text-center">
-                <!-- Ảnh qua servlet ảnh -->
-                <img src="${pageContext.request.contextPath}/product-image?id=${item.id}"
-                     alt="Ảnh sản phẩm" class="img-fluid rounded">
-                <div class="form-text text-secondary mt-1">
-                  Quy ước: <code>/assets/uploads/products/p{id}.ext</code>
-                </div>
+                <a href="${pageContext.request.contextPath}/assets/img/products/${item.id}.jpg" target="_blank">
+                  <img
+                    id="currentImage"
+                    src="${pageContext.request.contextPath}/assets/img/products/${item.id}.jpg"
+                    alt="Ảnh sản phẩm"
+                    class="img-fluid rounded"
+                    onerror="
+                      if (this.dataset.step !== 'p') {
+                        this.dataset.step='p';
+                        this.src='${pageContext.request.contextPath}/assets/img/products/p${item.id}.jpg';
+                      } else {
+                        this.onerror=null;
+                        this.src='${pageContext.request.contextPath}/assets/img/no-image.png';
+                      }"
+                  />
+                </a>
               </div>
             </div>
 
+            <!-- Chọn ảnh mới -->
             <div class="mb-3">
               <label class="form-label">Chọn ảnh mới (tùy chọn)</label>
               <input type="file" name="hinhAnh" class="form-control" accept="image/*">
@@ -45,6 +58,7 @@
             </div>
           </div>
 
+          <!-- Cột phải: Thông tin sản phẩm -->
           <div class="col-lg-8">
             <div class="mb-3">
               <label class="form-label">Tên sản phẩm</label>
@@ -107,5 +121,21 @@
     </div>
   </div>
 </div>
+
+<!-- JS preview ảnh khi chọn file mới -->
+<script>
+  (function () {
+    const input = document.querySelector('input[name="hinhAnh"]');
+    const img   = document.getElementById('currentImage');
+    if (!input || !img) return;
+    input.addEventListener('change', function () {
+      if (this.files && this.files[0]) {
+        const url = URL.createObjectURL(this.files[0]);
+        img.src = url;
+        img.onload = () => URL.revokeObjectURL(url);
+      }
+    });
+  })();
+</script>
 
 <%@ include file="../layout_admin_footer.jspf" %>
