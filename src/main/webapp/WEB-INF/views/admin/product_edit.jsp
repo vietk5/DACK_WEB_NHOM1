@@ -19,15 +19,14 @@
     <div class="card-body">
       <form method="post" enctype="multipart/form-data"
             action="<c:url value='/admin/products/edit'/>">
-        <input type="hidden" name="id" value="${item.id}"/>
-        <input type="hidden" name="q" value="${q}"/>
+        <input type="hidden" name="id"   value="${item.id}"/>
+        <input type="hidden" name="q"    value="${q}"/>
         <input type="hidden" name="page" value="${page}"/>
         <input type="hidden" name="size" value="${size}"/>
 
         <div class="row g-4">
           <!-- Cột trái: Ảnh -->
           <div class="col-lg-4">
-            <!-- Ảnh hiện tại (ưu tiên {id}.jpg, fallback p{id}.jpg, cuối cùng là no-image.png) -->
             <div class="mb-3">
               <label class="form-label">Ảnh hiện tại</label>
               <div class="border rounded p-2 bg-black-50 text-center">
@@ -38,22 +37,24 @@
                     alt="Ảnh sản phẩm"
                     class="img-fluid rounded"
                     onerror="
-                      if (this.dataset.step !== 'p') {
-                        this.dataset.step='p';
-                        this.src='${pageContext.request.contextPath}/assets/img/products/p${item.id}.jpg';
-                      } else {
-                        this.onerror=null;
-                        this.src='${pageContext.request.contextPath}/assets/img/no-image.png';
-                      }"
+                      (function(img){
+                        const base='${pageContext.request.contextPath}/assets/img/products/${item.id}';
+                        const tried = img.dataset.tries ? img.dataset.tries.split(',') : [];
+                        const exts = ['.png','.webp','.jpeg','.gif','.bmp'];
+                        const next = exts.find(e => !tried.includes(e));
+                        if (next) { tried.push(next); img.dataset.tries = tried.join(','); img.src = base + next; }
+                        else if (img.dataset.step!=='p') { img.dataset.step='p'; img.src='${pageContext.request.contextPath}/assets/img/products/p${item.id}.jpg'; }
+                        else { img.onerror=null; img.src='${pageContext.request.contextPath}/assets/img/no-image.png'; }
+                      })(this);
+                    "
                   />
                 </a>
               </div>
             </div>
 
-            <!-- Chọn ảnh mới -->
             <div class="mb-3">
               <label class="form-label">Chọn ảnh mới (tùy chọn)</label>
-              <input type="file" name="hinhAnh" class="form-control" accept="image/*">
+              <input type="file" name="hinhAnh" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp,.bmp">
               <div class="form-text text-secondary">Bỏ qua nếu muốn giữ ảnh cũ.</div>
             </div>
           </div>
@@ -95,12 +96,12 @@
               <div class="col-md-6">
                 <label class="form-label">Giá (VND)</label>
                 <input type="text" name="gia" class="form-control"
-                       value="<fmt:formatNumber value='${item.gia}' type='number' groupingUsed='true'/>"
-                       inputmode="numeric" autocomplete="off">
+                       value="<fmt:formatNumber value='${item.gia}' type='number' groupingUsed='true'/>">
                 <div class="form-text text-secondary">Có thể nhập số có dấu chấm/phẩy, hệ thống sẽ tự lọc.</div>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Tồn kho</label>
+                <!-- CHUẨN HÓA THEO SanPham.java: soLuongTon -->
                 <input type="number" name="soLuongTon" min="0" step="1"
                        class="form-control" value="${item.soLuongTon}">
               </div>
@@ -122,7 +123,7 @@
   </div>
 </div>
 
-<!-- JS preview ảnh khi chọn file mới -->
+<!-- Preview ảnh ngay khi chọn file -->
 <script>
   (function () {
     const input = document.querySelector('input[name="hinhAnh"]');
@@ -131,6 +132,7 @@
     input.addEventListener('change', function () {
       if (this.files && this.files[0]) {
         const url = URL.createObjectURL(this.files[0]);
+        img.dataset.tries = ''; img.dataset.step = '';
         img.src = url;
         img.onload = () => URL.revokeObjectURL(url);
       }
