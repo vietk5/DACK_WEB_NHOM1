@@ -79,6 +79,15 @@
           <i class="bi bi-cart-plus me-1"></i>${not empty param.stock && param.stock <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}
         </button>
       </form>
+      <form method="post" action="${cp}/checkout" class="mb-0">
+        <input type="hidden" name="action" value="buy_now">
+        <input type="hidden" name="productId" value="${param.id}">
+        <input type="hidden" name="qty" value="1">
+        <button class="btn btn-rog w-100" type="submit" ${param.stock <= 0 ? 'disabled' : ''}>
+            <i class="bi bi-cart-plus me-2"></i>
+            ${param.stock > 0 ? 'Mua ngay' : 'Hết hàng'}
+        </button>
+      </form>
       <a class="btn btn-sm btn-outline-light-subtle" 
          href="${cp}/product?id=${param.id}">
         <i class="bi bi-eye me-1"></i>Xem chi tiết
@@ -86,3 +95,4 @@
     </div>
   </div>
 </div>
+
