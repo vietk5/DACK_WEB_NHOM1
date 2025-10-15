@@ -15,7 +15,6 @@ import java.util.Optional;
 
 /**
  * Servlet xử lý yêu cầu đặt lại mật khẩu
- * @author MINHHUNG
  */
 @WebServlet(name = "requestPassword", urlPatterns = {"/requestPassword"})
 public class requestPassword extends HttpServlet {

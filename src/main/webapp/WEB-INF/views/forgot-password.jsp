@@ -13,6 +13,7 @@
             <p class="text-muted">Nhập email để nhận link đặt lại mật khẩu</p>
           </div>
 
+          <!-- Hiển thị lỗi -->
           <c:if test="${not empty error}">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
               <i class="bi bi-exclamation-triangle me-2"></i>${error}
@@ -20,28 +21,16 @@
             </div>
           </c:if>
 
+          <!-- Hiển thị thành công -->
           <c:if test="${not empty success}">
-            <div class="alert alert-success" role="alert">
-              <i class="bi bi-check-circle me-2"></i>
-              <c:choose>
-                <c:when test="${showLink}">
-                  ${success}
-                  <div class="mt-2">
-                    <small class="text-muted">
-                      (Trong môi trường thực tế, link sẽ được gửi qua email)
-                    </small>
-                  </div>
-                </c:when>
-                <c:otherwise>
-                  ${success}
-                </c:otherwise>
-              </c:choose>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="bi bi-check-circle me-2"></i>${success}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
           </c:if>
 
-          <form method="post" action="${pageContext.request.contextPath}/forgot-password">
-            <input type="hidden" name="action" value="sendReset">
-            
+          <!-- Form nhập email -->
+          <form method="post" action="${pageContext.request.contextPath}/requestPassword">
             <div class="mb-3">
               <label class="form-label">Email đã đăng ký</label>
               <input type="email" class="form-control" name="email" 
@@ -58,6 +47,7 @@
               </a>
             </div>
           </form>
+
         </div>
       </div>
     </div>
@@ -65,4 +55,3 @@
 </div>
 
 <%@ include file="layout_footer.jspf" %>
-
