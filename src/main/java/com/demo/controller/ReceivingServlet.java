@@ -172,7 +172,7 @@ public class ReceivingServlet extends HttpServlet {
 
         // Lấy đường dẫn thực tế của thư mục upload
         String root = req.getServletContext().getRealPath("/");
-        Path uploadDir = Paths.get(root, "assets", "img", "uploads");
+        Path uploadDir = Paths.get(root, "assets", "img", "products");
         Files.createDirectories(uploadDir);
 
         Path filePath = uploadDir.resolve(fileName);
@@ -182,6 +182,6 @@ public class ReceivingServlet extends HttpServlet {
         }
 
         // Trả về đường dẫn tương đối (để hiển thị trên web)
-        return "assets/img/uploads/" + fileName;
+        return "assets/img/products/" + fileName;
     }
 }
