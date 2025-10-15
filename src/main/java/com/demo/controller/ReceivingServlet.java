@@ -17,11 +17,11 @@ import java.time.LocalDate;
 @WebServlet(name = "ReceivingServlet", urlPatterns = {"/receiving"})
 @MultipartConfig(
         fileSizeThreshold = 512 * 1024, // 512KB -> đệm
-        maxFileSize = 2 * 1024 * 1024, // 2MB / file
+        maxFileSize = 2 * 1024 * 1024,  // 2MB / file
         maxRequestSize = 10 * 1024 * 1024 // 10MB / request
 )
 public class ReceivingServlet extends HttpServlet {
-    
+
     private final SanPhamDAO sanPhamDAO = new SanPhamDAO();
 
     @Override
@@ -32,35 +32,32 @@ public class ReceivingServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         final String ctx = request.getContextPath();
 
-        // Nền cho JSP nếu forward
+        // Dữ liệu nền cho JSP nếu forward
         request.setAttribute("categories", sanPhamDAO.getAllCategories());
         request.setAttribute("brands", sanPhamDAO.getAllBrands());
         request.setAttribute("categoryBrands", sanPhamDAO.getCategoryBrandsMap());
 
         String action = request.getParameter("action");
-        if (action == null) {
-            action = "";
-        }
+        if (action == null) action = "";
 
         if ("add".equals(action)) {
             String tenSanPham = param(request, "tenSanPham");
             String tenThuongHieu = param(request, "thuongHieu");
             String tenLoaiSanPham = param(request, "loaiSanPham");
             String moTaNgan = param(request, "moTaNgan");
-            String giaStr = param(request, "gia");   // có thể "12.500.000"
+            String giaStr = param(request, "gia");
             int soLuong = parseIntSafe(request.getParameter("soLuong"), 1);
 
-            // Chuẩn hoá giá: giữ số
+            // Chuẩn hoá giá: chỉ giữ chữ số
             String giaDigits = giaStr.replaceAll("[^0-9]", "");
             BigDecimal gia = new BigDecimal(giaDigits.isEmpty() ? "0" : giaDigits);
 
             ThuongHieu thuongHieu = ThuongHieuDB.selectThuongHieuByTen(tenThuongHieu);
             LoaiSanPham loaiSanPham = LoaiSanPhamDB.selectLoaiSanPhamByTen(tenLoaiSanPham);
 
-            // Kiểm tra đã tồn tại?
+            // Kiểm tra đã tồn tại sản phẩm
             SanPham existed = SanPhamDB.selectSanPhamByTen(tenSanPham);
             if (existed != null) {
-                // hỏi xác nhận tăng số lượng
                 response.sendRedirect(ctx + "/receiving?duplicate=true&tenSanPham="
                         + URLEncoder.encode(tenSanPham, "UTF-8"));
                 return;
@@ -77,15 +74,14 @@ public class ReceivingServlet extends HttpServlet {
                 imagePath = saveImageToUploads(request, img, tenSanPham);
             }
 
-            // Tạo mới sản phẩm (soLuongTon = số lượng nhập)
+            // Tạo mới sản phẩm
             SanPham p = new SanPham(tenSanPham, thuongHieu, loaiSanPham, gia, moTaNgan, LocalDate.now(), soLuong);
 
-            // Nếu entity có field/setter hình ảnh thì gán (không bắt buộc)
+            // Nếu entity có field/setter hình ảnh thì gán
             if (imagePath != null) {
                 try {
                     p.getClass().getMethod("setHinhAnh", String.class).invoke(p, imagePath);
                 } catch (Exception ignore) {
-                    // Không có setHinhAnh -> bỏ qua (ảnh vẫn được lưu file)
                 }
             }
 
@@ -100,16 +96,13 @@ public class ReceivingServlet extends HttpServlet {
 
             SanPham sp = SanPhamDB.selectSanPhamByTen(tenSanPham);
             if (sp != null) {
-                // Tăng đúng theo số lượng nhập
-                // Nếu bạn đã có hàm updateSoLuongTonById(id) tăng +1,
-                // hãy thêm overload tăng theo delta; nếu chưa có, sample ở dưới.
                 SanPhamDB.updateSoLuongTonById(sp.getId(), soLuong);
             }
             response.sendRedirect(ctx + "/receiving?update_success=true");
             return;
         }
 
-        // Default
+        // Mặc định
         request.getRequestDispatcher("/WEB-INF/views/receiving.jsp").forward(request, response);
     }
 
@@ -124,7 +117,6 @@ public class ReceivingServlet extends HttpServlet {
         request.setAttribute("brands", sanPhamDAO.getAllBrands());
         request.setAttribute("categoryBrands", sanPhamDAO.getCategoryBrandsMap());
 
-        // Nếu user vào trực tiếp link confirm_update (hiếm), xử lý và redirect
         String action = request.getParameter("action");
         if ("confirm_update".equals(action)) {
             String tenSanPham = param(request, "tenSanPham");
@@ -141,6 +133,8 @@ public class ReceivingServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/receiving.jsp").forward(request, response);
     }
 
+    // ==== HÀM PHỤ ====
+
     private static String param(HttpServletRequest req, String name) {
         String v = req.getParameter(name);
         return v == null ? "" : v.trim();
@@ -155,7 +149,7 @@ public class ReceivingServlet extends HttpServlet {
     }
 
     /**
-     * Lưu ảnh vào assets/img/uploads/, trả về đường dẫn tương đối (để hiển thị)
+     * Lưu ảnh vào thư mục /assets/img/uploads/, trả về đường dẫn tương đối
      */
     private String saveImageToUploads(HttpServletRequest req, Part part, String baseName) throws IOException {
         String submitted = Paths.get(part.getSubmittedFileName()).getFileName().toString();
@@ -165,17 +159,29 @@ public class ReceivingServlet extends HttpServlet {
             ext = submitted.substring(dot).toLowerCase();
         }
 
+        // Chuyển tên sản phẩm thành chuỗi an toàn
         String safeBase = baseName.toLowerCase().replaceAll("[^a-z0-9]+", "-");
+
+        // Giới hạn tên file tối đa 60 ký tự
+        if (safeBase.length() > 60) {
+            safeBase = safeBase.substring(0, 60);
+        }
+
+        // Tạo tên file ngắn gọn, an toàn
         String fileName = System.currentTimeMillis() + "_" + safeBase + ext;
 
+        // Lấy đường dẫn thực tế của thư mục upload
         String root = req.getServletContext().getRealPath("/");
         Path uploadDir = Paths.get(root, "assets", "img", "uploads");
         Files.createDirectories(uploadDir);
 
+        Path filePath = uploadDir.resolve(fileName);
+
         try (InputStream in = part.getInputStream()) {
-            Files.copy(in, uploadDir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
         }
-        // Dùng đường dẫn tương đối để hiển thị trên web
+
+        // Trả về đường dẫn tương đối (để hiển thị trên web)
         return "assets/img/uploads/" + fileName;
     }
 }
