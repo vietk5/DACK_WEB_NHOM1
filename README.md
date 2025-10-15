@@ -827,9 +827,5 @@ Nếu bạn tìm thấy lỗi hoặc có đề xuất cải tiến, vui lòng:
 ## 📜 **License**
 © 2023 ElectroMart. All rights reserved.
 
-## **5. FILTER PACKAGE (com.electromart.filter)**
-<img width="721" height="130" alt="image" src="https://github.com/user-attachments/assets/9eb7c394-be9e-4e54-a64c-f30536c75c54" />
-
----
-
 **📝 Note**: Đây là đồ án cuối kỳ 1/2025-2026 môn LẬP TRÌNH WEB.
+
