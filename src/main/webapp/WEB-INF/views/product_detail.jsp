@@ -351,6 +351,7 @@
         if (currentValue < maxStock) {
             quantityInput.value = currentValue + 1;
             document.getElementById('qtyHidden').value = currentValue + 1;
+            document.getElementById('qtyHiddenForBuyNow').value = currentValue + 1;
         }
     }
 
@@ -360,6 +361,7 @@
         if (currentValue > 1) {
             quantityInput.value = currentValue - 1;
             document.getElementById('qtyHidden').value = currentValue - 1;
+            document.getElementById('qtyHiddenForBuyNow').value = currentValue - 1;
         }
     }
 
@@ -453,5 +455,6 @@
         box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
     }
 </style>
+
 
 <%@ include file="/WEB-INF/views/layout_footer.jspf" %>
