@@ -45,6 +45,23 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
+        // TỰ ĐỘNG ĐIỀN THÔNG TIN TỪ PROFILE
+        try {
+            KhachHang khachHang = khachHangDAO.find(user.getId());
+            if (khachHang != null) {
+                // Set thông tin vào request để hiển thị trên form
+                req.setAttribute("fullName", khachHang.getTen());
+                req.setAttribute("phone", khachHang.getSdt());
+                req.setAttribute("email", khachHang.getEmail());
+                req.setAttribute("address", khachHang.getDiaChi());
+
+                System.out.println("Auto-filled profile for user: " + khachHang.getEmail());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Nếu lỗi thì vẫn cho phép user nhập thủ công
+        }
+
         req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
     }
 
