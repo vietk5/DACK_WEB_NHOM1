@@ -10,6 +10,11 @@
 
 <c:set var="cart" value="${sessionScope.cart}" />
 
+<c:set var="buyNowCart" value="${sessionScope.buyNowCart}" />
+<c:if test="${not empty buyNowCart}">
+    <c:set var="cart" value="${buyNowCart}" />
+</c:if>
+
 <!-- Checkout Page (stacked sections, no script) -->
 <div class="row">
     <div class="col-12">
@@ -254,3 +259,4 @@
 </style>
 
 <%@ include file="layout_footer.jspf" %>
+
