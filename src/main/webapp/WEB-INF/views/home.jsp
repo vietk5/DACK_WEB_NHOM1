@@ -8,15 +8,15 @@
     <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner rounded-3 shadow-sm">
             <div class="carousel-item active">
-                <img src="${pageContext.request.contextPath}/assets/img/hero_1.jpg" class="d-block w-100" alt="promo">
+                <img src="${pageContext.request.contextPath}/assets/img/hero1.jpg" class="d-block w-100" alt="promo">
                 <div class="carousel-caption text-start"></div>
             </div>
             <div class="carousel-item">
-                <img src="${pageContext.request.contextPath}/assets/img/hero_2.jpg" class="d-block w-100" alt="promo">
+                <img src="${pageContext.request.contextPath}/assets/img/hero2.png" class="d-block w-100" alt="promo">
                 <div class="carousel-caption"></div>
             </div>
             <div class="carousel-item">
-                <img src="${pageContext.request.contextPath}/assets/img/hero_3.jpg" class="d-block w-100" alt="promo">
+                <img src="${pageContext.request.contextPath}/assets/img/hero3.png" class="d-block w-100" alt="promo">
                 <div class="carousel-caption text-end"></div>
             </div>
         </div>
@@ -27,7 +27,6 @@
             <span class="carousel-control-next-icon"></span>
         </button>
     </div>
-    <p class="text-muted small mt-2">*Thay ảnh tại <code>assets/img/hero_*.jpg</code>.</p>
 </section>
 
 <%-- FEATURED CATEGORIES --%>
