@@ -33,8 +33,8 @@ public class AdminEditProductServlet extends HttpServlet {
     if (digits.isEmpty()) return BigDecimal.ZERO;
     return new BigDecimal(digits);
   }
-  private static int parseInt(String s, int def) { try { return Integer.parseInt(s); } catch (Exception e) { return def; } }
-  private static long parseLong(String s, long def) { try { return Long.parseLong(s); } catch (Exception e) { return def; } }
+  private static int  parseInt (String s, int def){ try { return Integer.parseInt(s); } catch(Exception e){ return def; } }
+  private static long parseLong(String s, long def){ try { return Long.parseLong(s); }  catch(Exception e){ return def; } }
 
   private List<ThuongHieu> allBrands(EntityManager em) {
     return em.createQuery("SELECT th FROM ThuongHieu th ORDER BY th.tenThuongHieu", ThuongHieu.class).getResultList();
@@ -52,14 +52,15 @@ public class AdminEditProductServlet extends HttpServlet {
 
     EntityManager em = JPAUtil.getEmFactory().createEntityManager();
     try {
-      SanPham sp = em.find(SanPham.class, id);
-      if (sp == null) { resp.sendError(404); return; }
+      SanPham item = em.find(SanPham.class, id);
+      if (item == null) { resp.sendError(404); return; }
 
-      req.setAttribute("item", sp);
+      // Đặt đúng tên attribute mà JSP đang dùng: brands, categories
+      req.setAttribute("item", item);
       req.setAttribute("brands", allBrands(em));
       req.setAttribute("categories", allCategories(em));
 
-      req.setAttribute("q", safe(req.getParameter("q")));
+      req.setAttribute("q",    safe(req.getParameter("q")));
       req.setAttribute("page", parseInt(req.getParameter("page"), 1));
       req.setAttribute("size", parseInt(req.getParameter("size"), 20));
 
@@ -74,14 +75,16 @@ public class AdminEditProductServlet extends HttpServlet {
     long id = parseLong(req.getParameter("id"), 0L);
     if (id <= 0) { resp.sendError(400); return; }
 
-    String q = safe(req.getParameter("q"));
-    int page = parseInt(req.getParameter("page"), 1);
-    int size = parseInt(req.getParameter("size"), 20);
+    String q    = safe(req.getParameter("q"));
+    int page    = parseInt(req.getParameter("page"), 1);
+    int size    = parseInt(req.getParameter("size"), 20);
 
-    String ten = safe(req.getParameter("tenSanPham"));
-    long brandId = parseLong(req.getParameter("thuongHieuId"), 0L);
-    long loaiId  = parseLong(req.getParameter("loaiId"), 0L);
+    String ten  = safe(req.getParameter("tenSanPham"));
+    long brandId= parseLong(req.getParameter("thuongHieuId"), 0L);
+    long loaiId = parseLong(req.getParameter("loaiId"), 0L);
     BigDecimal gia = parseMoney(req.getParameter("gia"));
+
+    // CHUẨN HÓA THEO SanPham.java: soLuongTon
     int ton = parseInt(req.getParameter("soLuongTon"), 0);
 
     Part imagePart = null;
@@ -96,6 +99,7 @@ public class AdminEditProductServlet extends HttpServlet {
       SanPham sp = em.find(SanPham.class, id);
       if (sp == null) { tx.rollback(); resp.sendError(404); return; }
 
+      // Tên setter khớp SanPham.java
       sp.setTenSanPham(ten);
       sp.setGia(gia);
       sp.setSoLuongTon(ton);
@@ -111,26 +115,24 @@ public class AdminEditProductServlet extends HttpServlet {
 
       // === LƯU ẢNH: /assets/img/products/{id}.ext ===
       if (imagePart != null && imagePart.getSize() > 0) {
-        String submitted = Optional.ofNullable(imagePart.getSubmittedFileName()).orElse("");
+        String submitted = imagePart.getSubmittedFileName();
         String ext = "";
         int dot = submitted.lastIndexOf('.');
         if (dot >= 0) ext = submitted.substring(dot).toLowerCase();
         if (ext.isEmpty()) ext = ".jpg";
 
-        // Thư mục đích (thư mục tĩnh trong webapp)
         String folder = getServletContext().getRealPath("/assets/img/products");
         File dir = new File(folder);
         if (!dir.exists()) dir.mkdirs();
 
-        // Ghi đè theo quy ước {id}.ext
-        String fileName = id + ext;                   // ví dụ: 105.jpg
+        String fileName = id + ext; // ví dụ: 105.jpg
         File out = new File(dir, fileName);
         try (InputStream in = imagePart.getInputStream()) {
           Files.copy(in, out.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // (Khuyến nghị) Xóa rác: các file khác ext và các file theo quy ước cũ p{id}.ext
-        String[] exts = {".jpg", ".jpeg", ".png", ".webp", ".gif"};
+        // Xoá các biến thể cũ khác đuôi & dạng p{id}.ext
+        String[] exts = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"};
         for (String e : exts) {
           if (!e.equals(ext)) {
             try { Files.deleteIfExists(new File(dir, id + e).toPath()); } catch (Exception ignored) {}
@@ -138,17 +140,23 @@ public class AdminEditProductServlet extends HttpServlet {
           try { Files.deleteIfExists(new File(dir, "p" + id + e).toPath()); } catch (Exception ignored) {}
         }
 
-        // (Tuỳ chọn) Lưu đường dẫn vào DB nếu entity có field hinhAnh
+        // Nếu SanPham có field hinhAnh thì có thể dùng:
         // sp.setHinhAnh("assets/img/products/" + fileName);
       }
 
+      // CHUẨN HÓA THEO SanPham.java: ngayCapPhat
       sp.setNgayCapPhat(LocalDate.now());
+
       em.merge(sp);
       tx.commit();
 
       String base = req.getContextPath() + "/admin/products";
-      String redirect = String.format("%s?q=%s&page=%d&size=%d&updated=1",
-              base, java.net.URLEncoder.encode(q, java.nio.charset.StandardCharsets.UTF_8), page, size);
+      String redirect = String.format(
+          "%s?q=%s&page=%d&size=%d&updated=1",
+          base,
+          java.net.URLEncoder.encode(q, java.nio.charset.StandardCharsets.UTF_8),
+          page, size
+      );
       resp.sendRedirect(redirect);
 
     } catch (Exception ex) {
