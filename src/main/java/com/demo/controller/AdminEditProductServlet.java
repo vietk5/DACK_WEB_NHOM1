@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -108,7 +109,7 @@ public class AdminEditProductServlet extends HttpServlet {
         sp.setLoai(loai);
       }
 
-      // Lưu ảnh theo quy ước /assets/uploads/products/p{id}.ext (không bắt buộc)
+      // === LƯU ẢNH: /assets/img/products/{id}.ext ===
       if (imagePart != null && imagePart.getSize() > 0) {
         String submitted = Optional.ofNullable(imagePart.getSubmittedFileName()).orElse("");
         String ext = "";
@@ -116,17 +117,29 @@ public class AdminEditProductServlet extends HttpServlet {
         if (dot >= 0) ext = submitted.substring(dot).toLowerCase();
         if (ext.isEmpty()) ext = ".jpg";
 
-        String folder = getServletContext().getRealPath("/assets/uploads/products");
+        // Thư mục đích (thư mục tĩnh trong webapp)
+        String folder = getServletContext().getRealPath("/assets/img/products");
         File dir = new File(folder);
         if (!dir.exists()) dir.mkdirs();
 
-        String fileName = "p" + id + ext;
+        // Ghi đè theo quy ước {id}.ext
+        String fileName = id + ext;                   // ví dụ: 105.jpg
         File out = new File(dir, fileName);
         try (InputStream in = imagePart.getInputStream()) {
-          Files.copy(in, out.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+          Files.copy(in, out.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
-        // Nếu bạn đã có field hinhAnh trong DB, có thể set:
-        // sp.setHinhAnh("assets/uploads/products/" + fileName);
+
+        // (Khuyến nghị) Xóa rác: các file khác ext và các file theo quy ước cũ p{id}.ext
+        String[] exts = {".jpg", ".jpeg", ".png", ".webp", ".gif"};
+        for (String e : exts) {
+          if (!e.equals(ext)) {
+            try { Files.deleteIfExists(new File(dir, id + e).toPath()); } catch (Exception ignored) {}
+          }
+          try { Files.deleteIfExists(new File(dir, "p" + id + e).toPath()); } catch (Exception ignored) {}
+        }
+
+        // (Tuỳ chọn) Lưu đường dẫn vào DB nếu entity có field hinhAnh
+        // sp.setHinhAnh("assets/img/products/" + fileName);
       }
 
       sp.setNgayCapPhat(LocalDate.now());
