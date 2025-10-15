@@ -57,6 +57,12 @@
                                     <i class="bi bi-house me-2"></i>Về trang chủ
                                 </a>
                             </div>
+
+                            <div class="alert alert-info mt-3 mb-0 text-start">
+                                <i class="bi bi-envelope-check me-2"></i>
+                                Email xác nhận đơn hàng đã được gửi đến <strong>${sessionScope.user.email}</strong>. 
+                                Vui lòng kiểm tra hộp thư (bao gồm cả thư mục Spam/Junk).
+                            </div>
                         </c:when>
 
                         <c:otherwise>

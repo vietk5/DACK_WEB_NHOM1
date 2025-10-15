@@ -12,6 +12,29 @@
 
 <%@ include file="layout_header.jspf" %>
 
+<c:if test="${param.checkout_success == 'true'}">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading">
+            <i class="bi bi-check-circle-fill me-2"></i>Đặt hàng thành công!
+        </h5>
+        <p class="mb-2">
+            Đơn hàng của bạn đã được tạo thành công. 
+            Chúng tôi sẽ xử lý và giao hàng trong vòng 2-3 ngày làm việc.
+        </p>
+        <hr>
+        <p class="mb-0">
+            <i class="bi bi-envelope-check me-2"></i>
+            <strong>Email xác nhận đã được gửi đến:</strong> 
+            <span class="text-primary">${sessionScope.user.email}</span>
+        </p>
+        <p class="mb-0 mt-1 small">
+            <i class="bi bi-info-circle me-1"></i>
+            Vui lòng kiểm tra hộp thư (bao gồm cả thư mục Spam/Junk).
+        </p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</c:if>
+
 <!-- Orders Page -->
 <div class="row">
   <div class="col-12">

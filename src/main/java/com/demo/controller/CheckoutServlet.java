@@ -115,8 +115,9 @@ public class CheckoutServlet extends HttpServlet {
     }
 
     /**
-     * Xử lý thanh toán COD
+     * Xử lý thanh toán COD - CÓ GỬI EMAIL
      */
+
     @SuppressWarnings("unchecked")
     private void processCOD(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, ServletException {
@@ -168,6 +169,21 @@ public class CheckoutServlet extends HttpServlet {
 
             donHang.setChiTiet(chiTietList);
             donHangDAO.save(donHang);
+
+            // GỬI EMAIL XÁC NHẬN
+            try {
+                boolean emailSent = CheckoutService.sendOrderConfirmation(donHang, "cod");
+                if (emailSent) {
+                    System.out.println("Order confirmation email sent for order #" + donHang.getId());
+                } else {
+                    System.err.println("Failed to send email for order #" + donHang.getId());
+                    // Không throw exception - đơn hàng vẫn được tạo thành công
+                }
+            } catch (Exception emailEx) {
+                emailEx.printStackTrace();
+                System.err.println("Email error: " + emailEx.getMessage());
+                // Vẫn cho phép đặt hàng thành công dù email lỗi
+            }
 
             // Xóa giỏ hàng
             session.removeAttribute("cart");

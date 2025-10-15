@@ -147,6 +147,20 @@ public class VNPayReturnServlet extends HttpServlet {
                 donHang.setChiTiet(chiTietList);
                 donHangDAO.save(donHang);
 
+                // Đánh dấu transaction đã xử lý
+                TransactionTracker.markAsProcessed(vnp_TxnRef);
+
+                // GỬI EMAIL XÁC NHẬN
+                try {
+                    boolean emailSent = CheckoutService.sendOrderConfirmation(donHang, "vnpay");
+                    if (emailSent) {
+                        System.out.println("Order confirmation email sent for order #" + donHang.getId());
+                    }
+                } catch (Exception emailEx) {
+                    emailEx.printStackTrace();
+                    // Không ảnh hưởng đến flow chính
+                }
+
                 // Xóa giỏ hàng và pending order
                 session.removeAttribute("cart");
                 session.removeAttribute("pendingOrder");
@@ -162,6 +176,8 @@ public class VNPayReturnServlet extends HttpServlet {
                 e.printStackTrace();
                 request.setAttribute("success", false);
                 request.setAttribute("message", "Lỗi: " + e.getMessage());
+                // Rollback: Xóa khỏi processed list
+                TransactionTracker.remove(vnp_TxnRef);
                 // Không xóa pendingOrder để có thể retry
             }
 

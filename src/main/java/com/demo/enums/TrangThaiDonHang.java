@@ -1,9 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.demo.enums;
 
 public enum TrangThaiDonHang {
-    MOI, DANG_XU_LY, DANG_GIAO, HOAN_TAT, DA_HUY, TRA_HANG, DA_THANH_TOAN
+    MOI("Mới"),
+    DANG_XU_LY("Đang xử lý"),
+    DA_THANH_TOAN("Đã thanh toán"),
+    DANG_GIAO("Đang giao"),
+    HOAN_TAT("Hoàn tất"),
+    DA_HUY("Đã hủy"),
+    TRA_HANG("Trả hàng");
+
+    private final String displayName;
+
+    TrangThaiDonHang(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 }

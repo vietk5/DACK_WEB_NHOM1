@@ -32,6 +32,7 @@ com\demo\controller\resetService.class
 com\demo\controller\CheckoutServlet.class
 com\demo\controller\ProductDetailServlet.class
 com\demo\model\AuditEntity.class
+com\demo\controller\CheckoutService$1.class
 com\demo\persistence\DonHangDAO.class
 com\demo\model\kho\ChiTietPhieuXuat.class
 com\demo\model\database\SanPhamDB.class
@@ -40,6 +41,7 @@ com\demo\model\database\ThuongHieuDB.class
 com\demo\enums\TrangThaiDonHang.class
 com\demo\controller\requestPassword.class
 com\demo\model\NguoiDung.class
+com\demo\controller\CheckoutService.class
 com\demo\model\kho\ChiTietPhieuXuatKey.class
 com\demo\model\database\LoaiSanPhamDB.class
 com\demo\repo\Product.class
