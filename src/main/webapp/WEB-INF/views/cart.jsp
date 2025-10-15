@@ -31,9 +31,33 @@
             <tr>
               <td><img src="${pageContext.request.contextPath}/${it.hinh}" width="60" class="rounded"
                        onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/img/laptop_placeholder.jpg';"/></td>
-              <td>${it.ten}</td>
+              <td>
+                <a href="${pageContext.request.contextPath}/product?id=${fn:substringAfter(it.sku, 'SP-')}">
+                  ${it.ten}
+                </a>
+              </td>
               <td><fmt:formatNumber value="${it.gia}" type="number"/> đ</td>
-              <td>${it.soLuong}</td>
+              <td>
+                  
+                <div class="update-quantity">
+                    <form action="" method="post" class="quantity-form">
+                      <input type="hidden" name="action" value="add">
+                      <input type="hidden" name="productId" value="${fn:substringAfter(it.sku, 'SP-')}">
+                      <input type="hidden" name="qty" value="-1">
+                      <button type="submit" class="btn-qty minus">−</button>
+                    </form>
+
+                    <span class="quantity-display">${it.soLuong}</span>
+
+                    <form action="" method="post" class="quantity-form">
+                      <input type="hidden" name="action" value="add">
+                      <input type="hidden" name="productId" value="${fn:substringAfter(it.sku, 'SP-')}">
+                      <input type="hidden" name="qty" value="1">
+                      <button type="submit" class="btn-qty plus">+</button>
+                    </form>
+                </div>
+                        
+              </td>
               <td><fmt:formatNumber value="${it.gia * it.soLuong}" type="number"/> đ</td>
               <td>
                 <form method="post" action="${pageContext.request.contextPath}/cart">
