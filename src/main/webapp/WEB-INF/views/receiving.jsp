@@ -1,9 +1,10 @@
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c"  uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="fn"  uri="jakarta.tags.functions" %>
 
-<%@ include file="layout_header.jspf" %>
+<%@ include file="layout_admin_header.jspf" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <div class="container my-4">
@@ -110,3 +111,4 @@
 </div>
 
 <%@ include file="layout_footer.jspf" %>
+
