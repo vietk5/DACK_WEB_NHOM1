@@ -21,6 +21,7 @@ public class CartServlet extends HttpServlet {
 
         HttpSession session = req.getSession();
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        session.removeAttribute("buyNowCart");
         if (cart == null) cart = new ArrayList<>();
 
         String action = req.getParameter("action");
@@ -67,7 +68,12 @@ public class CartServlet extends HttpServlet {
                         if (newQty > product.getSoLuongTon()) {
                             newQty = product.getSoLuongTon();
                         }
-                        item.setSoLuong(newQty);
+                        if (newQty <= 0) {
+                            cart.removeIf(i -> i.getSku().equals(sku));
+                            session.setAttribute("cart", cart);
+                        } else {
+                            item.setSoLuong(newQty);
+                        }
                         System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
                     } else {
                         cart.add(new GioHangItem(
@@ -125,6 +131,7 @@ public class CartServlet extends HttpServlet {
 
         HttpSession session = req.getSession();
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        session.removeAttribute("buyNowCart");
         if (cart == null) cart = new ArrayList<>();
 
         String action = req.getParameter("action");
@@ -171,7 +178,13 @@ public class CartServlet extends HttpServlet {
                         if (newQty > product.getSoLuongTon()) {
                             newQty = product.getSoLuongTon();
                         }
-                        item.setSoLuong(newQty);
+                        if (newQty <= 0) {
+                            cart.removeIf(i -> i.getSku().equals(sku));
+                            session.setAttribute("cart", cart);
+                            break;
+                        } else {
+                            item.setSoLuong(newQty);
+                        }
                         System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
                     } else {
                         cart.add(new GioHangItem(
