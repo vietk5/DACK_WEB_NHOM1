@@ -35,6 +35,14 @@ public class RegisterServlet extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
             return;
         }
+        fullName = fullName.trim();
+        email = email.trim().toLowerCase();
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            req.setAttribute("error", "Email không hợp lệ.");
+            req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+        }
+        
         if (khDAO.emailExists(email)) {
             req.setAttribute("error", "Email đã được sử dụng.");
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
