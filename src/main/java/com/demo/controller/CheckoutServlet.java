@@ -40,6 +40,9 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
+        if (cart == null && buyNowCart != null) cart = buyNowCart;
+                
         if (cart == null || cart.isEmpty()) {
             resp.sendRedirect(req.getContextPath() + "/cart");
             return;
@@ -84,11 +87,34 @@ public class CheckoutServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/cart");
             return;
         }
-
         // Kiểm tra action từ form
         String action = req.getParameter("action");
+                
+        if ("buy_now".equals(action)) {
+            Long productId = Long.valueOf(req.getParameter("productId").trim());
+            SanPham product = sanPhamDAO.find(productId);
+            int soLuong = parseInt(req.getParameter("qty"));
+            List<GioHangItem> buyNowCart = new ArrayList<>();
+            buyNowCart.add(new GioHangItem(
+                            "SP-" + productId,
+                            product.getTenSanPham(),
+                            "assets/img/products/" + productId + ".jpg",
+                            product.getGia().longValue(),
+                            soLuong
+                        ));
+            session.setAttribute("buyNowCart", buyNowCart);
+            req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
+            return;
+        }
+        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
+        if (cart == null && buyNowCart != null) cart = buyNowCart;
+        if (cart == null || cart.isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/cart");
+            return;
+        }
+                
         String paymentMethod = req.getParameter("paymentMethod");
-
         // Nếu user click "Áp dụng voucher" hoặc action không rõ ràng
         if ("applyVoucher".equals(action)) {
             // Xử lý voucher (có thể tính toán lại tổng tiền)
@@ -125,7 +151,8 @@ public class CheckoutServlet extends HttpServlet {
         HttpSession session = req.getSession();
         SessionUser user = (SessionUser) session.getAttribute("user");
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
-
+        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
+        if (cart == null && buyNowCart != null) cart = buyNowCart;
         try {
             KhachHang khachHang = khachHangDAO.find(user.getId());
             if (khachHang == null) {
@@ -187,6 +214,7 @@ public class CheckoutServlet extends HttpServlet {
 
             // Xóa giỏ hàng
             session.removeAttribute("cart");
+            session.removeAttribute("buyNowCart");
 
             resp.sendRedirect(req.getContextPath() + "/orders?checkout_success=true");
 
@@ -211,6 +239,8 @@ public class CheckoutServlet extends HttpServlet {
         HttpSession session = req.getSession();
         SessionUser user = (SessionUser) session.getAttribute("user");
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
+        if (cart == null && buyNowCart != null) cart = buyNowCart;
 
         // 1. Tính tổng số tiền từ giỏ hàng
         long totalAmount = 0;
@@ -271,6 +301,7 @@ public class CheckoutServlet extends HttpServlet {
                 totalAmount
         );
         session.setAttribute("pendingOrder", pendingOrder);
+        session.removeAttribute("buyNowCart");
 
         // 7. Chuyển hướng đến VNPAY
         resp.sendRedirect(paymentUrl);
