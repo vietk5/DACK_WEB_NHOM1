@@ -2,6 +2,11 @@ package com.demo.controller;
 
 import com.demo.model.SanPham;
 import com.demo.model.cart.GioHangItem;
+import com.demo.model.session.SessionUser;
+import com.demo.model.KhachHang;
+import com.demo.model.cart.GioHang;
+import com.demo.persistence.GioHangDAO;
+import com.demo.persistence.KhachHangDAO;
 import com.demo.persistence.SanPhamDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,77 +27,21 @@ public class CartServlet extends HttpServlet {
         HttpSession session = req.getSession();
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
         session.removeAttribute("buyNowCart");
-        if (cart == null) cart = new ArrayList<>();
+        if (cart == null) {
+            cart = new ArrayList<>();
+        }
 
         String action = req.getParameter("action");
-        if (action == null) action = "view";
+        if (action == null) {
+            action = "view";
+        }
 
         System.out.println("[DEBUG] Action GET nhận được: " + action);
 
         switch (action) {
-            case "add": {
-                // Lấy ID sản phẩm từ database
-                String productIdStr = req.getParameter("productId");
-                if (productIdStr == null || productIdStr.trim().isEmpty()) {
-                    resp.sendRedirect(req.getContextPath() + "/cart");
-                    return;
-                }
-                
-                try {
-                    Long productId = Long.valueOf(productIdStr.trim());
-                    SanPham product = sanPhamDAO.find(productId);
-                    
-                    if (product == null || product.getSoLuongTon() <= 0) {
-                        System.out.println("⚠️ [DEBUG] Sản phẩm không tồn tại hoặc hết hàng");
-                        resp.sendRedirect(req.getContextPath() + "/cart");
-                        return;
-                    }
-                    
-                    int soLuong = parseInt(req.getParameter("qty"), 1);
-                    String sku = "SP-" + productId;
-                    
-                    System.out.println("🛒 [DEBUG] Thêm sản phẩm vào giỏ (GET):");
-                    System.out.println("     ID: " + productId);
-                    System.out.println("     SKU: " + sku);
-                    System.out.println("     Tên: " + product.getTenSanPham());
-                    System.out.println("     Giá: " + product.getGia());
-                    System.out.println("     Số lượng thêm: " + soLuong);
-
-                    Optional<GioHangItem> existing = cart.stream()
-                            .filter(i -> i.getSku().equals(sku))
-                            .findFirst();
-
-                    if (existing.isPresent()) {
-                        GioHangItem item = existing.get();
-                        int newQty = item.getSoLuong() + soLuong;
-                        if (newQty > product.getSoLuongTon()) {
-                            newQty = product.getSoLuongTon();
-                        }
-                        if (newQty <= 0) {
-                            cart.removeIf(i -> i.getSku().equals(sku));
-                            session.setAttribute("cart", cart);
-                        } else {
-                            item.setSoLuong(newQty);
-                        }
-                        System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
-                    } else {
-                        cart.add(new GioHangItem(
-                            sku,
-                            product.getTenSanPham(),
-                            "assets/img/products/" + productId + ".jpg",
-                            product.getGia().longValue(),
-                            soLuong
-                        ));
-                        System.out.println("🟢 [DEBUG] Sản phẩm mới đã thêm vào giỏ.");
-                    }
-
-                    session.setAttribute("cart", cart);
-                    System.out.println("✅ [DEBUG] Tổng sản phẩm trong giỏ: " + cart.size());
-                    
-                } catch (NumberFormatException e) {
-                    System.err.println("ID sản phẩm không hợp lệ: " + e.getMessage());
-                }
-                
+            case "add":
+            case "update": { // hợp nhất "add" & "update"
+                handleAddOrUpdate(req, session, cart);
                 resp.sendRedirect(req.getContextPath() + "/cart");
                 return;
             }
@@ -102,14 +51,7 @@ public class CartServlet extends HttpServlet {
                 System.out.println("🗑️ [DEBUG] Xóa sản phẩm: " + sku);
                 cart.removeIf(i -> i.getSku().equals(sku));
                 session.setAttribute("cart", cart);
-                resp.sendRedirect(req.getContextPath() + "/cart");
-                return;
-            }
-
-            case "clear": {
-                System.out.println("🧹 [DEBUG] Xóa toàn bộ giỏ hàng");
-                cart.clear();
-                session.setAttribute("cart", cart);
+                deleteItemFromDatabaseIfLoggedIn(session, sku);
                 resp.sendRedirect(req.getContextPath() + "/cart");
                 return;
             }
@@ -120,10 +62,6 @@ public class CartServlet extends HttpServlet {
         }
     }
 
-    private int parseInt(String val, int def) {
-        try { return Integer.parseInt(val); } catch (Exception e) { return def; }
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -132,77 +70,21 @@ public class CartServlet extends HttpServlet {
         HttpSession session = req.getSession();
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
         session.removeAttribute("buyNowCart");
-        if (cart == null) cart = new ArrayList<>();
+        if (cart == null) {
+            cart = new ArrayList<>();
+        }
 
         String action = req.getParameter("action");
-        if (action == null) action = "view";
+        if (action == null) {
+            action = "view";
+        }
 
         System.out.println("🛒 [DEBUG] Action POST nhận được: " + action);
 
         switch (action) {
-            case "add": {
-                // Lấy ID sản phẩm từ database
-                String productIdStr = req.getParameter("productId");
-                if (productIdStr == null || productIdStr.trim().isEmpty()) {
-                    resp.sendRedirect(req.getContextPath() + "/cart");
-                    return;
-                }
-                
-                try {
-                    Long productId = Long.valueOf(productIdStr.trim());
-                    SanPham product = sanPhamDAO.find(productId);
-                    
-                    if (product == null || product.getSoLuongTon() <= 0) {
-                        System.out.println("⚠️ [DEBUG] Sản phẩm không tồn tại hoặc hết hàng");
-                        resp.sendRedirect(req.getContextPath() + "/cart");
-                        return;
-                    }
-                    
-                    int soLuong = parseInt(req.getParameter("qty"), 1);
-                    String sku = "SP-" + productId;
-
-                    System.out.println("🛒 [DEBUG] Thêm sản phẩm vào giỏ (POST):");
-                    System.out.println("     ID: " + productId);
-                    System.out.println("     SKU: " + sku);
-                    System.out.println("     Tên: " + product.getTenSanPham());
-                    System.out.println("     Giá: " + product.getGia());
-                    System.out.println("     Số lượng thêm: " + soLuong);
-
-                    Optional<GioHangItem> existing = cart.stream()
-                            .filter(i -> i.getSku().equals(sku))
-                            .findFirst();
-
-                    if (existing.isPresent()) {
-                        GioHangItem item = existing.get();
-                        int newQty = item.getSoLuong() + soLuong;
-                        if (newQty > product.getSoLuongTon()) {
-                            newQty = product.getSoLuongTon();
-                        }
-                        if (newQty <= 0) {
-                            cart.removeIf(i -> i.getSku().equals(sku));
-                            session.setAttribute("cart", cart);
-                            break;
-                        } else {
-                            item.setSoLuong(newQty);
-                        }
-                        System.out.println("🟡 [DEBUG] Sản phẩm đã tồn tại, cập nhật số lượng mới: " + item.getSoLuong());
-                    } else {
-                        cart.add(new GioHangItem(
-                            sku,
-                            product.getTenSanPham(),
-                            "assets/img/products/" + productId + ".jpg",
-                            product.getGia().longValue(),
-                            soLuong
-                        ));
-                        System.out.println("🟢 [DEBUG] Sản phẩm mới đã thêm vào giỏ.");
-                    }
-
-                    session.setAttribute("cart", cart);
-                    System.out.println("✅ [DEBUG] Số lượng sản phẩm trong giỏ hiện tại: " + cart.size());
-                    
-                } catch (NumberFormatException e) {
-                    System.err.println("ID sản phẩm không hợp lệ: " + e.getMessage());
-                }
+            case "add":
+            case "update": {
+                handleAddOrUpdate(req, session, cart);
                 break;
             }
 
@@ -211,17 +93,160 @@ public class CartServlet extends HttpServlet {
                 System.out.println("🗑️ [DEBUG] Xóa sản phẩm: " + sku);
                 cart.removeIf(i -> i.getSku().equals(sku));
                 session.setAttribute("cart", cart);
-                break;
-            }
-
-            case "clear": {
-                System.out.println("🧹 [DEBUG] Xóa toàn bộ giỏ hàng");
-                cart.clear();
-                session.setAttribute("cart", cart);
+                deleteItemFromDatabaseIfLoggedIn(session, sku);
                 break;
             }
         }
 
         resp.sendRedirect(req.getContextPath() + "/cart");
+    }
+
+ private void handleAddOrUpdate(HttpServletRequest req, HttpSession session, List<GioHangItem> cart) {
+    try {
+        String productIdStr = req.getParameter("productId");
+        int qtyChange = parseInt(req.getParameter("qty"), 1);
+        if (productIdStr == null || productIdStr.trim().isEmpty()) return;
+
+        Long productId = Long.valueOf(productIdStr.trim());
+        SanPham product = sanPhamDAO.find(productId);
+        if (product == null) return;
+
+        String sku = "SP-" + productId;
+        Optional<GioHangItem> existing = cart.stream()
+                .filter(i -> i.getSku().equals(sku))
+                .findFirst();
+
+        if (existing.isPresent()) {
+            GioHangItem item = existing.get();
+            int newQty = item.getSoLuong() + qtyChange;
+
+            if (newQty <= 0) {
+                // 🗑️ Nếu giảm xuống 0 → xóa khỏi session + DB
+                cart.remove(item);
+                System.out.println("🗑️ [DEBUG] Xóa SP vì SL=0: " + sku);
+
+                SessionUser user = (SessionUser) session.getAttribute("user");
+                if (user != null && !user.isAdmin()) {
+                    GioHangDAO gioHangDAO = new GioHangDAO();
+                    KhachHangDAO khDAO = new KhachHangDAO();
+                    KhachHang kh = khDAO.findById(user.getId());
+                    if (kh != null) {
+                        GioHang gioHang = gioHangDAO.findByKhachHang(kh);
+                        if (gioHang != null) {
+                            gioHangDAO.deleteItemBySku(gioHang, sku);
+                        }
+                    }
+                }
+            } else {
+                if (newQty > product.getSoLuongTon()) newQty = product.getSoLuongTon();
+                item.setSoLuong(newQty);
+                System.out.println("✏️ [DEBUG] Cập nhật SL SP " + sku + " -> " + newQty);
+
+                // 🔹 Chỉ cập nhật sản phẩm hiện tại trong DB
+                SessionUser user = (SessionUser) session.getAttribute("user");
+                if (user != null && !user.isAdmin()) {
+                    GioHangDAO gioHangDAO = new GioHangDAO();
+                    KhachHangDAO khDAO = new KhachHangDAO();
+                    KhachHang kh = khDAO.findById(user.getId());
+                    if (kh != null) {
+                        GioHang gioHang = gioHangDAO.findByKhachHang(kh);
+                        if (gioHang == null) gioHang = gioHangDAO.createForUser(kh);
+                        gioHangDAO.updateItemQuantity(gioHang.getId(), productId, newQty);
+                    }
+                }
+            }
+
+        } else {
+            // 🟢 Nếu sản phẩm chưa có trong giỏ và bấm "+"
+            if (qtyChange > 0) {
+                GioHangItem newItem = new GioHangItem(
+                        sku,
+                        product.getTenSanPham(),
+                        "assets/img/products/" + productId + ".jpg",
+                        product.getGia().longValue(),
+                        qtyChange
+                );
+                cart.add(newItem);
+                System.out.println("🟢 [DEBUG] Thêm SP mới: " + sku);
+
+                // 🔹 Ghi sản phẩm mới xuống DB
+                SessionUser user = (SessionUser) session.getAttribute("user");
+                if (user != null && !user.isAdmin()) {
+                    GioHangDAO gioHangDAO = new GioHangDAO();
+                    KhachHangDAO khDAO = new KhachHangDAO();
+                    KhachHang kh = khDAO.findById(user.getId());
+                    if (kh != null) {
+                        GioHang gioHang = gioHangDAO.findByKhachHang(kh);
+                        if (gioHang == null) gioHang = gioHangDAO.createForUser(kh);
+                        gioHangDAO.saveItems(gioHang, Collections.singletonList(newItem));
+                    }
+                }
+            }
+        }
+
+        session.setAttribute("cart", cart);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("❌ [ERROR] handleAddOrUpdate lỗi: " + e.getMessage());
+    }
+}
+
+
+    private int parseInt(String val, int def) {
+        try {
+            return Integer.parseInt(val);
+        } catch (Exception e) {
+            return def;
+        }
+    }
+
+    // ✅ Đồng bộ giỏ hàng xuống DB
+    private void saveCartToDatabaseIfLoggedIn(HttpSession session, List<GioHangItem> cart) {
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        if (user == null || user.isAdmin()) {
+            return;
+        }
+
+        try {
+            GioHangDAO gioHangDAO = new GioHangDAO();
+            KhachHangDAO khDAO = new KhachHangDAO();
+            KhachHang kh = khDAO.findById(user.getId());
+            if (kh == null) {
+                return;
+            }
+
+            GioHang gioHang = gioHangDAO.findByKhachHang(kh);
+            if (gioHang == null) {
+                gioHang = gioHangDAO.createForUser(kh);
+            }
+
+            gioHangDAO.saveItems(gioHang, cart);
+            System.out.println("💾 [DEBUG] Giỏ hàng đồng bộ DB cho KH=" + kh.getId());
+        } catch (Exception e) {
+            System.err.println("❌ [ERROR] Lưu giỏ hàng xuống DB lỗi: " + e.getMessage());
+        }
+    }
+
+    // ✅ Xóa một sản phẩm trong DB
+    private void deleteItemFromDatabaseIfLoggedIn(HttpSession session, String sku) {
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        if (user == null || user.isAdmin()) {
+            return;
+        }
+
+        try {
+            GioHangDAO gioHangDAO = new GioHangDAO();
+            KhachHangDAO khDAO = new KhachHangDAO();
+            KhachHang kh = khDAO.findById(user.getId());
+            if (kh != null) {
+                GioHang gioHang = gioHangDAO.findByKhachHang(kh);
+                if (gioHang != null) {
+                    gioHangDAO.deleteItemBySku(gioHang, sku);
+                }
+            }
+        } catch (Exception ex) {
+            System.err.println("⚠️ [DEBUG] Lỗi khi xóa SP khỏi DB: " + ex.getMessage());
+        }
     }
 }

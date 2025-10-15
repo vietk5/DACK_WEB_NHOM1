@@ -42,28 +42,25 @@ public class CheckoutServlet extends HttpServlet {
 
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
         List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (cart == null && buyNowCart != null) cart = buyNowCart;
-                
+        if (cart == null && buyNowCart != null) {
+            cart = buyNowCart;
+        }
+
         if (cart == null || cart.isEmpty()) {
             resp.sendRedirect(req.getContextPath() + "/cart");
             return;
         }
 
-        // TỰ ĐỘNG ĐIỀN THÔNG TIN TỪ PROFILE
         try {
             KhachHang khachHang = khachHangDAO.find(user.getId());
             if (khachHang != null) {
-                // Set thông tin vào request để hiển thị trên form
                 req.setAttribute("fullName", khachHang.getTen());
                 req.setAttribute("phone", khachHang.getSdt());
                 req.setAttribute("email", khachHang.getEmail());
                 req.setAttribute("address", khachHang.getDiaChi());
-
-                System.out.println("Auto-filled profile for user: " + khachHang.getEmail());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Nếu lỗi thì vẫn cho phép user nhập thủ công
         }
 
         req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
@@ -76,49 +73,91 @@ public class CheckoutServlet extends HttpServlet {
 
         req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
-
         SessionUser user = (SessionUser) session.getAttribute("user");
         if (user == null || user.isAdmin()) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
-        // Kiểm tra action từ form
+
         String action = req.getParameter("action");
-                
-        if ("buy_now".equals(action)) {
-            Long productId = Long.valueOf(req.getParameter("productId").trim());
-            SanPham product = sanPhamDAO.find(productId);
-            int soLuong = parseInt(req.getParameter("qty"));
-            List<GioHangItem> buyNowCart = new ArrayList<>();
-            buyNowCart.add(new GioHangItem(
-                            "SP-" + productId,
-                            product.getTenSanPham(),
-                            "assets/img/products/" + productId + ".jpg",
-                            product.getGia().longValue(),
-                            soLuong
-                        ));
-            session.setAttribute("buyNowCart", buyNowCart);
-            req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
+
+        if ("checkoutSelected".equals(action)) {
+            String[] selectedItems = req.getParameterValues("selectedItems");
+            if (selectedItems == null || selectedItems.length == 0) {
+                req.setAttribute("error", "Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+                req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
+                return;
+            }
+
+//    HttpSession session = req.getSession();
+            List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+            List<GioHangItem> selectedCart = new ArrayList<>();
+
+            for (String s : selectedItems) {
+                final String skuFinal = s;
+                cart.stream()
+                        .filter(i -> i.getSku().equals(skuFinal))
+                        .findFirst()
+                        .ifPresent(selectedCart::add);
+            }
+
+            session.setAttribute("selectedCart", selectedCart);
+            resp.sendRedirect(req.getContextPath() + "/checkout");
             return;
         }
+
+        String[] selectedItems = req.getParameterValues("selectedItems");
+
         List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
         List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (cart == null && buyNowCart != null) cart = buyNowCart;
+        if (cart == null && buyNowCart != null) {
+            cart = buyNowCart;
+        }
         if (cart == null || cart.isEmpty()) {
             resp.sendRedirect(req.getContextPath() + "/cart");
             return;
         }
-                
+
+        // ✅ Lọc danh sách sản phẩm được chọn để thanh toán
+        List<GioHangItem> selectedCart = new ArrayList<>();
+        if (selectedItems != null && selectedItems.length > 0) {
+            for (String s : selectedItems) {
+                final String skuFinal = s;
+                cart.stream()
+                        .filter(i -> i.getSku().equals(skuFinal))
+                        .findFirst()
+                        .ifPresent(selectedCart::add);
+            }
+        } else {
+            selectedCart = cart; // Nếu không chọn gì => thanh toán tất cả
+        }
+
+        session.setAttribute("selectedCart", selectedCart);
+
         String paymentMethod = req.getParameter("paymentMethod");
-        // Nếu user click "Áp dụng voucher" hoặc action không rõ ràng
-        if ("applyVoucher".equals(action)) {
-            // Xử lý voucher (có thể tính toán lại tổng tiền)
-            // Sau đó forward lại checkout.jsp
+
+        if ("buy_now".equals(action)) {
+            Long productId = Long.valueOf(req.getParameter("productId").trim());
+            SanPham product = sanPhamDAO.find(productId);
+            int soLuong = parseInt(req.getParameter("qty"));
+            List<GioHangItem> buyNowCartNew = new ArrayList<>();
+            buyNowCartNew.add(new GioHangItem(
+                    "SP-" + productId,
+                    product.getTenSanPham(),
+                    "assets/img/products/" + productId + ".jpg",
+                    product.getGia().longValue(),
+                    soLuong
+            ));
+            session.setAttribute("buyNowCart", buyNowCartNew);
             req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
             return;
         }
 
-        // Nếu user click "Xác nhận đặt hàng"
+        if ("applyVoucher".equals(action)) {
+            req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
+            return;
+        }
+
         if ("placeOrder".equals(action)) {
             if ("cod".equals(paymentMethod)) {
                 processCOD(req, resp);
@@ -131,23 +170,24 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        // Mặc định: forward lại checkout
         req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
     }
 
     /**
-     * Xử lý thanh toán COD - CÓ GỬI EMAIL
+     * Xử lý thanh toán COD
      */
-
     @SuppressWarnings("unchecked")
     private void processCOD(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, ServletException {
 
         HttpSession session = req.getSession();
         SessionUser user = (SessionUser) session.getAttribute("user");
-        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
-        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (cart == null && buyNowCart != null) cart = buyNowCart;
+
+        List<GioHangItem> selectedCart = (List<GioHangItem>) session.getAttribute("selectedCart");
+        if (selectedCart == null || selectedCart.isEmpty()) {
+            selectedCart = (List<GioHangItem>) session.getAttribute("cart");
+        }
+
         try {
             KhachHang khachHang = khachHangDAO.find(user.getId());
             if (khachHang == null) {
@@ -155,7 +195,6 @@ public class CheckoutServlet extends HttpServlet {
                 return;
             }
 
-            // Tạo đơn hàng
             DonHang donHang = new DonHang();
             donHang.setKhachHang(khachHang);
             donHang.setNgayDatHang(LocalDateTime.now());
@@ -164,8 +203,7 @@ public class CheckoutServlet extends HttpServlet {
             List<ChiTietDonHang> chiTietList = new ArrayList<>();
             long totalAmount = 0;
 
-            // Kiểm tra kho và tạo chi tiết đơn hàng
-            for (GioHangItem item : cart) {
+            for (GioHangItem item : selectedCart) {
                 long sanPhamId = Long.valueOf(item.getSku().split("-")[1]);
                 SanPham sanPham = sanPhamDAO.find(sanPhamId);
 
@@ -182,7 +220,6 @@ public class CheckoutServlet extends HttpServlet {
                 chiTiet.setDonGia(sanPham.getGia());
                 chiTietList.add(chiTiet);
 
-                // Cập nhật kho
                 sanPham.setSoLuongTon(sanPham.getSoLuongTon() - item.getSoLuong());
                 sanPhamDAO.update(sanPham);
 
@@ -192,23 +229,20 @@ public class CheckoutServlet extends HttpServlet {
             donHang.setChiTiet(chiTietList);
             donHangDAO.save(donHang);
 
-            // GỬI EMAIL XÁC NHẬN
             try {
-                boolean emailSent = CheckoutService.sendOrderConfirmation(donHang, "cod");
-                if (emailSent) {
-                    System.out.println("Order confirmation email sent for order #" + donHang.getId());
-                } else {
-                    System.err.println("Failed to send email for order #" + donHang.getId());
-                    // Không throw exception - đơn hàng vẫn được tạo thành công
-                }
-            } catch (Exception emailEx) {
-                emailEx.printStackTrace();
-                System.err.println("Email error: " + emailEx.getMessage());
-                // Vẫn cho phép đặt hàng thành công dù email lỗi
+                CheckoutService.sendOrderConfirmation(donHang, "cod");
+            } catch (Exception ignored) {
             }
 
-            // Xóa giỏ hàng
-            session.removeAttribute("cart");
+            // ✅ Xóa sản phẩm đã thanh toán khỏi giỏ hàng
+            List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+            if (cart != null && selectedCart != null) {
+                final List<GioHangItem> selectedFinal = selectedCart;
+                cart.removeIf(i -> selectedFinal.stream().anyMatch(sel -> sel.getSku().equals(i.getSku())));
+                session.setAttribute("cart", cart);
+            }
+
+            session.removeAttribute("selectedCart");
             session.removeAttribute("buyNowCart");
 
             resp.sendRedirect(req.getContextPath() + "/orders?checkout_success=true");
@@ -216,16 +250,12 @@ public class CheckoutServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("error", "Đã có lỗi xảy ra trong quá trình tạo đơn hàng.");
-            try {
-                req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
-            } catch (ServletException | IOException ex) {
-                ex.printStackTrace();
-            }
+            req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
         }
     }
 
     /**
-     * Xử lý thanh toán VNPAY
+     * Xử lý thanh toán qua VNPAY
      */
     @SuppressWarnings("unchecked")
     private void processVNPAY(HttpServletRequest req, HttpServletResponse resp)
@@ -233,22 +263,21 @@ public class CheckoutServlet extends HttpServlet {
 
         HttpSession session = req.getSession();
         SessionUser user = (SessionUser) session.getAttribute("user");
-        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
-        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (cart == null && buyNowCart != null) cart = buyNowCart;
 
-        // 1. Tính tổng số tiền từ giỏ hàng
+        List<GioHangItem> selectedCart = (List<GioHangItem>) session.getAttribute("selectedCart");
+        if (selectedCart == null || selectedCart.isEmpty()) {
+            selectedCart = (List<GioHangItem>) session.getAttribute("cart");
+        }
+
         long totalAmount = 0;
-        for (GioHangItem item : cart) {
+        for (GioHangItem item : selectedCart) {
             totalAmount += item.getGia() * item.getSoLuong();
         }
-        String amountStr = String.valueOf(totalAmount * 100); // VNPAY yêu cầu nhân 100
 
-        // 2. Tạo mã giao dịch duy nhất
+        String amountStr = String.valueOf(totalAmount * 100);
         String vnp_TxnRef = String.valueOf(System.currentTimeMillis());
         String vnp_IpAddr = VNPayConfig.getIpAddress(req);
 
-        // 3. Chuẩn bị các tham số để gửi đi
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", VNPayConfig.vnp_Version);
         vnp_Params.put("vnp_Command", VNPayConfig.vnp_Command);
@@ -267,26 +296,21 @@ public class CheckoutServlet extends HttpServlet {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        // 4. Tạo chuỗi hash data và chữ ký
         String hashData = VNPayConfig.hashAllFields(vnp_Params);
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData);
 
-        // 5. Build URL hoàn chỉnh
         String queryUrl = hashData + "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
 
-        // 6. LƯU PENDING ORDER VÀO SESSION (QUAN TRỌNG!)
-        // Tạo bản sao sâu của cart để tránh bị thay đổi
         List<GioHangItem> cartCopy = new ArrayList<>();
-        for (GioHangItem item : cart) {
-            // Clone từng item để tránh reference issue
-            GioHangItem clonedItem = new GioHangItem();
-            clonedItem.setSku(item.getSku());
-            clonedItem.setTen(item.getTen());
-            clonedItem.setGia(item.getGia());
-            clonedItem.setSoLuong(item.getSoLuong());
-            clonedItem.setHinh(item.getHinh());
-            cartCopy.add(clonedItem);
+        for (GioHangItem item : selectedCart) {
+            GioHangItem cloned = new GioHangItem();
+            cloned.setSku(item.getSku());
+            cloned.setTen(item.getTen());
+            cloned.setGia(item.getGia());
+            cloned.setSoLuong(item.getSoLuong());
+            cloned.setHinh(item.getHinh());
+            cartCopy.add(cloned);
         }
 
         PendingOrder pendingOrder = new PendingOrder(
@@ -298,7 +322,6 @@ public class CheckoutServlet extends HttpServlet {
         session.setAttribute("pendingOrder", pendingOrder);
         session.removeAttribute("buyNowCart");
 
-        // 7. Chuyển hướng đến VNPAY
         resp.sendRedirect(paymentUrl);
     }
 }
