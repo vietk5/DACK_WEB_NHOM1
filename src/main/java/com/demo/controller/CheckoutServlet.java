@@ -32,45 +32,14 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        HttpSession session = req.getSession();
-        SessionUser user = (SessionUser) session.getAttribute("user");
-        if (user == null || user.isAdmin()) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
-
-        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
-        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (cart == null && buyNowCart != null) {
-            cart = buyNowCart;
-        }
-
-        if (cart == null || cart.isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/cart");
-            return;
-        }
-
-        try {
-            KhachHang khachHang = khachHangDAO.find(user.getId());
-            if (khachHang != null) {
-                req.setAttribute("fullName", khachHang.getTen());
-                req.setAttribute("phone", khachHang.getSdt());
-                req.setAttribute("email", khachHang.getEmail());
-                req.setAttribute("address", khachHang.getDiaChi());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
+        doPost(req, resp);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
+        
         req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         SessionUser user = (SessionUser) session.getAttribute("user");
@@ -78,64 +47,8 @@ public class CheckoutServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
-
         String action = req.getParameter("action");
-
-        if ("checkoutSelected".equals(action)) {
-            String[] selectedItems = req.getParameterValues("selectedItems");
-            if (selectedItems == null || selectedItems.length == 0) {
-                req.setAttribute("error", "Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
-                req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
-                return;
-            }
-
-//    HttpSession session = req.getSession();
-            List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
-            List<GioHangItem> selectedCart = new ArrayList<>();
-
-            for (String s : selectedItems) {
-                final String skuFinal = s;
-                cart.stream()
-                        .filter(i -> i.getSku().equals(skuFinal))
-                        .findFirst()
-                        .ifPresent(selectedCart::add);
-            }
-
-            session.setAttribute("selectedCart", selectedCart);
-            resp.sendRedirect(req.getContextPath() + "/checkout");
-            return;
-        }
-
-        String[] selectedItems = req.getParameterValues("selectedItems");
-
-        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
-        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
-        if (cart == null && buyNowCart != null) {
-            cart = buyNowCart;
-        }
-        if (cart == null || cart.isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/cart");
-            return;
-        }
-
-        // ✅ Lọc danh sách sản phẩm được chọn để thanh toán
-        List<GioHangItem> selectedCart = new ArrayList<>();
-        if (selectedItems != null && selectedItems.length > 0) {
-            for (String s : selectedItems) {
-                final String skuFinal = s;
-                cart.stream()
-                        .filter(i -> i.getSku().equals(skuFinal))
-                        .findFirst()
-                        .ifPresent(selectedCart::add);
-            }
-        } else {
-            selectedCart = cart; // Nếu không chọn gì => thanh toán tất cả
-        }
-
-        session.setAttribute("selectedCart", selectedCart);
-
-        String paymentMethod = req.getParameter("paymentMethod");
-
+        
         if ("buy_now".equals(action)) {
             Long productId = Long.valueOf(req.getParameter("productId").trim());
             SanPham product = sanPhamDAO.find(productId);
@@ -152,12 +65,45 @@ public class CheckoutServlet extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
             return;
         }
+        
+        List<GioHangItem> cart = (List<GioHangItem>) session.getAttribute("cart");
+        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
+        if (buyNowCart != null) {
+            cart = buyNowCart;
+        }
+        if (cart == null || cart.isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/cart");
+            return;
+        }
 
+        if ("checkoutSelected".equals(action)) {
+            String[] selectedItems = req.getParameterValues("selectedItems");
+            if (selectedItems == null || selectedItems.length == 0) {
+                req.setAttribute("error", "Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+                req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
+                return;
+            }
+
+            List<GioHangItem> selectedCart = new ArrayList<>();
+
+            for (String s : selectedItems) {
+                final String skuFinal = s;
+                cart.stream()
+                        .filter(i -> i.getSku().equals(skuFinal))
+                        .findFirst()
+                        .ifPresent(selectedCart::add);
+            }
+            session.setAttribute("selectedCart", selectedCart);
+            resp.sendRedirect(req.getContextPath() + "/checkout");
+            return;
+        }
+        
         if ("applyVoucher".equals(action)) {
             req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
             return;
         }
-
+        // payment
+        String paymentMethod = req.getParameter("paymentMethod");
         if ("placeOrder".equals(action)) {
             if ("cod".equals(paymentMethod)) {
                 processCOD(req, resp);
@@ -184,6 +130,8 @@ public class CheckoutServlet extends HttpServlet {
         SessionUser user = (SessionUser) session.getAttribute("user");
 
         List<GioHangItem> selectedCart = (List<GioHangItem>) session.getAttribute("selectedCart");
+        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
+        if (buyNowCart != null) selectedCart = buyNowCart;
         if (selectedCart == null || selectedCart.isEmpty()) {
             selectedCart = (List<GioHangItem>) session.getAttribute("cart");
         }
@@ -265,6 +213,8 @@ public class CheckoutServlet extends HttpServlet {
         SessionUser user = (SessionUser) session.getAttribute("user");
 
         List<GioHangItem> selectedCart = (List<GioHangItem>) session.getAttribute("selectedCart");
+        List<GioHangItem> buyNowCart = (List<GioHangItem>) session.getAttribute("buyNowCart");
+        if (buyNowCart != null) selectedCart = buyNowCart;
         if (selectedCart == null || selectedCart.isEmpty()) {
             selectedCart = (List<GioHangItem>) session.getAttribute("cart");
         }
