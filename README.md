@@ -810,19 +810,13 @@ mvn clean install
 ---
 
 ## 👥 **Thành viên nhóm**
-1. [Tên thành viên 1] - [MSSV] - [Vai trò]
-2. [Tên thành viên 2] - [MSSV] - [Vai trò]
-3. [Tên thành viên 3] - [MSSV] - [Vai trò]
+1. Đào Tuấn Duy
+2. Lê Minh Hưng
+3. Vũ Văn Thông
+4. Lê Đức Việt
 
 ---
 
-## 📝 **Báo cáo lỗi & Đóng góp**
-Nếu bạn tìm thấy lỗi hoặc có đề xuất cải tiến, vui lòng:
-1. Tạo issue mới trong repository
-2. Mô tả chi tiết vấn đề hoặc đề xuất
-3. Đính kèm ảnh chụp màn hình nếu cần thiết
-
----
 
 ## 📜 **License**
 © 2023 ElectroMart. All rights reserved.
