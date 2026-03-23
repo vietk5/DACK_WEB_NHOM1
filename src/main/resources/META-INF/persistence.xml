@@ -11,14 +11,14 @@
 
     <properties>
       <property name="jakarta.persistence.jdbc.url" 
-                value="jdbc:postgresql://dackweb1-vuvanthong1708-8959.i.aivencloud.com:21121/defaultdb?sslmode=require"/>
+                value="jdbc:postgresql://localhost:5432/dack_web_nhom1"/>
       
       <property name="jakarta.persistence.jdbc.driver"  
                 value="org.postgresql.Driver"/>
       
-      <property name="jakarta.persistence.jdbc.user" value="avnadmin"/>
+      <property name="jakarta.persistence.jdbc.user" value="postgres"/>
       
-      <property name="jakarta.persistence.jdbc.password" value="AVNS_abEM4PbxqDqbIAfcOIw"/>
+      <property name="jakarta.persistence.jdbc.password" value="11111"/>
 
       <property name="jakarta.persistence.schema-generation.database.action" 
                 value="update"/>
