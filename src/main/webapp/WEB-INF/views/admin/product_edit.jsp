@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c"   uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <%@ include file="../layout_admin_header.jspf" %>
 
 <div class="container py-4">
@@ -127,11 +127,29 @@
 <script>
   (function () {
     const input = document.querySelector('input[name="hinhAnh"]');
-    const img   = document.getElementById('currentImage');
+    const img = document.getElementById('currentImage');
     if (!input || !img) return;
+
     input.addEventListener('change', function () {
       if (this.files && this.files[0]) {
-        const url = URL.createObjectURL(this.files[0]);
+        const file = this.files[0];
+        const fileName = file.name.toLowerCase();
+        const allowedExts = ['.jpg', '.jpeg', '.png'];
+        
+        // Check đuôi file ngay tại client
+        const isValid = allowedExts.some(ext => fileName.endsWith(ext));
+        
+        if (!isValid) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sai định dạng',
+                text: 'Vui lòng chỉ chọn các file ảnh (jpg, png, webp)'
+            });
+            this.value = ""; // Reset input file
+            return;
+        }
+
+        const url = URL.createObjectURL(file);
         img.dataset.tries = ''; img.dataset.step = '';
         img.src = url;
         img.onload = () => URL.revokeObjectURL(url);

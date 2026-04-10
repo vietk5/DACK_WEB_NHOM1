@@ -30,6 +30,10 @@
               Sản phẩm <strong>${param.tenSanPham}</strong> đã tồn tại. Bạn muốn tăng số lượng?
             </div>
           </c:if>
+          </c:if>
+            <c:if test="${param.image_error == 'true'}">
+            <div class="alert alert-danger">Chỉ cho phép upload file ảnh (.jpg, .jpeg, .png)</div>
+          </c:if>
 
           <!-- Form add -->
           <form class="row g-3" method="post"

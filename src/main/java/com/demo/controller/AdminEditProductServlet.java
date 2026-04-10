@@ -21,6 +21,9 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.nio.file.*;
+import java.util.Arrays;
+
 
 @WebServlet(name = "AdminEditProductServlet", urlPatterns = {"/admin/products/edit"})
 @MultipartConfig(maxFileSize = 10 * 1024 * 1024) // 10MB
@@ -115,33 +118,47 @@ public class AdminEditProductServlet extends HttpServlet {
 
       // === LƯU ẢNH: /assets/img/products/{id}.ext ===
       if (imagePart != null && imagePart.getSize() > 0) {
-        String submitted = imagePart.getSubmittedFileName();
+        // 1. Lấy và làm sạch tên file gốc
+        String submitted = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
+
+        // 2. Tách extension và Validate White-list
         String ext = "";
         int dot = submitted.lastIndexOf('.');
         if (dot >= 0) ext = submitted.substring(dot).toLowerCase();
-        if (ext.isEmpty()) ext = ".jpg";
 
+        // CHỈ cho phép các định dạng ảnh phổ biến
+        List<String> whitelist = Arrays.asList(".jpg", ".jpeg", ".png", ".webp");
+        if (!whitelist.contains(ext)) {
+            throw new ServletException("Định dạng file không hỗ trợ!");
+        }
+
+        // 3. Kiểm tra MIME Type để chắc chắn là ảnh
+        String mimeType = getServletContext().getMimeType(submitted);
+        if (mimeType == null || !mimeType.startsWith("image/")) {
+            throw new ServletException("File upload không phải là ảnh hợp lệ!");
+        }
+
+        // 4. Xác định thư mục lưu trữ (Dùng Paths cho an toàn)
         String folder = getServletContext().getRealPath("/assets/img/products");
-        File dir = new File(folder);
-        if (!dir.exists()) dir.mkdirs();
+        Path dirPath = Paths.get(folder);
+        if (!Files.exists(dirPath)) Files.createDirectories(dirPath);
 
-        String fileName = id + ext; // ví dụ: 105.jpg
-        File out = new File(dir, fileName);
+        // 5. Lưu file với tên là ID (Tuyệt đối an toàn)
+        String fileName = id + ext; 
+        Path targetPath = dirPath.resolve(fileName);
+
         try (InputStream in = imagePart.getInputStream()) {
-          Files.copy(in, out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
         }
 
         // Xoá các biến thể cũ khác đuôi & dạng p{id}.ext
-        String[] exts = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"};
-        for (String e : exts) {
-          if (!e.equals(ext)) {
-            try { Files.deleteIfExists(new File(dir, id + e).toPath()); } catch (Exception ignored) {}
-          }
-          try { Files.deleteIfExists(new File(dir, "p" + id + e).toPath()); } catch (Exception ignored) {}
-        }
-
-        // Nếu SanPham có field hinhAnh thì có thể dùng:
-        // sp.setHinhAnh("assets/img/products/" + fileName);
+//        String[] exts = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"};
+//        for (String e : exts) {
+//          if (!e.equals(ext)) {
+//            try { Files.deleteIfExists(new File(dir, id + e).toPath()); } catch (Exception ignored) {}
+//          }
+//          try { Files.deleteIfExists(new File(dir, "p" + id + e).toPath()); } catch (Exception ignored) {}
+//        }
       }
 
       // CHUẨN HÓA THEO SanPham.java: ngayCapPhat

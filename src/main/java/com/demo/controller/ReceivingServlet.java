@@ -63,29 +63,41 @@ public class ReceivingServlet extends HttpServlet {
                 return;
             }
 
+            // Tạo mới sản phẩm
+            SanPham p = new SanPham(tenSanPham, thuongHieu, loaiSanPham, gia, moTaNgan, LocalDate.now(), soLuong);
             // Lưu ảnh (nếu có)
-            String imagePath = null;
             Part img = null;
             try {
                 img = request.getPart("hinhAnh");
-            } catch (Exception ignore) {
-            }
+            } catch (Exception ignore) {}
+            
             if (img != null && img.getSize() > 0) {
-                imagePath = saveImageToUploads(request, img, tenSanPham);
-            }
+                String submitted = Paths.get(img.getSubmittedFileName()).getFileName().toString();
+                String ext = getExtension(submitted);
+                String contentType = img.getContentType();
 
-            // Tạo mới sản phẩm
-            SanPham p = new SanPham(tenSanPham, thuongHieu, loaiSanPham, gia, moTaNgan, LocalDate.now(), soLuong);
-
-            // Nếu entity có field/setter hình ảnh thì gán
-            if (imagePath != null) {
-                try {
-                    p.getClass().getMethod("setHinhAnh", String.class).invoke(p, imagePath);
-                } catch (Exception ignore) {
+                // Validate nhanh (giống logic trong saveImage cũ)
+                if (!isValidImage(ext, contentType)) {
+                    response.sendRedirect(ctx + "/receiving?image_error=true");
+                    return;
                 }
             }
-
+            
             SanPhamDB.insert(p);
+            long newId = p.getId(); 
+
+            // BƯỚC 3: Lưu file với tên là ID + EXT
+            if (img != null && img.getSize() > 0) {
+                try {
+                    String ext = getExtension(Paths.get(img.getSubmittedFileName()).getFileName().toString());
+                    String fileName = newId + ext; // Tên file là ID
+
+                    String imagePath = saveFinalImage(request, img, fileName);
+                } catch (IOException e) {
+                    // Xử lý lỗi lưu file nếu cần
+                }
+            }
+                
             response.sendRedirect(ctx + "/receiving?success=true");
             return;
         }
@@ -148,40 +160,33 @@ public class ReceivingServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Lưu ảnh vào thư mục /assets/img/uploads/, trả về đường dẫn tương đối
-     */
-    private String saveImageToUploads(HttpServletRequest req, Part part, String baseName) throws IOException {
-        String submitted = Paths.get(part.getSubmittedFileName()).getFileName().toString();
-        String ext = "";
-        int dot = submitted.lastIndexOf('.');
-        if (dot >= 0) {
-            ext = submitted.substring(dot).toLowerCase();
-        }
+    // Hàm lấy đuôi file
+    private String getExtension(String fileName) {
+        int dot = fileName.lastIndexOf('.');
+        return (dot >= 0) ? fileName.substring(dot).toLowerCase() : "";
+    }
 
-        // Chuyển tên sản phẩm thành chuỗi an toàn
-        String safeBase = baseName.toLowerCase().replaceAll("[^a-z0-9]+", "-");
+    // Hàm kiểm tra tính hợp lệ của ảnh
+    private boolean isValidImage(String ext, String contentType) {
+        boolean validExt = ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png");
+        boolean validMime = contentType != null && contentType.startsWith("image/");
+        return validExt && validMime;
+    }
 
-        // Giới hạn tên file tối đa 60 ký tự
-        if (safeBase.length() > 60) {
-            safeBase = safeBase.substring(0, 60);
-        }
-
-        // Tạo tên file ngắn gọn, an toàn
-        String fileName = System.currentTimeMillis() + "_" + safeBase + ext;
-
-        // Lấy đường dẫn thực tế của thư mục upload
+    // Hàm thực hiện ghi file lên ổ cứng
+    private String saveFinalImage(HttpServletRequest req, Part part, String fileName) throws IOException {
         String root = req.getServletContext().getRealPath("/");
         Path uploadDir = Paths.get(root, "assets", "img", "products");
-        Files.createDirectories(uploadDir);
+
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
 
         Path filePath = uploadDir.resolve(fileName);
-
         try (InputStream in = part.getInputStream()) {
             Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // Trả về đường dẫn tương đối (để hiển thị trên web)
         return "assets/img/products/" + fileName;
     }
 }
