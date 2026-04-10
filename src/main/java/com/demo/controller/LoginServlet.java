@@ -84,6 +84,9 @@ import com.demo.model.session.SessionUser;
 import com.demo.persistence.AdminDAO;
 import com.demo.persistence.GioHangDAO;
 import com.demo.persistence.KhachHangDAO;
+import com.demo.util.AccountLockoutManager;
+import com.demo.util.PasswordUtil;
+import com.demo.util.SecurityLogger;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -114,36 +117,82 @@ public class LoginServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         String account = req.getParameter("account");   // username hoặc email
         String password = req.getParameter("password");
+        String clientIP = req.getRemoteAddr();
 
-        // 1) Thử admin trước
-        Optional<Admin> aOpt = adminDAO.findByAccount(account);
-        if (aOpt.isPresent() && password.equals(aOpt.get().getMatKhau())) {
-            Admin a = aOpt.get();
-            SessionUser su = new SessionUser(
-                    a.getIdAdmin(),
-                    a.getTen() != null ? a.getTen() : a.getTaiKhoan(),
-                    a.getEmail(),
-                    true
-            );
-            HttpSession ss = req.getSession(true);
-            ss.setAttribute("user", su);       // header của bạn đang dùng sessionScope.user.fullName
-            ss.setAttribute("IS_ADMIN", true);
-            resp.sendRedirect(req.getContextPath() + "/admin");
+        // 🔒 Security Enhancement - Vũ Văn Thông
+        // Fix A06: Check account lockout
+        if (AccountLockoutManager.isAccountLocked(account)) {
+            long remainingMinutes = AccountLockoutManager.getRemainingLockoutMinutes(account);
+            SecurityLogger.logAccountLockout(account, clientIP);
+            req.setAttribute("error", "Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau " + remainingMinutes + " phút.");
+            req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
             return;
         }
 
-        // 2) Khách
-        Optional<KhachHang> kOpt = khDAO.findByEmailAndPassword(account, password);
+        // 1) Thử admin trước
+        Optional<Admin> aOpt = adminDAO.findByAccount(account);
+        if (aOpt.isPresent()) {
+            Admin a = aOpt.get();
+            
+            // 🔒 Fix A07: BCrypt password verification (with fallback for backward compatibility)
+            boolean passwordMatch = false;
+            try {
+                passwordMatch = PasswordUtil.verifyPassword(password, a.getMatKhau());
+            } catch (Exception e) {
+                // Fallback to plaintext comparison for backward compatibility
+                passwordMatch = password.equals(a.getMatKhau());
+            }
+            
+            if (passwordMatch) {
+                // 🔒 Fix A06: Reset failed attempts on successful login
+                AccountLockoutManager.resetAttempts(account);
+                
+                // 🔒 Fix A09: Log successful login
+                SecurityLogger.logLoginSuccess(account, clientIP);
+                
+                SessionUser su = new SessionUser(
+                        a.getIdAdmin(),
+                        a.getTen() != null ? a.getTen() : a.getTaiKhoan(),
+                        a.getEmail(),
+                        true
+                );
+                HttpSession ss = req.getSession(true);
+                ss.setAttribute("user", su);
+                ss.setAttribute("IS_ADMIN", true);
+                resp.sendRedirect(req.getContextPath() + "/admin");
+                return;
+            }
+        }
+
+        // 2) Khách - 🔒 Fix A07: Use BCrypt verification instead of findByEmailAndPassword
+        Optional<KhachHang> kOpt = khDAO.findByEmail(account);
         if (kOpt.isPresent()) {
             KhachHang k = kOpt.get();
-            String name = (k.getTen() != null && !k.getTen().isBlank())
-                    ? k.getTen()
-                    : (k.getHoTen() != null ? k.getHoTen() : k.getEmail());
+            
+            // 🔒 Fix A07: BCrypt password verification (with fallback)
+            boolean passwordMatch = false;
+            try {
+                passwordMatch = PasswordUtil.verifyPassword(password, k.getMatKhau());
+            } catch (Exception e) {
+                // Fallback to plaintext comparison for backward compatibility
+                passwordMatch = password.equals(k.getMatKhau());
+            }
+            
+            if (passwordMatch) {
+                // 🔒 Fix A06: Reset failed attempts on successful login
+                AccountLockoutManager.resetAttempts(account);
+                
+                // 🔒 Fix A09: Log successful login
+                SecurityLogger.logLoginSuccess(account, clientIP);
+                
+                String name = (k.getTen() != null && !k.getTen().isBlank())
+                        ? k.getTen()
+                        : (k.getHoTen() != null ? k.getHoTen() : k.getEmail());
 
-            SessionUser su = new SessionUser(k.getId(), name, k.getEmail(), false);
-            HttpSession ss = req.getSession(true);
-            ss.setAttribute("user", su);
-            ss.setAttribute("IS_ADMIN", false);
+                SessionUser su = new SessionUser(k.getId(), name, k.getEmail(), false);
+                HttpSession ss = req.getSession(true);
+                ss.setAttribute("user", su);
+                ss.setAttribute("IS_ADMIN", false);
 
             // 🆕 --- BẮT ĐẦU: Gộp giỏ hàng tạm với giỏ hàng DB ---
             List<com.demo.model.cart.GioHangItem> cartSession
@@ -195,12 +244,20 @@ public class LoginServlet extends HttpServlet {
                 System.out.println("🛒 [DEBUG] Giỏ hàng DB trống, dùng giỏ session hiện tại.");
             }
 // 🧩 --- Kết thúc ---
-            resp.sendRedirect(req.getContextPath() + "/home");
-            return;
+                resp.sendRedirect(req.getContextPath() + "/home");
+                return;
+            }
         }
 
         // 3) Sai thông tin
-        req.setAttribute("error", "Sai tài khoản hoặc mật khẩu");
+        // 🔒 Fix A06: Record failed attempt
+        AccountLockoutManager.recordFailedAttempt(account);
+        
+        // 🔒 Fix A09: Log failed login
+        SecurityLogger.logLoginFailure(account, clientIP, "Invalid credentials");
+        
+        // 🔒 Fix A10: Generic error message (không tiết lộ thông tin)
+        req.setAttribute("error", "Email hoặc mật khẩu không chính xác");
         req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
     }
 }
