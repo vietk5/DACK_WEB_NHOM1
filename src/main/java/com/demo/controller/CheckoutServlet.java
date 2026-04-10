@@ -82,17 +82,45 @@ public class CheckoutServlet extends HttpServlet {
         if ("buy_now".equals(action)) {
             Long productId = Long.valueOf(req.getParameter("productId").trim());
             SanPham product = sanPhamDAO.find(productId);
-            int soLuong = parseInt(req.getParameter("qty"));
-            List<GioHangItem> buyNowCartNew = new ArrayList<>();
-            buyNowCartNew.add(new GioHangItem(
-                    "SP-" + productId,
-                    product.getTenSanPham(),
-                    "assets/img/products/" + productId + ".jpg",
-                    product.getGia().longValue(),
-                    soLuong
-            ));
-            session.setAttribute("buyNowCart", buyNowCartNew);
-            req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
+            
+            String qtyRaw = req.getParameter("qty");
+            int soLuong; 
+
+            try {
+                soLuong = Integer.parseInt(qtyRaw);
+
+                // KIỂM TRA BẢO MẬT
+                if (soLuong <= 0 || (product != null && soLuong > product.getSoLuongTon())) {
+                    String msg = (soLuong <= 0) ? "Số lượng sản phẩm không hợp lệ!" : "Số lượng vượt quá hàng tồn kho!";
+                    
+                    // Lưu thông báo vào session để trang home.jsp có thể đọc được
+                    req.getSession().setAttribute("errorAlert", msg);
+                    
+                    // Trả về trang chủ thay vì ở lại checkout
+                    resp.sendRedirect(req.getContextPath() + "/home");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                req.getSession().setAttribute("errorAlert", "Định dạng số lượng không hợp lệ!");
+                resp.sendRedirect(req.getContextPath() + "/home");
+                return;
+            }
+
+            // Nếu hợp lệ thì tiếp tục luồng mua ngay
+            if (product != null) {
+                List<GioHangItem> buyNowCartNew = new ArrayList<>();
+                buyNowCartNew.add(new GioHangItem(
+                        "SP-" + productId,
+                        product.getTenSanPham(),
+                        "assets/img/products/" + productId + ".jpg",
+                        product.getGia().longValue(),
+                        soLuong
+                ));
+                session.setAttribute("buyNowCart", buyNowCartNew);
+                req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/home");
+            }
             return;
         }
 
