@@ -1,1 +1,20 @@
 /target/
+
+# Security: Never commit credentials - Vũ Văn Thông
+# Fix: A08:2025 - Software & Data Integrity Failures
+src/main/resources/config.properties
+*.properties
+!pom.properties
+!config.properties.template
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
