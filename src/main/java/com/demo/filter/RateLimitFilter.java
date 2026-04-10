@@ -14,12 +14,12 @@ import java.util.concurrent.TimeUnit;
  * Rate limiting filter to prevent brute force attacks
  * Author: Vũ Văn Thông
  * Date: 2026-04-10
- * Fix: A06 - Rate limiting (5 requests / 15 minutes)
+ * Fix: A06 - Rate limiting (5 requests / 5 seconds)
  */
 @WebFilter(urlPatterns = {"/login", "/register", "/forgot-password", "/requestPassword"})
 public class RateLimitFilter implements Filter {
     private static final int MAX_REQUESTS = 5;
-    private static final long TIME_WINDOW = TimeUnit.MINUTES.toMillis(15);
+    private static final long TIME_WINDOW = TimeUnit.SECONDS.toMillis(5);
     private final ConcurrentHashMap<String, RequestCounter> requestCounts = new ConcurrentHashMap<>();
 
     @Override
@@ -35,7 +35,7 @@ public class RateLimitFilter implements Filter {
             SecurityLogger.logRateLimitExceeded(httpRequest.getRequestURI(), clientIP);
             httpResponse.setStatus(429);
             httpResponse.setContentType("text/html; charset=UTF-8");
-            httpResponse.getWriter().write("Quá nhiều yêu cầu. Vui lòng thử lại sau 15 phút.");
+            httpResponse.getWriter().write("Quá nhiều yêu cầu. Vui lòng thử lại sau 5 giây.");
             return;
         }
         
