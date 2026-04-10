@@ -3,6 +3,10 @@ package com.demo.controller;
 import com.demo.model.KhachHang;
 import com.demo.model.session.SessionUser;
 import com.demo.persistence.KhachHangDAO;
+import com.demo.util.PasswordPolicy;
+import com.demo.util.PasswordUtil;
+import com.demo.util.SecurityLogger;
+import com.demo.util.ValidationResult;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,6 +27,7 @@ public class RegisterServlet extends HttpServlet {
         String email    = req.getParameter("email");
         String pass     = req.getParameter("password");
         String confirm  = req.getParameter("confirm");
+        String clientIP = req.getRemoteAddr();
 
         if (fullName == null || email == null || pass == null
                 || fullName.isBlank() || email.isBlank() || pass.isBlank()) {
@@ -35,12 +40,23 @@ public class RegisterServlet extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
             return;
         }
+        
+        // 🔒 Security Enhancement - Vũ Văn Thông
+        // Fix A07: Validate password policy
+        ValidationResult passwordValidation = PasswordPolicy.validate(pass);
+        if (!passwordValidation.isValid()) {
+            req.setAttribute("error", passwordValidation.getMessage());
+            req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+            return;
+        }
+        
         fullName = fullName.trim();
         email = email.trim().toLowerCase();
 
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             req.setAttribute("error", "Email không hợp lệ.");
             req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+            return;
         }
         
         if (khDAO.emailExists(email)) {
@@ -52,9 +68,15 @@ public class RegisterServlet extends HttpServlet {
         KhachHang kh = new KhachHang();
         kh.setTen(fullName);
         kh.setEmail(email);
-        kh.setMatKhau(pass); // Lưu plaintext
+        
+        // 🔒 Fix A07: Hash password with BCrypt before saving
+        String hashedPassword = PasswordUtil.hashPassword(pass);
+        kh.setMatKhau(hashedPassword);
 
         khDAO.create(kh);
+        
+        // 🔒 Fix A09: Log registration
+        SecurityLogger.logRegistration(email, clientIP);
 
         // Auto login
         SessionUser su = new SessionUser(kh.getId(), kh.getTen(), kh.getEmail(), false);
