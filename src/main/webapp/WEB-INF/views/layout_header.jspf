@@ -82,7 +82,7 @@
       <!-- Search -->
       <form class="d-flex flex-grow-1 me-3" role="search" action="${pageContext.request.contextPath}/search" method="get">
         <input class="form-control me-2 bg-dark border-secondary" type="search" name="q"
-               placeholder="Tìm laptop, PC, linh kiện…" value="${param.q}"
+               placeholder="Tìm laptop, PC, linh kiện…" value="${fn:escapeXml(param.q)}"
                data-context-path="${pageContext.request.contextPath}"
                autocomplete="off"/>
         <button class="btn btn-rog" type="submit">Tìm</button>
@@ -129,7 +129,7 @@
           <c:otherwise>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                <i class="bi bi-person-circle me-1"></i>${sessionScope.user.fullName}
+                <i class="bi bi-person-circle me-1"></i><c:out value="${sessionScope.user.fullName}" escapeXml="true"/>
               </a>
               <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
                 <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">

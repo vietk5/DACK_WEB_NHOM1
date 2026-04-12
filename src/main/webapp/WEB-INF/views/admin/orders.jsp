@@ -31,7 +31,7 @@
       </div>
       <div class="col-md-3">
         <label class="form-label">Tìm (ID hoặc email KH)</label>
-        <input class="form-control" name="q" value="${q}">
+        <input class="form-control" name="q" value="${fn:escapeXml(q)}">
       </div>
       <div class="col-md-1">
         <button class="btn btn-rog w-100" type="submit">Lọc</button>
@@ -87,10 +87,10 @@
         <c:set var="prev" value="${page>1 ? page-1 : 1}"/>
         <c:set var="next" value="${(page*size)<total ? page+1 : page}"/>
         <a class="btn btn-outline-light btn-sm"
-           href="?q=${q}&status=${status}&from=${from}&to=${to}&size=${size}&page=${prev}">«</a>
+           href="?q=${fn:escapeXml(q)}&status=${status}&from=${from}&to=${to}&size=${size}&page=${prev}">«</a>
         <span class="btn btn-outline-light btn-sm disabled">${page}</span>
         <a class="btn btn-outline-light btn-sm"
-           href="?q=${q}&status=${status}&from=${from}&to=${to}&size=${size}&page=${next}">»</a>
+           href="?q=${fn:escapeXml(q)}&status=${status}&from=${from}&to=${to}&size=${size}&page=${next}">»</a>
       </div>
     </div>
   </div>

@@ -11,7 +11,7 @@
   <form class="card border-0 shadow-sm mb-3" method="get">
     <div class="card-body row g-2">
       <div class="col-md-6">
-        <input class="form-control" name="q" placeholder="Tìm theo tên / email" value="${q}">
+        <input class="form-control" name="q" placeholder="Tìm theo tên / email" value="${fn:escapeXml(q)}">
       </div>
       <div class="col-md-2">
         <select class="form-select" name="size">
@@ -61,9 +61,9 @@
       <div class="btn-group">
         <c:set var="prev" value="${page>1 ? page-1 : 1}"/>
         <c:set var="next" value="${(page*size)<total ? page+1 : page}"/>
-        <a class="btn btn-outline-light btn-sm" href="?q=${q}&size=${size}&page=${prev}">«</a>
+        <a class="btn btn-outline-light btn-sm" href="?q=${fn:escapeXml(q)}&size=${size}&page=${prev}">«</a>
         <span class="btn btn-outline-light btn-sm disabled">${page}</span>
-        <a class="btn btn-outline-light btn-sm" href="?q=${q}&size=${size}&page=${next}">»</a>
+        <a class="btn btn-outline-light btn-sm" href="?q=${fn:escapeXml(q)}&size=${size}&page=${next}">»</a>
       </div>
     </div>
   </div>

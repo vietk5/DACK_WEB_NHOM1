@@ -38,14 +38,14 @@
               
               <c:if test="${not empty success}">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                  <i class="bi bi-check-circle me-2"></i>${success}
+                  <i class="bi bi-check-circle me-2"></i><c:out value="${success}" escapeXml="true"/>
                   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
               </c:if>
               
               <c:if test="${not empty error}">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                  <i class="bi bi-exclamation-triangle me-2"></i>${error}
+                  <i class="bi bi-exclamation-triangle me-2"></i><c:out value="${error}" escapeXml="true"/>
                   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
               </c:if>
@@ -57,7 +57,7 @@
                   <div class="col-md-6">
                     <label class="form-label">Họ tên <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" name="fullName" 
-                           value="${khachHang.ten}" required>
+                           value="${fn:escapeXml(khachHang.ten)}" required>
                   </div>
                   
                   <div class="col-md-6">
@@ -69,7 +69,7 @@
                   <div class="col-md-6">
                     <label class="form-label">Số điện thoại</label>
                     <input type="tel" class="form-control" name="phone" 
-                           value="${khachHang.sdt}" placeholder="Chưa cập nhật">
+                           value="${fn:escapeXml(khachHang.sdt)}" placeholder="Chưa cập nhật">
                   </div>
                   
                   <div class="col-md-6">
@@ -97,14 +97,14 @@
               
               <c:if test="${not empty successPassword}">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                  <i class="bi bi-check-circle me-2"></i>${successPassword}
+                  <i class="bi bi-check-circle me-2"></i><c:out value="${successPassword}" escapeXml="true"/>
                   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
               </c:if>
               
               <c:if test="${not empty errorPassword}">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                  <i class="bi bi-exclamation-triangle me-2"></i>${errorPassword}
+                  <i class="bi bi-exclamation-triangle me-2"></i><c:out value="${errorPassword}" escapeXml="true"/>
                   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
               </c:if>

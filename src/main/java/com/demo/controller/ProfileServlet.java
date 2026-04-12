@@ -63,19 +63,38 @@ public class ProfileServlet extends HttpServlet {
     private void updateProfile(HttpServletRequest req, HttpServletResponse resp, SessionUser user)
             throws ServletException, IOException {
         
+        // SỬA — thêm validation trước khi setTen()
         String fullName = req.getParameter("fullName");
-        String phone = req.getParameter("phone");
+        String phone    = req.getParameter("phone");
 
         if (fullName == null || fullName.isBlank()) {
             req.setAttribute("error", "Vui lòng nhập họ tên.");
-            doGet(req, resp);
-            return;
+            doGet(req, resp); return;
+        }
+
+        // Giới hạn độ dài — cột VARCHAR(255), payload XSS thường > 100 ký tự
+        if (fullName.length() > 50) {
+            req.setAttribute("error", "Họ tên không được vượt quá 50 ký tự.");
+            doGet(req, resp); return;
+        }
+
+        // Chỉ cho phép chữ cái, khoảng trắng, dấu tiếng Việt
+        if (!fullName.matches("^[\\p{L}\\s]{1,50}$")) {
+            req.setAttribute("error", "Họ tên chỉ được chứa chữ cái và khoảng trắng.");
+            doGet(req, resp); return;
+        }
+
+        // Validate số điện thoại — chỉ số và dấu +, -
+        if (phone != null && !phone.isBlank()
+                && !phone.matches("^[0-9+\\-]{7,15}$")) {
+            req.setAttribute("error", "Số điện thoại không hợp lệ.");
+            doGet(req, resp); return;
         }
 
         KhachHang kh = khDAO.find(user.getId());
         if (kh != null) {
-            kh.setTen(fullName);
-            kh.setSdt(phone);
+            kh.setTen(fullName.trim());
+            kh.setSdt(phone != null ? phone.trim() : null);
             khDAO.update(kh);
 
             // Cập nhật session

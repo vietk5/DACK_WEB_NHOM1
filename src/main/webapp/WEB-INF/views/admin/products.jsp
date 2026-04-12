@@ -29,7 +29,7 @@
       <div class="col-md-6">
         <input class="form-control" name="q"
                placeholder="Tìm theo tên / thương hiệu / loại"
-               value="${q}">
+               value="${fn:escapeXml(q)}">
       </div>
       <div class="col-md-2">
         <select class="form-select" name="size">
