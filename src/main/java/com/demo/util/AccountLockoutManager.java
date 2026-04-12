@@ -21,12 +21,17 @@ public class AccountLockoutManager {
         LoginAttempt attempt = attempts.get(email);
         if (attempt == null) return false;
         
-        if (System.currentTimeMillis() - attempt.lockoutTime > LOCKOUT_DURATION) {
-            attempts.remove(email);
-            return false;
+        // Check if account has reached max failed attempts
+        if (attempt.failedAttempts >= MAX_FAILED_ATTEMPTS) {
+            // Check if lockout period has expired
+            if (System.currentTimeMillis() - attempt.lockoutTime > LOCKOUT_DURATION) {
+                attempts.remove(email);
+                return false;
+            }
+            return true;
         }
         
-        return attempt.failedAttempts >= MAX_FAILED_ATTEMPTS;
+        return false;
     }
 
     /**
@@ -35,8 +40,13 @@ public class AccountLockoutManager {
     public static void recordFailedAttempt(String email) {
         LoginAttempt attempt = attempts.computeIfAbsent(email, k -> new LoginAttempt());
         attempt.failedAttempts++;
+        
+        // Set lockout time when reaching max attempts
         if (attempt.failedAttempts >= MAX_FAILED_ATTEMPTS) {
             attempt.lockoutTime = System.currentTimeMillis();
+            System.out.println("🔒 [SECURITY] Account locked: " + email + " - Failed attempts: " + attempt.failedAttempts);
+        } else {
+            System.out.println("⚠️ [SECURITY] Failed login attempt " + attempt.failedAttempts + "/" + MAX_FAILED_ATTEMPTS + " for: " + email);
         }
     }
 
@@ -44,7 +54,10 @@ public class AccountLockoutManager {
      * Reset failed attempts counter (called on successful login)
      */
     public static void resetAttempts(String email) {
-        attempts.remove(email);
+        LoginAttempt removed = attempts.remove(email);
+        if (removed != null && removed.failedAttempts > 0) {
+            System.out.println("✅ [SECURITY] Reset failed attempts for: " + email);
+        }
     }
 
     /**

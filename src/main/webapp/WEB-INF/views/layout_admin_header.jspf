@@ -126,6 +126,9 @@
                             <i class="bi bi-percent me-2"></i>Khuyến mãi
                         </a>
                         <hr class="border-secondary mx-3"/>
+                        <a href="${pageContext.request.contextPath}/admin/security" class="admin-nav-link ${param.page == 'security' ? 'active' : ''}">
+                            <i class="bi bi-shield-lock me-2"></i>Security (SIEM)
+                        </a>
                         <a href="${pageContext.request.contextPath}/receiving" class="admin-nav-link">
                             <i class="bi bi-box-arrow-in-down me-2"></i>Nhập hàng
                         </a>
