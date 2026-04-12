@@ -87,6 +87,7 @@ import com.demo.persistence.KhachHangDAO;
 import com.demo.util.AccountLockoutManager;
 import com.demo.util.PasswordUtil;
 import com.demo.util.SecurityLogger;
+import com.demo.util.GoogleOAuthConfig;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -107,6 +108,10 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         // Tạo admin mặc định nếu chưa có
         adminDAO.ensureDefaultAdmin();
+        
+        // Check if Google OAuth is configured
+        req.setAttribute("googleOAuthEnabled", GoogleOAuthConfig.isConfigured());
+        
         req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
     }
 
@@ -120,9 +125,9 @@ public class LoginServlet extends HttpServlet {
         String clientIP = req.getRemoteAddr();
 
         // 🔒 Security Enhancement - Vũ Văn Thông
-        // Fix A06: Check account lockout
-        if (AccountLockoutManager.isAccountLocked(account)) {
-            long remainingMinutes = AccountLockoutManager.getRemainingLockoutMinutes(account);
+        // Fix A06: Check account lockout (with IP tracking)
+        if (AccountLockoutManager.isAccountLocked(account, clientIP)) {
+            long remainingMinutes = AccountLockoutManager.getRemainingLockoutMinutes(account, clientIP);
             SecurityLogger.logAccountLockout(account, clientIP);
             req.setAttribute("error", "Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau " + remainingMinutes + " phút.");
             req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
@@ -145,7 +150,7 @@ public class LoginServlet extends HttpServlet {
             
             if (passwordMatch) {
                 // 🔒 Fix A06: Reset failed attempts on successful login
-                AccountLockoutManager.resetAttempts(account);
+                AccountLockoutManager.resetAttempts(account, clientIP);
                 
                 // 🔒 Fix A09: Log successful login
                 SecurityLogger.logLoginSuccess(account, clientIP);
@@ -180,7 +185,7 @@ public class LoginServlet extends HttpServlet {
             
             if (passwordMatch) {
                 // 🔒 Fix A06: Reset failed attempts on successful login
-                AccountLockoutManager.resetAttempts(account);
+                AccountLockoutManager.resetAttempts(account, clientIP);
                 
                 // 🔒 Fix A09: Log successful login
                 SecurityLogger.logLoginSuccess(account, clientIP);
@@ -250,8 +255,8 @@ public class LoginServlet extends HttpServlet {
         }
 
         // 3) Sai thông tin
-        // 🔒 Fix A06: Record failed attempt
-        AccountLockoutManager.recordFailedAttempt(account);
+        // 🔒 Fix A06: Record failed attempt (with IP tracking)
+        AccountLockoutManager.recordFailedAttempt(account, clientIP);
         
         // 🔒 Fix A09: Log failed login
         SecurityLogger.logLoginFailure(account, clientIP, "Invalid credentials");

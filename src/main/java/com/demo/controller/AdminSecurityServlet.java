@@ -2,6 +2,7 @@ package com.demo.controller;
 
 import com.demo.model.SecurityEvent;
 import com.demo.util.SecurityEventStore;
+import com.demo.util.AccountLockoutManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -31,6 +32,21 @@ public class AdminSecurityServlet extends HttpServlet {
         
         if ("api".equals(action)) {
             handleApiRequest(req, resp);
+            return;
+        }
+        
+        if ("unlock".equals(action)) {
+            handleUnlockAccount(req, resp);
+            return;
+        }
+        
+        if ("blockip".equals(action)) {
+            handleBlockIP(req, resp);
+            return;
+        }
+        
+        if ("unblockip".equals(action)) {
+            handleUnblockIP(req, resp);
             return;
         }
         
@@ -65,6 +81,7 @@ public class AdminSecurityServlet extends HttpServlet {
         // Get statistics
         Map<String, Long> eventTypeStats = SecurityEventStore.getEventTypeStats();
         Map<String, Long> topSuspiciousIPs = SecurityEventStore.getTopSuspiciousIPs(10);
+        Map<String, ?> blockedIPs = AccountLockoutManager.getBlockedIPs();
         
         // Calculate summary stats
         long totalEvents = SecurityEventStore.getAllEvents().size();
@@ -76,6 +93,7 @@ public class AdminSecurityServlet extends HttpServlet {
         req.setAttribute("events", events);
         req.setAttribute("eventTypeStats", eventTypeStats);
         req.setAttribute("topSuspiciousIPs", topSuspiciousIPs);
+        req.setAttribute("blockedIPs", blockedIPs);
         req.setAttribute("totalEvents", totalEvents);
         req.setAttribute("errorCount", errorCount);
         req.setAttribute("warnCount", warnCount);
@@ -83,6 +101,56 @@ public class AdminSecurityServlet extends HttpServlet {
         req.setAttribute("pageTitle", "Security Monitoring - SIEM Dashboard");
         
         req.getRequestDispatcher("/WEB-INF/views/admin/security.jsp").forward(req, resp);
+    }
+    
+    /**
+     * Handle unlock account request
+     */
+    private void handleUnlockAccount(HttpServletRequest req, HttpServletResponse resp) 
+            throws IOException {
+        String email = req.getParameter("email");
+        String ip = req.getParameter("ip");
+        
+        if (email != null && !email.isEmpty()) {
+            if (ip != null && !ip.isEmpty()) {
+                AccountLockoutManager.unlockAccount(email, ip);
+            } else {
+                AccountLockoutManager.unlockAccountAll(email);
+            }
+            resp.sendRedirect(req.getContextPath() + "/admin/security?success=unlocked");
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/admin/security?error=invalid");
+        }
+    }
+    
+    /**
+     * Handle block IP request
+     */
+    private void handleBlockIP(HttpServletRequest req, HttpServletResponse resp) 
+            throws IOException {
+        String ip = req.getParameter("ip");
+        
+        if (ip != null && !ip.isEmpty()) {
+            AccountLockoutManager.blockIP(ip);
+            resp.sendRedirect(req.getContextPath() + "/admin/security?success=blocked");
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/admin/security?error=invalid");
+        }
+    }
+    
+    /**
+     * Handle unblock IP request
+     */
+    private void handleUnblockIP(HttpServletRequest req, HttpServletResponse resp) 
+            throws IOException {
+        String ip = req.getParameter("ip");
+        
+        if (ip != null && !ip.isEmpty()) {
+            AccountLockoutManager.unblockIP(ip);
+            resp.sendRedirect(req.getContextPath() + "/admin/security?success=unblocked");
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/admin/security?error=invalid");
+        }
     }
     
     /**

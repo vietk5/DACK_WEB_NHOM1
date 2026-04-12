@@ -65,6 +65,26 @@
             </button>
         </div>
     </div>
+    
+    <!-- Success/Error Messages -->
+    <c:if test="${param.success == 'unlocked'}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>Account unlocked successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </c:if>
+    <c:if test="${param.success == 'blocked'}">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-shield-x me-2"></i>IP address blocked successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </c:if>
+    <c:if test="${param.success == 'unblocked'}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>IP address unblocked successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </c:if>
 
     <!-- Statistics Cards -->
     <div class="row g-3 mb-4">
@@ -116,7 +136,7 @@
 
     <div class="row">
         <!-- Event Type Distribution -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="chart-container">
                 <h5 class="mb-3">
                     <i class="bi bi-pie-chart me-2"></i>Event Type Distribution
@@ -152,10 +172,10 @@
         </div>
 
         <!-- Top Suspicious IPs -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="chart-container">
                 <h5 class="mb-3">
-                    <i class="bi bi-geo-alt me-2"></i>Top Suspicious IP Addresses
+                    <i class="bi bi-geo-alt me-2"></i>Top Suspicious IPs
                 </h5>
                 <div class="table-responsive">
                     <table class="table table-dark table-sm">
@@ -175,8 +195,12 @@
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-outline-warning" 
-                                                onclick="filterByIP('${ip.key}')">
+                                                onclick="filterByIP('${ip.key}')" title="Filter events by this IP">
                                             <i class="bi bi-funnel"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" 
+                                                onclick="blockIP('${ip.key}')" title="Block this IP permanently">
+                                            <i class="bi bi-shield-x"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -185,6 +209,45 @@
                                 <tr>
                                     <td colspan="3" class="text-center text-muted">
                                         <i class="bi bi-check-circle me-2"></i>No suspicious activity detected
+                                    </td>
+                                </tr>
+                            </c:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Blocked IPs -->
+        <div class="col-md-4 mb-4">
+            <div class="chart-container">
+                <h5 class="mb-3">
+                    <i class="bi bi-shield-x text-danger me-2"></i>Blocked IP Addresses
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="blocked" items="${blockedIPs}">
+                                <tr>
+                                    <td><span class="ip-badge text-danger">${blocked.key}</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-success" 
+                                                onclick="unblockIP('${blocked.key}')" title="Unblock this IP">
+                                            <i class="bi bi-unlock"></i> Unblock
+                                        </button>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty blockedIPs}">
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">
+                                        <i class="bi bi-check-circle me-2"></i>No blocked IPs
                                     </td>
                                 </tr>
                             </c:if>
@@ -252,6 +315,7 @@
                         <th>Email</th>
                         <th>IP Address</th>
                         <th>Details</th>
+                        <th style="width: 100px">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -275,11 +339,20 @@
                             <td class="small">${event.email}</td>
                             <td><span class="ip-badge">${event.ipAddress}</span></td>
                             <td class="small text-muted">${event.details}</td>
+                            <td>
+                                <c:if test="${event.eventType == 'ACCOUNT_LOCKOUT' || event.eventType == 'LOGIN_FAILURE'}">
+                                    <button class="btn btn-sm btn-outline-success" 
+                                            onclick="unlockAccount('${event.email}', '${event.ipAddress}')" 
+                                            title="Unlock this account from this IP">
+                                        <i class="bi bi-unlock"></i>
+                                    </button>
+                                </c:if>
+                            </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty events}">
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 No security events found
                             </td>
@@ -298,6 +371,27 @@ function refreshData() {
 
 function filterByIP(ip) {
     window.location.href = '${pageContext.request.contextPath}/admin/security?ip=' + ip;
+}
+
+function unlockAccount(email, ip) {
+    if (confirm('Unlock account ' + email + ' from IP ' + ip + '?')) {
+        window.location.href = '${pageContext.request.contextPath}/admin/security?action=unlock&email=' + 
+                              encodeURIComponent(email) + '&ip=' + encodeURIComponent(ip);
+    }
+}
+
+function blockIP(ip) {
+    if (confirm('⚠️ Block IP address ' + ip + ' permanently?\n\nThis will prevent all login attempts from this IP until manually unblocked.')) {
+        window.location.href = '${pageContext.request.contextPath}/admin/security?action=blockip&ip=' + 
+                              encodeURIComponent(ip);
+    }
+}
+
+function unblockIP(ip) {
+    if (confirm('Unblock IP address ' + ip + '?\n\nThis IP will be able to attempt logins again.')) {
+        window.location.href = '${pageContext.request.contextPath}/admin/security?action=unblockip&ip=' + 
+                              encodeURIComponent(ip);
+    }
 }
 
 function exportLogs() {

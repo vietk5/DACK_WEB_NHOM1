@@ -1,0 +1,7 @@
+# Google OAuth 2.0 Credentials Template
+# Copy this file to 'google-oauth.properties' and fill in your actual credentials
+# DO NOT COMMIT google-oauth.properties TO GIT!
+
+google.client.id=YOUR_GOOGLE_CLIENT_ID_HERE
+google.client.secret=YOUR_GOOGLE_CLIENT_SECRET_HERE
+google.redirect.uri=http://localhost:8080/DACK_WEB_NHOM1/google-callback

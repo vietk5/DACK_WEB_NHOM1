@@ -7,6 +7,9 @@ src/main/resources/config.properties
 !pom.properties
 !config.properties.template
 
+# Google OAuth credentials
+google-oauth.properties
+
 # Logs
 logs/
 *.log

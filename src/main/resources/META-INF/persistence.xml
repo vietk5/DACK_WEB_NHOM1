@@ -11,14 +11,14 @@
 
     <properties>
       <property name="jakarta.persistence.jdbc.url" 
-                value="jdbc:postgresql://localhost:5432/dack_web_nhom1"/>
+                value="jdbc:postgresql://dpg-d75jnqgule4c73cs9910-a.singapore-postgres.render.com:5432/web_vul?sslmode=require"/>
       
       <property name="jakarta.persistence.jdbc.driver"  
                 value="org.postgresql.Driver"/>
       
-      <property name="jakarta.persistence.jdbc.user" value="postgres"/>
+      <property name="jakarta.persistence.jdbc.user" value="web_vul_user"/>
       
-      <property name="jakarta.persistence.jdbc.password" value="11111"/>
+      <property name="jakarta.persistence.jdbc.password" value="2A8UGqOOoniKdWtubM0brzVZbGFH2GKB"/>
 
       <property name="jakarta.persistence.schema-generation.database.action" 
                 value="update"/>
