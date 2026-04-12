@@ -39,6 +39,14 @@ public class GoogleCallbackServlet extends HttpServlet {
         
         HttpSession session = req.getSession(false);
         
+        // Debug logging
+        System.out.println("DEBUG Callback - Received state: " + state);
+        System.out.println("DEBUG Callback - Session exists: " + (session != null));
+        if (session != null) {
+            System.out.println("DEBUG Callback - Session ID: " + session.getId());
+            System.out.println("DEBUG Callback - Stored state: " + session.getAttribute("google_oauth_state"));
+        }
+        
         // Check for errors
         if (error != null) {
             req.setAttribute("error", "Đăng nhập Google thất bại: " + error);
@@ -47,8 +55,22 @@ public class GoogleCallbackServlet extends HttpServlet {
         }
         
         // Verify state token (CSRF protection)
-        if (session == null || state == null || !state.equals(session.getAttribute("google_oauth_state"))) {
-            req.setAttribute("error", "Invalid state token. Possible CSRF attack.");
+        // If session is null, try to get it with create=true as fallback
+        if (session == null) {
+            session = req.getSession(true);
+            System.out.println("DEBUG: Session was null, created new session");
+        }
+        
+        String storedState = (String) session.getAttribute("google_oauth_state");
+        
+        if (state == null || storedState == null || !state.equals(storedState)) {
+            String errorMsg = "Invalid state token. ";
+            if (session == null) errorMsg += "Session is null. ";
+            if (state == null) errorMsg += "Received state is null. ";
+            if (storedState == null) errorMsg += "Stored state is null. ";
+            
+            System.err.println("CSRF Error: " + errorMsg);
+            req.setAttribute("error", errorMsg + "Vui lòng thử lại.");
             req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
             return;
         }

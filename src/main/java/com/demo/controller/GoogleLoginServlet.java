@@ -33,6 +33,17 @@ public class GoogleLoginServlet extends HttpServlet {
         HttpSession session = req.getSession(true);
         session.setAttribute("google_oauth_state", state);
         
+        // Set session cookie properties for HTTPS
+        Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+        sessionCookie.setPath(req.getContextPath());
+        sessionCookie.setHttpOnly(true);
+        sessionCookie.setSecure(req.isSecure()); // true for HTTPS
+        sessionCookie.setMaxAge(600); // 10 minutes
+        resp.addCookie(sessionCookie);
+        
+        System.out.println("DEBUG: Generated state token: " + state);
+        System.out.println("DEBUG: Session ID: " + session.getId());
+        
         // Build Google OAuth URL
         String googleAuthUrl = GoogleOAuthConfig.AUTH_URL +
                 "?client_id=" + URLEncoder.encode(GoogleOAuthConfig.CLIENT_ID, StandardCharsets.UTF_8) +
