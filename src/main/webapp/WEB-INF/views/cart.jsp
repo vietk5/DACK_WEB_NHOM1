@@ -45,6 +45,7 @@
                             <td>
                                 <div class="update-quantity d-flex justify-content-center align-items-center gap-1">
                                     <form action="${pageContext.request.contextPath}/cart" method="post">
+                                        <input type="hidden" name="csrfToken" value="${csrfToken}"/>
                                         <input type="hidden" name="action" value="update"/>
                                         <input type="hidden" name="productId" value="${fn:substringAfter(it.sku, 'SP-')}"/>
                                         <input type="hidden" name="qty" value="-1"/>
@@ -52,6 +53,7 @@
                                     </form>
                                     <span class="text-white mx-2">${it.soLuong}</span>
                                     <form action="${pageContext.request.contextPath}/cart" method="post">
+                                        <input type="hidden" name="csrfToken" value="${csrfToken}"/>
                                         <input type="hidden" name="action" value="update"/>
                                         <input type="hidden" name="productId" value="${fn:substringAfter(it.sku, 'SP-')}"/>
                                         <input type="hidden" name="qty" value="1"/>
@@ -62,6 +64,7 @@
                             <td><fmt:formatNumber value="${it.gia * it.soLuong}" type="number"/> đ</td>
                             <td>
                                 <form method="post" action="${pageContext.request.contextPath}/cart">
+                                    <input type="hidden" name="csrfToken" value="${csrfToken}"/>
                                     <input type="hidden" name="action" value="remove"/>
                                     <input type="hidden" name="sku" value="${it.sku}"/>
                                     <button class="btn btn-outline-danger btn-sm">Xóa</button>
@@ -72,6 +75,7 @@
                 </tbody>
             </table>
             <form method="post" action="${pageContext.request.contextPath}/checkout">
+                <input type="hidden" name="csrfToken" value="${csrfToken}"/>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <a href="${pageContext.request.contextPath}/home" class="btn btn-outline-light">
                         ← Tiếp tục mua hàng
@@ -147,6 +151,13 @@
                 actionInput.name = "action";
                 actionInput.value = "checkoutSelected";
                 form.appendChild(actionInput);
+                
+                // Add CSRF token
+                const csrfInput = document.createElement("input");
+                csrfInput.type = "hidden";
+                csrfInput.name = "csrfToken";
+                csrfInput.value = "${csrfToken}";
+                form.appendChild(csrfInput);
                 
                 checkboxes.forEach(cb => {
                     const input = document.createElement("input");

@@ -8,6 +8,7 @@ import com.demo.model.cart.GioHang;
 import com.demo.persistence.GioHangDAO;
 import com.demo.persistence.KhachHangDAO;
 import com.demo.persistence.SanPhamDAO;
+import com.demo.util.CSRFUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -58,6 +59,9 @@ public class CartServlet extends HttpServlet {
 
             default:
                 System.out.println("📦 [DEBUG] Hiển thị giỏ hàng – tổng sản phẩm: " + cart.size());
+                // Generate CSRF token for cart forms
+                String csrfToken = CSRFUtil.getToken(session);
+                req.setAttribute("csrfToken", csrfToken);
                 req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
         }
     }

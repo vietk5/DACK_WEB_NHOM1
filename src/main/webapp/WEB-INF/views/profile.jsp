@@ -52,6 +52,7 @@
 
               <form method="post" action="${pageContext.request.contextPath}/profile">
                 <input type="hidden" name="action" value="update">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 
                 <div class="row g-3">
                   <div class="col-md-6">
@@ -111,6 +112,7 @@
 
               <form method="post" action="${pageContext.request.contextPath}/profile">
                 <input type="hidden" name="action" value="changePassword">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 
                 <div class="row g-3">
                   <div class="col-12">

@@ -3,6 +3,7 @@ package com.demo.controller;
 import com.demo.model.KhachHang;
 import com.demo.model.session.SessionUser;
 import com.demo.persistence.KhachHangDAO;
+import com.demo.util.CSRFUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -32,6 +33,9 @@ public class ProfileServlet extends HttpServlet {
             return;
         }
 
+        // Generate CSRF token for forms
+        String csrfToken = CSRFUtil.getToken(req.getSession());
+        req.setAttribute("csrfToken", csrfToken);
         req.setAttribute("khachHang", kh);
         req.getRequestDispatcher("/WEB-INF/views/profile.jsp").forward(req, resp);
     }

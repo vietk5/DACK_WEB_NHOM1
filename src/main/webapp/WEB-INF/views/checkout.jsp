@@ -61,6 +61,7 @@
         <!-- Form chính -->
         <c:if test="${not empty cart}">
             <form method="post" action="${cp}/checkout" id="checkoutForm">
+                <input type="hidden" name="csrfToken" value="${csrfToken}"/>
 
                 <!-- 1️⃣ Địa chỉ nhận hàng -->
                 <div class="card bg-dark border-secondary mb-4">

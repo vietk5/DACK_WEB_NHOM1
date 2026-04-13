@@ -11,6 +11,7 @@ import com.demo.model.session.SessionUser;
 import com.demo.persistence.DonHangDAO;
 import com.demo.persistence.KhachHangDAO;
 import com.demo.persistence.SanPhamDAO;
+import com.demo.util.CSRFUtil;
 import com.demo.util.VNPayConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -61,6 +62,10 @@ public class CheckoutServlet extends HttpServlet {
             e.printStackTrace();
             // Nếu lỗi thì vẫn cho phép user nhập thủ công
         }
+
+        // Generate CSRF token for checkout form
+        String csrfToken = CSRFUtil.getToken(session);
+        req.setAttribute("csrfToken", csrfToken);
 
         req.getRequestDispatcher("/WEB-INF/views/checkout.jsp").forward(req, resp);
     }
